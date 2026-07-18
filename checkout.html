@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Secure checkout at Arise Numero. Guest checkout available. PCI-DSS compliant payment processing." />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Secure Checkout — Arise Numero</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <!--
+    ╔══════════════════════════════════════════════════════════════╗
+    ║  PAYPAL SDK                                                  ║
+    ║  Replace YOUR_PAYPAL_CLIENT_ID with your actual Client ID.  ║
+    ║  Get it from: developer.paypal.com → My Apps → Client ID    ║
+    ╚══════════════════════════════════════════════════════════════╝
+  -->
+  <script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=USD&intent=capture" defer></script>
+  <!--
+    EMAILJS SDK
+    Replace YOUR_EMAILJS_PUBLIC_KEY with your actual Public Key.
+    Get it from: emailjs.com → Account → Public Key
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+    })();
+  </script>
+
+  <!--
+    GOOGLE ANALYTICS 4
+    Replace YOUR_GA_MEASUREMENT_ID with your Measurement ID.
+    Get it from: analytics.google.com -> Admin -> Data Streams
+    Format: G-XXXXXXXXXX
+    Only fires if user accepted analytics cookies (GDPR compliant).
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_MEASUREMENT_ID"></script>
+  <script>
+    (function() {
+      var consent = {};
+      try { consent = JSON.parse(localStorage.getItem("ariseNumero_cookieConsent") || "{}"); } catch(e) {}
+      if (consent.analytics) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "YOUR_GA_MEASUREMENT_ID", { anonymize_ip: true });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-inner">
+      <div class="cookie-text"><strong id="cookie-title">🍪 We use cookies</strong><p id="cookie-desc">We use cookies to enhance your experience. See our <a href="privacy.html">Privacy Policy</a>.</p></div>
+      <div class="cookie-actions"><button id="cookie-accept" class="btn btn-primary btn-sm">Accept All</button><button id="cookie-manage" class="btn btn-outline btn-sm">Manage</button><button id="cookie-reject" class="btn btn-ghost btn-sm">Reject</button></div>
+    </div>
+  </div>
+
+  <!-- Minimal Checkout Header -->
+  <header class="site-header site-header--checkout" role="banner">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a>
+      <div class="checkout-header-secure" aria-label="Secure checkout indicator">
+        <span aria-hidden="true">🔒</span> Secure Checkout
+      </div>
+      <div class="header-actions">
+        
+        <a href="cart.html" class="btn btn-ghost btn-sm" aria-label="Return to cart">← Back to Cart</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- Checkout Steps -->
+    <div class="checkout-steps container" aria-label="Checkout progress">
+      <div class="step step-done"><span class="step-num" aria-hidden="true">✓</span><span class="step-label">Cart</span></div>
+      <div class="step-connector" aria-hidden="true"></div>
+      <div class="step step-active" aria-current="step"><span class="step-num" aria-hidden="true">2</span><span class="step-label">Details</span></div>
+      <div class="step-connector" aria-hidden="true"></div>
+      <div class="step"><span class="step-num" aria-hidden="true">3</span><span class="step-label">Payment</span></div>
+      <div class="step-connector" aria-hidden="true"></div>
+      <div class="step"><span class="step-num" aria-hidden="true">4</span><span class="step-label">Confirm</span></div>
+    </div>
+
+    <div class="container checkout-layout">
+
+      <!-- ========== CHECKOUT FORM ========== -->
+      <div class="checkout-form-wrap">
+
+        <!-- Account Options -->
+        <div class="checkout-account-options" role="group" aria-labelledby="account-options-label">
+          <h2 id="account-options-label" class="checkout-section-title">How would you like to continue?</h2>
+          <div class="account-tabs" role="tablist" aria-label="Account or guest checkout">
+            <button class="account-tab active" role="tab" aria-selected="true" aria-controls="guest-panel" id="tab-guest">
+              Guest Checkout
+              <span class="tab-note">No account required</span>
+            </button>
+            <button class="account-tab" role="tab" aria-selected="false" aria-controls="login-panel" id="tab-login">
+              Sign In
+              <span class="tab-note">Faster for returning customers</span>
+            </button>
+            <button class="account-tab" role="tab" aria-selected="false" aria-controls="register-panel" id="tab-register">
+              Create Account
+              <span class="tab-note">Save your details</span>
+            </button>
+          </div>
+
+          <!-- Guest Panel -->
+          <div id="guest-panel" role="tabpanel" aria-labelledby="tab-guest" class="account-panel">
+            <p class="checkout-guest-note">Checking out as a guest. Your order confirmation will be sent by email.</p>
+          </div>
+
+          <!-- Login Panel -->
+          <div id="login-panel" role="tabpanel" aria-labelledby="tab-login" class="account-panel" hidden>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="login-email" class="form-label">Email Address <span aria-label="required" class="required">*</span></label>
+                <input type="email" id="login-email" class="form-input" placeholder="your@email.com" aria-required="true" autocomplete="email" />
+              </div>
+              <div class="form-group">
+                <label for="login-password" class="form-label">Password <span aria-label="required" class="required">*</span></label>
+                <input type="password" id="login-password" class="form-input" placeholder="••••••••" aria-required="true" autocomplete="current-password" />
+              </div>
+            </div>
+            <button class="btn btn-primary" aria-label="Sign in to your account">Sign In</button>
+            <a href="#" class="form-link">Forgot password?</a>
+          </div>
+
+          <!-- Register Panel -->
+          <div id="register-panel" role="tabpanel" aria-labelledby="tab-register" class="account-panel" hidden>
+            <p>Fill in the details below and tick "Create an account" at the end of the form.</p>
+          </div>
+        </div>
+
+        <!-- Checkout Form -->
+        <form id="checkout-form" class="checkout-form" novalidate aria-label="Checkout delivery and contact details">
+
+          <!-- Contact Information -->
+          <fieldset class="checkout-fieldset">
+            <legend class="checkout-section-title">Contact Information</legend>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-email" class="form-label">Email Address <span aria-label="required" class="required">*</span></label>
+                <input type="email" id="contact-email" name="contact_email" class="form-input" placeholder="your@email.com" aria-required="true" autocomplete="email" />
+                <p class="form-hint">Order confirmation will be sent to this address</p>
+              </div>
+              <div class="form-group">
+                <label for="contact-phone" class="form-label">Phone Number <span aria-label="required" class="required">*</span></label>
+                <input type="tel" id="contact-phone" name="contact_phone" class="form-input" placeholder="+1 555 000 0000" aria-required="true" autocomplete="tel" />
+                <p class="form-hint">For shipping notifications only</p>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Shipping Address -->
+          <fieldset class="checkout-fieldset">
+            <legend class="checkout-section-title">Shipping Address</legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ship-first" class="form-label">First Name <span aria-label="required" class="required">*</span></label>
+                <input type="text" id="ship-first" name="first_name" class="form-input" placeholder="Jane" aria-required="true" autocomplete="given-name" />
+              </div>
+              <div class="form-group">
+                <label for="ship-last" class="form-label">Last Name <span aria-label="required" class="required">*</span></label>
+                <input type="text" id="ship-last" name="last_name" class="form-input" placeholder="Smith" aria-required="true" autocomplete="family-name" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="ship-address1" class="form-label">Address Line 1 <span aria-label="required" class="required">*</span></label>
+              <input type="text" id="ship-address1" name="address1" class="form-input" placeholder="123 Main Street" aria-required="true" autocomplete="address-line1" />
+            </div>
+
+            <div class="form-group">
+              <label for="ship-address2" class="form-label">Address Line 2 <span class="optional-label">(optional)</span></label>
+              <input type="text" id="ship-address2" name="address2" class="form-input" placeholder="Apartment, suite, etc." autocomplete="address-line2" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ship-city" class="form-label">City <span aria-label="required" class="required">*</span></label>
+                <input type="text" id="ship-city" name="city" class="form-input" placeholder="Mumbai" aria-required="true" autocomplete="address-level2" />
+              </div>
+              <div class="form-group">
+                <label for="ship-state" class="form-label">State / Province <span aria-label="required" class="required">*</span></label>
+                <input type="text" id="ship-state" name="state" class="form-input" placeholder="Maharashtra" aria-required="true" autocomplete="address-level1" />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="ship-zip" class="form-label">Postal / ZIP Code <span aria-label="required" class="required">*</span></label>
+                <input type="text" id="ship-zip" name="postal_code" class="form-input" placeholder="400001" aria-required="true" autocomplete="postal-code" />
+              </div>
+              <div class="form-group">
+                <label for="ship-country" class="form-label">Country <span aria-label="required" class="required">*</span></label>
+                <select id="ship-country" name="country" class="form-input" aria-required="true" autocomplete="country">
+                  <option value="">Select country…</option>
+                  <option value="IN">India</option>
+                  <option value="US">United States</option>
+                  <option value="GB">United Kingdom</option>
+                  <option value="AU">Australia</option>
+                  <option value="CA">Canada</option>
+                  <option value="DE">Germany</option>
+                  <option value="FR">France</option>
+                  <option value="NL">Netherlands</option>
+                  <option value="SG">Singapore</option>
+                  <option value="AE">UAE</option>
+                  <option value="OTHER">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Customs Notice -->
+            <div class="customs-notice" role="note" aria-label="International customs information" id="customs-notice" hidden>
+              <span aria-hidden="true">ℹ️</span>
+              <p><strong>International Shipping:</strong> Your order may be subject to import duties and taxes levied by the destination country. These charges are the buyer's responsibility. We mark all parcels with accurate customs values as required by law.</p>
+            </div>
+          </fieldset>
+
+          <!-- Shipping Method -->
+          <fieldset class="checkout-fieldset">
+            <legend class="checkout-section-title">Shipping Method</legend>
+            <div class="shipping-options" role="radiogroup" aria-label="Select shipping method">
+              <label class="shipping-option">
+                <input type="radio" name="shipping_method" value="standard" checked aria-label="Standard shipping, 7-14 business days" />
+                <div class="shipping-option-info">
+                  <span class="shipping-name">Standard Shipping</span>
+                  <span class="shipping-time">7–14 business days</span>
+                </div>
+                <span class="shipping-cost" id="std-shipping-cost">$5.99</span>
+              </label>
+              <label class="shipping-option">
+                <input type="radio" name="shipping_method" value="express" aria-label="Express shipping, 3-5 business days" />
+                <div class="shipping-option-info">
+                  <span class="shipping-name">Express Shipping</span>
+                  <span class="shipping-time">3–5 business days</span>
+                </div>
+                <span class="shipping-cost">$14.99</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <!-- Payment Section -->
+          <fieldset class="checkout-fieldset" id="payment-section">
+            <legend class="checkout-section-title">
+              <span aria-hidden="true">🔒</span> Payment Details
+              <span class="pci-badge" aria-label="PCI-DSS compliant">PCI-DSS Secured</span>
+            </legend>
+            <p class="payment-note">Your payment is processed securely. We never store your card details on our servers.</p>
+
+            <!-- Payment Method Tabs -->
+            <div class="payment-tabs" role="tablist" aria-label="Select payment method">
+              <button type="button" class="payment-tab active" role="tab" aria-selected="true" aria-controls="pay-card" id="tab-card">
+                <span aria-hidden="true">💳</span> Card
+              </button>
+              <button type="button" class="payment-tab" role="tab" aria-selected="false" aria-controls="pay-paypal" id="tab-paypal">
+                <span aria-hidden="true">🅿</span> PayPal
+              </button>
+              <button type="button" class="payment-tab" role="tab" aria-selected="false" aria-controls="pay-razorpay" id="tab-razorpay">
+                Razorpay
+              </button>
+            </div>
+
+            <!-- Card Panel (Stripe embedded) -->
+            <div id="pay-card" role="tabpanel" aria-labelledby="tab-card" class="payment-panel">
+              <div class="form-group">
+                <label for="card-name" class="form-label">Name on Card <span aria-label="required" class="required">*</span></label>
+                <input type="text" id="card-name" name="card_name" class="form-input" placeholder="Jane Smith" aria-required="true" autocomplete="cc-name" />
+              </div>
+              <!-- Stripe Elements placeholder -->
+              <div class="form-group">
+                <label class="form-label" id="stripe-card-label">Card Number <span aria-label="required" class="required">*</span></label>
+                <div id="stripe-card-element" class="stripe-element" role="group" aria-labelledby="stripe-card-label">
+                  <!-- Stripe.js injects secure card field here -->
+                  <div class="stripe-placeholder" aria-hidden="true">
+                    <input type="text" class="form-input" placeholder="•••• •••• •••• ••••" aria-label="Card number (processed securely by Stripe)" autocomplete="cc-number" inputmode="numeric" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="card-expiry" class="form-label">Expiry <span aria-label="required" class="required">*</span></label>
+                  <input type="text" id="card-expiry" class="form-input" placeholder="MM / YY" aria-required="true" autocomplete="cc-exp" inputmode="numeric" maxlength="7" />
+                </div>
+                <div class="form-group">
+                  <label for="card-cvc" class="form-label">CVC <span aria-label="required" class="required">*</span>
+                    <button type="button" class="info-tooltip-btn" aria-label="What is CVC? 3 or 4 digit security code on the back of your card" title="3 or 4 digit security code on the back of your card">ℹ</button>
+                  </label>
+                  <input type="text" id="card-cvc" class="form-input" placeholder="•••" aria-required="true" autocomplete="cc-csc" inputmode="numeric" maxlength="4" />
+                </div>
+              </div>
+            </div>
+
+            <!-- PayPal Panel -->
+            <div id="pay-paypal" role="tabpanel" aria-labelledby="tab-paypal" class="payment-panel" hidden>
+              <p class="payment-redirect-note">You will be redirected to PayPal to complete your payment securely.</p>
+              <button type="button" class="btn btn-paypal btn-lg btn-full" aria-label="Pay with PayPal">
+                Pay with PayPal
+              </button>
+            </div>
+
+            <!-- Razorpay Panel -->
+            <div id="pay-razorpay" role="tabpanel" aria-labelledby="tab-razorpay" class="payment-panel" hidden>
+              <p class="payment-redirect-note">Razorpay supports UPI, Net Banking, Cards, and Wallets. Best for Indian customers.</p>
+              <button type="button" class="btn btn-razorpay btn-lg btn-full" aria-label="Pay with Razorpay">
+                Pay with Razorpay
+              </button>
+            </div>
+          </fieldset>
+
+          <!-- Create Account Option -->
+          <div class="checkout-create-account">
+            <label class="checkbox-label">
+              <input type="checkbox" id="create-account" name="create_account" aria-label="Create an account with these details" />
+              Create an account for faster checkout next time
+            </label>
+            <div id="account-password-wrap" hidden class="form-group">
+              <label for="new-password" class="form-label">Choose a Password <span aria-label="required" class="required">*</span></label>
+              <input type="password" id="new-password" name="new_password" class="form-input" placeholder="Min 8 characters" autocomplete="new-password" />
+            </div>
+          </div>
+
+          <!-- Consent & Terms -->
+          <div class="checkout-consent">
+            <label class="checkbox-label">
+              <input type="checkbox" id="terms-agree" name="terms_agree" required aria-required="true" aria-label="I agree to the Terms of Service and Privacy Policy" />
+              I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> <span aria-label="required" class="required">*</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="marketing-opt" name="marketing" aria-label="Optional: receive newsletters and promotions" />
+              Send me updates about new products and promotions (optional)
+            </label>
+          </div>
+
+          <!-- Place Order -->
+          <button type="submit" class="btn btn-primary btn-lg btn-full place-order-btn" aria-label="Place your order securely">
+            🔒 Place Order Securely
+          </button>
+
+          <p class="checkout-final-note">By placing your order you confirm you have read and agreed to our <a href="terms.html">Terms of Service</a> and <a href="returns.html">Returns Policy</a>. Your data is handled per our <a href="privacy.html">Privacy Policy</a>.</p>
+
+        </form>
+      </div>
+
+      <!-- ========== ORDER SUMMARY SIDEBAR ========== -->
+      <aside class="cart-summary checkout-summary-sticky" aria-labelledby="checkout-summary-heading">
+        <h2 id="checkout-summary-heading" class="summary-title">Your Order</h2>
+        <div id="checkout-order-items" aria-live="polite">
+          <!-- Populated by JS -->
+          <p class="checkout-empty-note">Your cart appears to be empty. <a href="shop.html">Return to shop</a>.</p>
+        </div>
+        <dl class="summary-breakdown">
+          <div class="summary-row"><dt>Subtotal</dt><dd id="co-subtotal">$0.00</dd></div>
+          <div class="summary-row"><dt>Shipping</dt><dd id="co-shipping">Calculated above</dd></div>
+          <div class="summary-row"><dt>Taxes</dt><dd id="co-tax">Calculated above</dd></div>
+          <div class="summary-row summary-total"><dt>Total</dt><dd id="co-total"><strong>$0.00</strong></dd></div>
+        </dl>
+        <div class="payment-methods" aria-label="Accepted payment methods">
+          <span class="payment-label">Secured by:</span>
+          <img src="assets/payment-stripe.svg" alt="Stripe" width="38" height="24" />
+          <img src="assets/payment-paypal.svg" alt="PayPal" width="38" height="24" />
+          <img src="assets/payment-razorpay.svg" alt="Razorpay" width="38" height="24" />
+        </div>
+        <p class="security-note"><span aria-hidden="true">🔐</span> 256-bit SSL encryption. PCI-DSS compliant. We never store your card data.</p>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Footer (minimal on checkout) -->
+  <footer class="site-footer site-footer--minimal" role="contentinfo">
+    <div class="container">
+      <p class="footer-legal-links">&copy; <span class="footer-year"></span> Arise Numero. All rights reserved. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms.html">Terms of Service</a> &nbsp;|&nbsp; <a href="returns.html">Returns Policy</a></p>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

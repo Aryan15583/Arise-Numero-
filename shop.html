@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Shop authentic crystal bracelets at Arise Numero. Browse Amethyst, Rose Quartz, Lapis Lazuli, Black Tourmaline and more. Ships worldwide." />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <title>Shop Crystal Bracelets — Arise Numero</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <!--
+    EMAILJS SDK
+    Replace YOUR_EMAILJS_PUBLIC_KEY with your actual Public Key.
+    Get it from: emailjs.com → Account → Public Key
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+    })();
+  </script>
+
+  <!--
+    GOOGLE ANALYTICS 4
+    Replace YOUR_GA_MEASUREMENT_ID with your Measurement ID.
+    Get it from: analytics.google.com -> Admin -> Data Streams
+    Format: G-XXXXXXXXXX
+    Only fires if user accepted analytics cookies (GDPR compliant).
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_MEASUREMENT_ID"></script>
+  <script>
+    (function() {
+      var consent = {};
+      try { consent = JSON.parse(localStorage.getItem("ariseNumero_cookieConsent") || "{}"); } catch(e) {}
+      if (consent.analytics) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "YOUR_GA_MEASUREMENT_ID", { anonymize_ip: true });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-inner">
+      <div class="cookie-text">
+        <strong id="cookie-title">🍪 We use cookies</strong>
+        <p id="cookie-desc">We use cookies to enhance your experience. See our <a href="privacy.html">Privacy Policy</a>.</p>
+      </div>
+      <div class="cookie-actions">
+        <button id="cookie-accept" class="btn btn-primary btn-sm">Accept All</button>
+        <button id="cookie-manage" class="btn btn-outline btn-sm">Manage</button>
+        <button id="cookie-reject" class="btn btn-ghost btn-sm">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Arise Numero Home">
+        <span class="logo-symbol" aria-hidden="true">✦</span>
+        <span class="logo-text">Arise Numero</span>
+      </a>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list" role="list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link active" aria-current="page">Shop</a></li>
+          <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+          <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <div class="currency-selector">
+          <select id="currency-select" aria-label="Currency selection">
+            <option value="USD">$ USD</option>
+            <option value="INR">₹ INR</option>
+            <option value="EUR">€ EUR</option>
+            <option value="GBP">£ GBP</option>
+            <option value="AUD">A$ AUD</option>
+          </select>
+        </div>
+        
+        <a href="cart.html" class="cart-btn" aria-label="Shopping cart">
+          <span class="cart-icon" aria-hidden="true">🛒</span>
+          <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+        </a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-nav">
+          <span class="hamburger" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden>
+      <ul class="mobile-nav-list" role="list">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+        <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <ol role="list">
+        <li><a href="index.html">Home</a></li>
+        <li aria-current="page">Shop</li>
+      </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header container">
+      <h1 class="page-title">Crystal Bracelet Collection</h1>
+      <p class="page-subtitle">Handcrafted with authentic gemstones. Each piece is unique with natural variations.</p>
+    </div>
+
+    <div class="container shop-layout">
+
+      <!-- ========== SIDEBAR FILTERS ========== -->
+      <aside class="shop-sidebar" aria-label="Filter and sort products">
+        <div class="filter-section">
+          <h2 class="filter-title">Filter By</h2>
+
+          <!-- Category Filter -->
+          <fieldset class="filter-group">
+            <legend class="filter-label">Crystal Type</legend>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="all" checked aria-label="Show all crystals" />
+              All Crystals
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="amethyst" aria-label="Filter by Amethyst" />
+              Amethyst
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="rose-quartz" aria-label="Filter by Rose Quartz" />
+              Rose Quartz
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="lapis-lazuli" aria-label="Filter by Lapis Lazuli" />
+              Lapis Lazuli
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="tourmaline" aria-label="Filter by Black Tourmaline" />
+              Black Tourmaline
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="citrine" aria-label="Filter by Citrine" />
+              Citrine
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="crystal" value="obsidian" aria-label="Filter by Obsidian" />
+              Obsidian
+            </label>
+          </fieldset>
+
+          <!-- Price Range -->
+          <fieldset class="filter-group">
+            <legend class="filter-label">Price Range</legend>
+            <label class="filter-option">
+              <input type="radio" name="price" value="all" checked aria-label="All prices" />
+              All Prices
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="price" value="0-20" aria-label="Under $20" />
+              Under $20
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="price" value="20-30" aria-label="$20 to $30" />
+              $20 – $30
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="price" value="30-50" aria-label="$30 to $50" />
+              $30 – $50
+            </label>
+            <label class="filter-option">
+              <input type="radio" name="price" value="50+" aria-label="Over $50" />
+              Over $50
+            </label>
+          </fieldset>
+
+          <!-- Bead Size -->
+          <fieldset class="filter-group">
+            <legend class="filter-label">Bead Size</legend>
+            <label class="filter-option">
+              <input type="checkbox" name="size" value="6mm" aria-label="Filter by 6mm bead size" />
+              6mm
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="size" value="8mm" aria-label="Filter by 8mm bead size" />
+              8mm
+            </label>
+            <label class="filter-option">
+              <input type="checkbox" name="size" value="10mm" aria-label="Filter by 10mm bead size" />
+              10mm
+            </label>
+          </fieldset>
+
+          <!-- Availability -->
+          <fieldset class="filter-group">
+            <legend class="filter-label">Availability</legend>
+            <label class="filter-option">
+              <input type="checkbox" name="avail" value="in-stock" aria-label="Show only in stock items" />
+              In Stock Only
+            </label>
+          </fieldset>
+
+          <button class="btn btn-outline btn-sm filter-reset" id="filter-reset" aria-label="Reset all filters">Reset Filters</button>
+        </div>
+      </aside>
+
+      <!-- ========== PRODUCT GRID ========== -->
+      <div class="shop-main">
+        <!-- Sort & Results Bar -->
+        <div class="shop-toolbar" role="toolbar" aria-label="Sort and view options">
+          <p class="results-count" aria-live="polite" id="results-count">Showing 8 products</p>
+          <div class="sort-group">
+            <label for="sort-select" class="sort-label">Sort by:</label>
+            <select id="sort-select" class="sort-select" aria-label="Sort products">
+              <option value="featured">Featured</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="newest">Newest</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="product-grid" role="list" aria-label="Crystal bracelet products">
+
+          <!-- Product 1 -->
+          <article class="product-card" role="listitem" data-crystal="amethyst" data-price="24.99" data-size="8mm">
+            <a href="product.html?id=amethyst-8mm" class="product-img-link" aria-label="View Amethyst Serenity bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/amethyst-bracelet.jpg" alt="Handcrafted 8mm Amethyst crystal bracelet with natural purple beads on elastic cord" class="product-img" loading="lazy" width="400" height="400" />
+                <div class="product-badge">Bestseller</div>
+                <div class="stock-warning" role="status" aria-label="Low stock">Only 3 left!</div>
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=amethyst-8mm">Amethyst Serenity</a></h2>
+              <p class="product-material">Authentic 8mm Amethyst, elastic cord</p>
+              <div class="product-rating" aria-label="4.9 out of 5 stars"><span aria-hidden="true">★★★★★</span> <span class="rating-count">(128)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="24.99">$24.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="amethyst-8mm" data-name="Amethyst Serenity" data-price="24.99" aria-label="Add Amethyst Serenity to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 2 -->
+          <article class="product-card" role="listitem" data-crystal="lapis-lazuli" data-price="32.99" data-size="8mm">
+            <a href="product.html?id=lapis-lazuli" class="product-img-link" aria-label="View Lapis Lazuli Wisdom bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/lapis-bracelet.jpg" alt="Handcrafted Lapis Lazuli crystal bracelet with deep blue beads and gold accents" class="product-img" loading="lazy" width="400" height="400" />
+                <div class="product-badge product-badge--new">New</div>
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=lapis-lazuli">Lapis Lazuli Wisdom</a></h2>
+              <p class="product-material">Authentic Lapis Lazuli, gold accents</p>
+              <div class="product-rating" aria-label="4.8 out of 5 stars"><span aria-hidden="true">★★★★★</span> <span class="rating-count">(94)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="32.99">$32.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="lapis-lazuli" data-name="Lapis Lazuli Wisdom" data-price="32.99" aria-label="Add Lapis Lazuli Wisdom to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 3 -->
+          <article class="product-card" role="listitem" data-crystal="rose-quartz" data-price="22.99" data-size="10mm">
+            <a href="product.html?id=rose-quartz" class="product-img-link" aria-label="View Rose Quartz Love bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/rose-quartz-bracelet.jpg" alt="Handcrafted Rose Quartz crystal bracelet with soft pink 10mm beads on elastic cord" class="product-img" loading="lazy" width="400" height="400" />
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=rose-quartz">Rose Quartz Love</a></h2>
+              <p class="product-material">Authentic 10mm Rose Quartz, elastic cord</p>
+              <div class="product-rating" aria-label="5 out of 5 stars"><span aria-hidden="true">★★★★★</span> <span class="rating-count">(211)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="22.99">$22.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="rose-quartz" data-name="Rose Quartz Love" data-price="22.99" aria-label="Add Rose Quartz Love to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 4 -->
+          <article class="product-card" role="listitem" data-crystal="tourmaline" data-price="27.99" data-size="8mm">
+            <a href="product.html?id=black-tourmaline" class="product-img-link" aria-label="View Black Tourmaline Shield bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/tourmaline-bracelet.jpg" alt="Handcrafted Black Tourmaline protection bracelet with matte black beads on elastic cord" class="product-img" loading="lazy" width="400" height="400" />
+                <div class="stock-warning" role="status" aria-label="Low stock">Only 5 left!</div>
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=black-tourmaline">Black Tourmaline Shield</a></h2>
+              <p class="product-material">Authentic Black Tourmaline, elastic cord</p>
+              <div class="product-rating" aria-label="4.7 out of 5 stars"><span aria-hidden="true">★★★★☆</span> <span class="rating-count">(76)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="27.99">$27.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="black-tourmaline" data-name="Black Tourmaline Shield" data-price="27.99" aria-label="Add Black Tourmaline Shield to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 5 -->
+          <article class="product-card" role="listitem" data-crystal="citrine" data-price="29.99" data-size="8mm">
+            <a href="product.html?id=citrine" class="product-img-link" aria-label="View Citrine Abundance bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/citrine-bracelet.jpg" alt="Handcrafted Citrine crystal bracelet with warm golden yellow beads on elastic cord" class="product-img" loading="lazy" width="400" height="400" />
+                <div class="product-badge product-badge--sale">Sale</div>
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=citrine">Citrine Abundance</a></h2>
+              <p class="product-material">Authentic 8mm Citrine, elastic cord</p>
+              <div class="product-rating" aria-label="4.8 out of 5 stars"><span aria-hidden="true">★★★★★</span> <span class="rating-count">(53)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="29.99">$29.99</span>
+                <span class="price-original" aria-label="Original price $39.99">$39.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="citrine" data-name="Citrine Abundance" data-price="29.99" aria-label="Add Citrine Abundance to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 6 -->
+          <article class="product-card" role="listitem" data-crystal="obsidian" data-price="25.99" data-size="10mm">
+            <a href="product.html?id=obsidian" class="product-img-link" aria-label="View Obsidian Grounding bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/obsidian-bracelet.jpg" alt="Handcrafted Obsidian grounding bracelet with glossy black 10mm beads on elastic cord" class="product-img" loading="lazy" width="400" height="400" />
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=obsidian">Obsidian Grounding</a></h2>
+              <p class="product-material">Authentic 10mm Obsidian, elastic cord</p>
+              <div class="product-rating" aria-label="4.6 out of 5 stars"><span aria-hidden="true">★★★★☆</span> <span class="rating-count">(41)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="25.99">$25.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="obsidian" data-name="Obsidian Grounding" data-price="25.99" aria-label="Add Obsidian Grounding to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 7 -->
+          <article class="product-card" role="listitem" data-crystal="amethyst" data-price="34.99" data-size="6mm">
+            <a href="product.html?id=amethyst-6mm" class="product-img-link" aria-label="View Amethyst Clarity bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/amethyst-6mm-bracelet.jpg" alt="Handcrafted 6mm Amethyst crystal bracelet with delicate purple beads and silver accents" class="product-img" loading="lazy" width="400" height="400" />
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=amethyst-6mm">Amethyst Clarity</a></h2>
+              <p class="product-material">Authentic 6mm Amethyst, silver accents</p>
+              <div class="product-rating" aria-label="5 out of 5 stars"><span aria-hidden="true">★★★★★</span> <span class="rating-count">(38)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="34.99">$34.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="amethyst-6mm" data-name="Amethyst Clarity" data-price="34.99" aria-label="Add Amethyst Clarity to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Product 8 -->
+          <article class="product-card" role="listitem" data-crystal="rose-quartz" data-price="49.99" data-size="8mm">
+            <a href="product.html?id=rose-quartz-premium" class="product-img-link" aria-label="View Rose Quartz Premium Set bracelet">
+              <div class="product-img-wrap">
+                <img src="assets/rose-quartz-premium.jpg" alt="Premium Rose Quartz crystal bracelet set with 8mm beads, gold spacers and gift box" class="product-img" loading="lazy" width="400" height="400" />
+                <div class="product-badge product-badge--new">Premium</div>
+              </div>
+            </a>
+            <div class="product-info">
+              <h2 class="product-name"><a href="product.html?id=rose-quartz-premium">Rose Quartz Premium Set</a></h2>
+              <p class="product-material">8mm Rose Quartz, gold spacers, gift box</p>
+              <div class="product-rating" aria-label="5 out of 5 stars"><span aria-hidden="true">★★★★★</span> <span class="rating-count">(19)</span></div>
+              <div class="product-price-row">
+                <span class="product-price" data-usd="49.99">$49.99</span>
+                <button class="btn btn-primary btn-sm add-to-cart" data-id="rose-quartz-premium" data-name="Rose Quartz Premium Set" data-price="49.99" aria-label="Add Rose Quartz Premium Set to cart">Add to Cart</button>
+              </div>
+            </div>
+          </article>
+
+        </div><!-- end product-grid -->
+
+        <!-- Pagination -->
+        <nav class="pagination" aria-label="Product pagination">
+          <button class="pagination-btn" aria-label="Previous page" disabled>&#8592; Prev</button>
+          <button class="pagination-btn active" aria-current="page" aria-label="Page 1">1</button>
+          <button class="pagination-btn" aria-label="Page 2">2</button>
+          <button class="pagination-btn" aria-label="Page 3">3</button>
+          <button class="pagination-btn" aria-label="Next page">Next &#8594;</button>
+        </nav>
+
+      </div><!-- end shop-main -->
+    </div><!-- end shop-layout -->
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a>
+        <p>Authentic crystal bracelets &amp; numerology readings delivered worldwide.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Shop navigation"><h4>Shop</h4><ul role="list"><li><a href="shop.html">All Bracelets</a></li><li><a href="cart.html">Cart</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Numerology navigation"><h4>Numerology</h4><ul role="list"><li><a href="numerology.html">Free Calculator</a></li><li><a href="booking.html">Book a Reading</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Legal navigation"><h4>Legal</h4><ul role="list"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="returns.html">Returns &amp; Shipping</a></li></ul></nav>
+    </div>
+    <div class="footer-disclaimer">
+      <div class="container">
+        <p><strong>Numerology Disclaimer:</strong> Numerology readings are intended for self-insight and entertainment purposes only. They do not constitute legal, financial, medical, or professional psychological advice.</p>
+        <p class="footer-legal-links">&copy; <span class="footer-year"></span> Arise Numero. All rights reserved. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms.html">Terms of Service</a> &nbsp;|&nbsp; <a href="returns.html">Returns Policy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
