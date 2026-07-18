@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Arise Numero Returns and Shipping Policy — 14-day returns, international shipping rates, customs information and delivery times worldwide." />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <title>Returns &amp; Shipping Policy — Arise Numero</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <!--
+    EMAILJS SDK
+    Replace YOUR_EMAILJS_PUBLIC_KEY with your actual Public Key.
+    Get it from: emailjs.com → Account → Public Key
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+    })();
+  </script>
+
+  <!--
+    GOOGLE ANALYTICS 4
+    Replace YOUR_GA_MEASUREMENT_ID with your Measurement ID.
+    Get it from: analytics.google.com -> Admin -> Data Streams
+    Format: G-XXXXXXXXXX
+    Only fires if user accepted analytics cookies (GDPR compliant).
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_MEASUREMENT_ID"></script>
+  <script>
+    (function() {
+      var consent = {};
+      try { consent = JSON.parse(localStorage.getItem("ariseNumero_cookieConsent") || "{}"); } catch(e) {}
+      if (consent.analytics) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "YOUR_GA_MEASUREMENT_ID", { anonymize_ip: true });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-inner">
+      <div class="cookie-text"><strong id="cookie-title">🍪 We use cookies</strong><p id="cookie-desc">We use cookies to enhance your experience. See our <a href="privacy.html">Privacy Policy</a>.</p></div>
+      <div class="cookie-actions"><button id="cookie-accept" class="btn btn-primary btn-sm">Accept All</button><button id="cookie-manage" class="btn btn-outline btn-sm">Manage</button><button id="cookie-reject" class="btn btn-ghost btn-sm">Reject</button></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list" role="list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
+          <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+          <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        
+        <a href="cart.html" class="cart-btn" aria-label="Shopping cart"><span class="cart-icon" aria-hidden="true">🛒</span><span class="cart-count" id="cart-count" aria-live="polite">0</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-nav"><span class="hamburger" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden>
+      <ul class="mobile-nav-list" role="list">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+        <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <ol role="list">
+        <li><a href="index.html">Home</a></li>
+        <li aria-current="page">Returns &amp; Shipping</li>
+      </ol>
+    </nav>
+
+    <div class="container legal-page">
+
+      <!-- Table of Contents -->
+      <aside class="legal-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading" class="toc-title">Contents</h2>
+        <nav aria-label="Policy sections">
+          <ol class="toc-list" role="list">
+            <li><a href="#returns-policy">1. Returns Policy</a></li>
+            <li><a href="#how-to-return">2. How to Return</a></li>
+            <li><a href="#refunds">3. Refunds</a></li>
+            <li><a href="#exchanges">4. Exchanges</a></li>
+            <li><a href="#non-returnable">5. Non-Returnable Items</a></li>
+            <li><a href="#shipping">6. Shipping Information</a></li>
+            <li><a href="#shipping-rates">7. Shipping Rates &amp; Times</a></li>
+            <li><a href="#customs">8. Customs &amp; Import Duties</a></li>
+            <li><a href="#tracking">9. Order Tracking</a></li>
+            <li><a href="#lost-damaged">10. Lost or Damaged Orders</a></li>
+            <li><a href="#contact-returns">11. Contact</a></li>
+          </ol>
+        </nav>
+      </aside>
+
+      <!-- Returns Content -->
+      <article class="legal-content" aria-labelledby="returns-heading">
+        <header class="legal-header">
+          <h1 id="returns-heading" class="legal-title">Returns &amp; Shipping Policy</h1>
+          <p class="legal-meta">Last updated: <time datetime="2025-01-01">1 January 2025</time></p>
+        </header>
+
+        <section id="returns-policy" aria-labelledby="h-ret-pol">
+          <h2 id="h-ret-pol">1. Returns Policy</h2>
+          <p>We want you to be completely satisfied with your purchase. We offer a <strong>14-day return window</strong> from the date of delivery on all eligible non-customised physical products.</p>
+          <p>This policy is in compliance with:</p>
+          <ul>
+            <li>The EU Consumer Rights Directive (Distance Selling)</li>
+            <li>UK Consumer Contracts Regulations 2013</li>
+            <li>Applicable Australian Consumer Law</li>
+            <li>Indian Consumer Protection Act 2019</li>
+          </ul>
+          <div class="policy-highlight" role="note">
+            <strong>To be eligible for a return, items must be:</strong>
+            <ul>
+              <li>Returned within 14 days of your delivery date</li>
+              <li>Unworn and in original condition</li>
+              <li>In their original packaging (Arise Numero gift box)</li>
+              <li>Not customised or personalised</li>
+            </ul>
+          </div>
+          <p><strong>Natural variations</strong> in crystal colour, texture, or pattern are characteristics of authentic gemstones and do not qualify as defects.</p>
+        </section>
+
+        <section id="how-to-return" aria-labelledby="h-how-ret">
+          <h2 id="h-how-ret">2. How to Return</h2>
+          <ol class="numbered-list">
+            <li><strong>Contact us</strong> within 14 days of delivery at <a href="mailto:returns@arisenumero.com">returns@arisenumero.com</a> with your order number and reason for return</li>
+            <li><strong>Receive your return authorisation</strong> — we'll confirm your return is eligible and provide a return address</li>
+            <li><strong>Pack securely</strong> — use the original packaging if possible to protect the item in transit</li>
+            <li><strong>Ship the item</strong> — use a tracked shipping method. Keep your tracking number</li>
+            <li><strong>Confirmation &amp; refund</strong> — once we receive and inspect the item, we will process your refund within 5–7 business days</li>
+          </ol>
+          <p>We recommend using a tracked shipping service for returns. We cannot process refunds for items lost in return transit.</p>
+        </section>
+
+        <section id="refunds" aria-labelledby="h-refunds">
+          <h2 id="h-refunds">3. Refunds</h2>
+          <p>Approved refunds are processed within <strong>5–7 business days</strong> of receiving the returned item. The refund will be issued to the original payment method used at checkout.</p>
+          <p>Depending on your bank or payment provider, it may take an additional 3–10 business days for the refund to appear in your account.</p>
+          <p>Original shipping costs are non-refundable unless the return is due to our error (wrong item sent, defective product).</p>
+          <p>If your order qualified for free shipping and you return part of the order, the original shipping cost may be deducted from your refund.</p>
+        </section>
+
+        <section id="exchanges" aria-labelledby="h-exchanges">
+          <h2 id="h-exchanges">4. Exchanges</h2>
+          <p>We are happy to exchange items for a different size or product of equal value. Contact <a href="mailto:returns@arisenumero.com">returns@arisenumero.com</a> within 14 days of delivery to arrange an exchange. You are responsible for return shipping costs on exchanges unless the original item was defective.</p>
+        </section>
+
+        <section id="non-returnable" aria-labelledby="h-non-ret">
+          <h2 id="h-non-ret">5. Non-Returnable Items</h2>
+          <p>The following cannot be returned or refunded:</p>
+          <ul>
+            <li>Customised or personalised bracelets</li>
+            <li>Numerology readings once delivered (digital personalised service)</li>
+            <li>Items returned after the 14-day window</li>
+            <li>Items that have been worn, damaged, or are missing their original packaging</li>
+          </ul>
+        </section>
+
+        <section id="shipping" aria-labelledby="h-shipping">
+          <h2 id="h-shipping">6. Shipping Information</h2>
+          <p>We ship worldwide from Mumbai, India. Orders are processed and dispatched within 1–3 business days of confirmed payment. You will receive a dispatch confirmation email with tracking information once your order ships.</p>
+          <p>We ship via reputable international carriers including India Post EMS, DHL, FedEx, and regional postal services depending on your location.</p>
+        </section>
+
+        <section id="shipping-rates" aria-labelledby="h-rates">
+          <h2 id="h-rates">7. Shipping Rates &amp; Estimated Delivery Times</h2>
+          <table class="legal-table" aria-label="Shipping rates and delivery times by region">
+            <thead>
+              <tr>
+                <th scope="col">Region</th>
+                <th scope="col">Estimated Delivery</th>
+                <th scope="col">Standard Shipping</th>
+                <th scope="col">Free Shipping Threshold</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>India</td>
+                <td>5–10 business days</td>
+                <td>₹150</td>
+                <td>Free on orders over ₹2,000</td>
+              </tr>
+              <tr>
+                <td>USA &amp; Canada</td>
+                <td>7–14 business days</td>
+                <td>$5.99</td>
+                <td>Free on orders over $50</td>
+              </tr>
+              <tr>
+                <td>United Kingdom</td>
+                <td>10–16 business days</td>
+                <td>£5.99</td>
+                <td>Free on orders over £40</td>
+              </tr>
+              <tr>
+                <td>European Union</td>
+                <td>10–18 business days</td>
+                <td>€6.99</td>
+                <td>Free on orders over €45</td>
+              </tr>
+              <tr>
+                <td>Australia &amp; New Zealand</td>
+                <td>12–20 business days</td>
+                <td>A$9.99</td>
+                <td>Free on orders over A$60</td>
+              </tr>
+              <tr>
+                <td>Middle East (UAE, Saudi, etc.)</td>
+                <td>10–18 business days</td>
+                <td>$7.99</td>
+                <td>Free on orders over $60</td>
+              </tr>
+              <tr>
+                <td>Southeast Asia</td>
+                <td>8–15 business days</td>
+                <td>$6.99</td>
+                <td>Free on orders over $50</td>
+              </tr>
+              <tr>
+                <td>Rest of World</td>
+                <td>14–25 business days</td>
+                <td>$9.99</td>
+                <td>Free on orders over $70</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="info-note">Express shipping options are available at checkout for most regions at an additional cost. Estimated delivery times are in business days and do not include customs processing time, which may add additional days for international orders.</p>
+        </section>
+
+        <section id="customs" aria-labelledby="h-customs">
+          <h2 id="h-customs">8. Customs &amp; Import Duties</h2>
+          <div class="policy-highlight" role="note">
+            <p><strong>International buyers please note:</strong> Your order may be subject to import duties, customs taxes, or processing fees levied by your country's customs authority. These charges are <strong>the buyer's sole responsibility</strong> and are not included in our product prices or shipping fees.</p>
+          </div>
+          <p>We mark all parcels with accurate customs values as required by law. We do not undervalue parcels or mark orders as "gifts" to avoid customs charges, as this is illegal.</p>
+          <p>Customs processing times vary by country and are outside our control. If your parcel is held at customs, please contact your local customs authority with your tracking number.</p>
+          <p>If an order is refused or unclaimed at customs and returned to us, we will issue a refund for the product value only (minus original shipping costs).</p>
+        </section>
+
+        <section id="tracking" aria-labelledby="h-tracking">
+          <h2 id="h-tracking">9. Order Tracking</h2>
+          <p>Once your order is dispatched, you will receive a tracking number by email. You can use this number on the carrier's website to monitor your delivery.</p>
+          <p>Please allow 24–48 hours after dispatch for tracking information to update on the carrier's system.</p>
+        </section>
+
+        <section id="lost-damaged" aria-labelledby="h-lost">
+          <h2 id="h-lost">10. Lost or Damaged Orders</h2>
+          <p>If your order arrives damaged, please photograph the damage immediately and contact us at <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a> within 48 hours of delivery. We will arrange a replacement or full refund.</p>
+          <p>If your tracking shows "delivered" but you have not received your parcel, please: (1) check with neighbours and any safe drop locations; (2) contact your local postal office. If still unresolved after 5 business days, contact us and we will investigate with the carrier.</p>
+          <p>We consider an order officially lost if there has been no tracking update for 30 days (domestic) or 45 days (international). In such cases, we will reship or refund at no cost to you.</p>
+        </section>
+
+        <section id="contact-returns" aria-labelledby="h-contact-ret">
+          <h2 id="h-contact-ret">11. Contact</h2>
+          <address>
+            <strong>Arise Numero — Returns &amp; Shipping</strong><br />
+            Email: <a href="mailto:returns@arisenumero.com">returns@arisenumero.com</a><br />
+            General enquiries: <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a><br />
+            Response time: 24–48 hours, Monday–Saturday
+          </address>
+          <p>When contacting us about a return or shipment, please include your order number (CEL-XXXXX) for faster assistance.</p>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-brand"><a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a><p>Authentic crystal bracelets &amp; numerology readings delivered worldwide.</p></div>
+      <nav class="footer-nav" aria-label="Shop navigation"><h4>Shop</h4><ul role="list"><li><a href="shop.html">All Bracelets</a></li><li><a href="cart.html">Cart</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Numerology navigation"><h4>Numerology</h4><ul role="list"><li><a href="numerology.html">Free Calculator</a></li><li><a href="booking.html">Book a Reading</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Legal navigation"><h4>Legal</h4><ul role="list"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="returns.html">Returns &amp; Shipping</a></li></ul></nav>
+    </div>
+    <div class="footer-disclaimer">
+      <div class="container">
+        <p><strong>Numerology Disclaimer:</strong> Numerology readings are intended for self-insight and entertainment purposes only. Not professional advice.</p>
+        <p class="footer-legal-links">&copy; <span class="footer-year"></span> Arise Numero. All rights reserved. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms.html">Terms of Service</a> &nbsp;|&nbsp; <a href="returns.html">Returns Policy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

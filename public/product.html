@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Authentic 8mm Amethyst Serenity crystal bracelet. Handcrafted with genuine amethyst beads on durable elastic cord. Ships worldwide." />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <title>Amethyst Serenity Bracelet — Arise Numero</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <!-- Product Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Amethyst Serenity Crystal Bracelet",
+    "description": "Handcrafted bracelet with authentic 8mm Amethyst beads on durable elastic cord.",
+    "brand": { "@type": "Brand", "name": "Arise Numero" },
+    "offers": {
+      "@type": "Offer",
+      "price": "24.99",
+      "priceCurrency": "USD",
+      "availability": "https://schema.org/LimitedAvailability",
+      "url": "https://www.celestia.com/product.html?id=amethyst-8mm"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.9",
+      "reviewCount": "128"
+    }
+  }
+  </script>
+  <!--
+    EMAILJS SDK
+    Replace YOUR_EMAILJS_PUBLIC_KEY with your actual Public Key.
+    Get it from: emailjs.com → Account → Public Key
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+    })();
+  </script>
+
+  <!--
+    GOOGLE ANALYTICS 4
+    Replace YOUR_GA_MEASUREMENT_ID with your Measurement ID.
+    Get it from: analytics.google.com -> Admin -> Data Streams
+    Format: G-XXXXXXXXXX
+    Only fires if user accepted analytics cookies (GDPR compliant).
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_MEASUREMENT_ID"></script>
+  <script>
+    (function() {
+      var consent = {};
+      try { consent = JSON.parse(localStorage.getItem("ariseNumero_cookieConsent") || "{}"); } catch(e) {}
+      if (consent.analytics) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "YOUR_GA_MEASUREMENT_ID", { anonymize_ip: true });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-inner">
+      <div class="cookie-text">
+        <strong id="cookie-title">🍪 We use cookies</strong>
+        <p id="cookie-desc">We use cookies to enhance your experience. See our <a href="privacy.html">Privacy Policy</a>.</p>
+      </div>
+      <div class="cookie-actions">
+        <button id="cookie-accept" class="btn btn-primary btn-sm">Accept All</button>
+        <button id="cookie-manage" class="btn btn-outline btn-sm">Manage</button>
+        <button id="cookie-reject" class="btn btn-ghost btn-sm">Reject</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list" role="list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link active">Shop</a></li>
+          <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+          <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <div class="currency-selector"><select id="currency-select" aria-label="Currency selection"><option value="USD">$ USD</option><option value="INR">₹ INR</option><option value="EUR">€ EUR</option><option value="GBP">£ GBP</option><option value="AUD">A$ AUD</option></select></div>
+        
+        <a href="cart.html" class="cart-btn" aria-label="Shopping cart"><span class="cart-icon" aria-hidden="true">🛒</span><span class="cart-count" id="cart-count" aria-live="polite">0</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-nav"><span class="hamburger" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden>
+      <ul class="mobile-nav-list" role="list">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+        <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <ol role="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop</a></li>
+        <li aria-current="page" id="breadcrumb-current">Amethyst Serenity</li>
+      </ol>
+    </nav>
+
+    <!-- Not-found state (shown if ?id= doesn't match a product) -->
+    <div id="product-not-found" class="container" style="display:none;padding:60px 0;text-align:center;">
+      <h1>Product not found</h1>
+      <p>We couldn't find that product — it may have been removed or the link is out of date.</p>
+      <a href="shop.html" class="btn btn-primary">Back to Shop</a>
+    </div>
+
+    <!-- ========== PRODUCT DETAIL ========== -->
+    <section class="product-detail container" id="product-detail-section" aria-labelledby="product-heading">
+      <div class="product-detail-inner">
+
+        <!-- Image Gallery -->
+        <div class="product-gallery">
+          <div class="gallery-main">
+            <img id="gallery-main-img" src="assets/amethyst-bracelet.jpg" alt="Handcrafted 8mm Amethyst Serenity crystal bracelet showing natural purple bead variations on elastic cord" class="gallery-main-img" width="600" height="600" />
+            <div class="gallery-zoom-hint" aria-hidden="true">🔍 Click to zoom</div>
+          </div>
+          <div class="gallery-thumbs" role="list" aria-label="Product image thumbnails" id="gallery-thumbs">
+            <button class="gallery-thumb active" aria-label="View main product image" aria-pressed="true">
+              <img src="assets/amethyst-bracelet.jpg" alt="Amethyst bracelet front view showing purple beads" width="80" height="80" loading="lazy" />
+            </button>
+            <button class="gallery-thumb" aria-label="View bracelet close-up" aria-pressed="false">
+              <img src="assets/amethyst-bracelet-closeup.jpg" alt="Close-up of Amethyst bracelet showing natural crystal texture and colour variations" width="80" height="80" loading="lazy" />
+            </button>
+            <button class="gallery-thumb" aria-label="View bracelet on wrist" aria-pressed="false">
+              <img src="assets/amethyst-bracelet-worn.jpg" alt="Amethyst Serenity bracelet worn on wrist showing fit and size" width="80" height="80" loading="lazy" />
+            </button>
+            <button class="gallery-thumb" aria-label="View bracelet packaging" aria-pressed="false">
+              <img src="assets/amethyst-bracelet-box.jpg" alt="Amethyst Serenity bracelet in Arise Numero gift box packaging" width="80" height="80" loading="lazy" />
+            </button>
+          </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="product-detail-info">
+          <div class="product-detail-badges" aria-label="Product badges" id="product-badges">
+            <span class="badge badge-bestseller">Bestseller</span>
+            <span class="badge badge-authentic">✓ Certified Authentic</span>
+          </div>
+
+          <h1 id="product-heading" class="product-detail-title">Amethyst Serenity Bracelet</h1>
+
+          <div class="product-detail-rating" aria-label="Customer rating: 4.9 out of 5 stars, 128 reviews" id="product-rating-wrap">
+            <span class="stars" aria-hidden="true" id="product-stars">★★★★★</span>
+            <a href="#reviews" class="rating-link" id="product-rating-text">4.9 (128 reviews)</a>
+          </div>
+
+          <!-- Price -->
+          <div class="product-detail-price" aria-label="Product pricing">
+            <span class="price-main" data-usd="24.99" aria-label="Price: $24.99" id="detail-price">$24.99</span>
+            <span class="price-original" data-usd="0" id="detail-price-original" style="display:none;text-decoration:line-through;color:var(--text-muted);margin-left:8px;"></span>
+            <span class="price-note" aria-label="Free shipping on orders over $50">Free shipping on orders over $50</span>
+          </div>
+
+          <!-- Stock Status -->
+          <div class="stock-status" role="status" aria-live="polite" id="stock-status-wrap">
+            <span class="stock-dot" aria-hidden="true"></span>
+            <span id="stock-status-text">In stock</span>
+          </div>
+
+          <!-- Specifications -->
+          <div class="product-specs" aria-label="Product specifications">
+            <h2 class="specs-title">Specifications</h2>
+            <dl class="specs-list">
+              <div class="spec-row">
+                <dt>Material</dt>
+                <dd id="spec-material">Authentic 8mm Amethyst beads</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Cord</dt>
+                <dd>Durable elastic cord (high-grade)</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Bead Size</dt>
+                <dd id="spec-bead-size">8mm diameter</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Wrist Size</dt>
+                <dd>Adjustable — fits 15–20cm wrists</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Colour</dt>
+                <dd>Natural variations (no two identical)</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Origin</dt>
+                <dd>Ethically sourced, certified genuine</dd>
+              </div>
+              <div class="spec-row">
+                <dt>Packaging</dt>
+                <dd>Arise Numero gift box included</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Wrist Size Selector -->
+          <div class="product-options">
+            <fieldset class="option-group">
+              <legend class="option-label">Wrist Size</legend>
+              <div class="size-options" role="radiogroup" aria-label="Select wrist size">
+                <label class="size-option">
+                  <input type="radio" name="wrist-size" value="S" aria-label="Small: 15-16cm" />
+                  <span>S <em>(15–16cm)</em></span>
+                </label>
+                <label class="size-option">
+                  <input type="radio" name="wrist-size" value="M" checked aria-label="Medium: 17-18cm" />
+                  <span>M <em>(17–18cm)</em></span>
+                </label>
+                <label class="size-option">
+                  <input type="radio" name="wrist-size" value="L" aria-label="Large: 19-20cm" />
+                  <span>L <em>(19–20cm)</em></span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Quantity -->
+            <div class="quantity-group">
+              <label for="qty-input" class="option-label">Quantity</label>
+              <div class="quantity-control">
+                <button class="qty-btn qty-minus" aria-label="Decrease quantity">−</button>
+                <input type="number" id="qty-input" class="qty-input" value="1" min="1" max="3" aria-label="Quantity" />
+                <button class="qty-btn qty-plus" aria-label="Increase quantity">+</button>
+              </div>
+              <p class="qty-limit" aria-live="polite">Max 3 available</p>
+            </div>
+          </div>
+
+          <!-- Add to Cart -->
+          <div class="product-cta-group">
+            <button class="btn btn-primary btn-lg add-to-cart-main" id="add-to-cart-main-btn" data-id="amethyst-8mm" data-name="Amethyst Serenity" data-price="24.99" aria-label="Add Amethyst Serenity bracelet to cart">
+              🛒 Add to Cart
+            </button>
+            <button class="btn btn-outline btn-lg wishlist-btn" aria-label="Add to wishlist" aria-pressed="false">
+              ♡ Wishlist
+            </button>
+          </div>
+
+          <!-- Trust Icons -->
+          <div class="product-trust" aria-label="Trust indicators">
+            <div class="trust-item-sm"><span aria-hidden="true">🔐</span> Secure Checkout</div>
+            <div class="trust-item-sm"><span aria-hidden="true">🌍</span> Ships Worldwide</div>
+            <div class="trust-item-sm"><span aria-hidden="true">↩️</span> 14-Day Returns</div>
+            <div class="trust-item-sm"><span aria-hidden="true">💎</span> Authentic Crystal</div>
+          </div>
+
+          <!-- Description -->
+          <div class="product-description" id="product-description">
+            <h2>About This Crystal</h2>
+            <p>The Amethyst Serenity bracelet is handcrafted using genuine, ethically sourced amethyst gemstones. Each bead displays the natural colour variations unique to authentic amethyst — no two bracelets are exactly the same.</p>
+            <p>Amethyst has been prized across cultures for its deep purple hues and calming aesthetic. Whether worn as everyday jewelry or gifted to a loved one, this bracelet arrives in a Arise Numero gift box ready to present.</p>
+            <p><strong>Note on natural variations:</strong> As a natural gemstone, colour, texture, and pattern may vary slightly from the photos shown. This is a mark of authenticity, not a defect.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TABS: Reviews / Shipping / Returns ========== -->
+      <div class="product-tabs" role="tablist" aria-label="Product information tabs">
+        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-reviews" id="btn-reviews">Reviews (128)</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-shipping" id="btn-shipping">Shipping</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-returns" id="btn-returns">Returns</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-care" id="btn-care">Crystal Care</button>
+      </div>
+
+      <!-- Reviews Tab -->
+      <div id="tab-reviews" role="tabpanel" aria-labelledby="btn-reviews" class="tab-panel">
+        <div class="reviews-summary">
+          <div class="rating-big" aria-label="Overall rating: 4.9 out of 5">
+            <span class="rating-number">4.9</span>
+            <span class="rating-stars" aria-hidden="true">★★★★★</span>
+            <span class="rating-total">Based on 128 reviews</span>
+          </div>
+        </div>
+        <div class="reviews-list" role="list" aria-label="Customer reviews">
+          <article class="review-card" role="listitem">
+            <header class="review-header">
+              <strong class="reviewer-name">Priya M.</strong>
+              <span class="reviewer-location">Mumbai, India</span>
+              <div class="review-stars" aria-label="5 stars">★★★★★</div>
+              <time class="review-date" datetime="2024-11-15">15 Nov 2024</time>
+            </header>
+            <p class="review-text">"Absolutely stunning bracelet. The amethyst beads have the most beautiful natural variations and the quality is exceptional. Arrived in India in just 12 days, beautifully packaged."</p>
+          </article>
+          <article class="review-card" role="listitem">
+            <header class="review-header">
+              <strong class="reviewer-name">Sarah K.</strong>
+              <span class="reviewer-location">London, UK</span>
+              <div class="review-stars" aria-label="5 stars">★★★★★</div>
+              <time class="review-date" datetime="2024-10-28">28 Oct 2024</time>
+            </header>
+            <p class="review-text">"I've bought crystal jewelry before but the quality here is genuinely different. You can tell these are real amethyst, not dyed glass. Will be ordering more."</p>
+          </article>
+        </div>
+        <button class="btn btn-outline" aria-label="Load more reviews">Load More Reviews</button>
+      </div>
+
+      <!-- Shipping Tab -->
+      <div id="tab-shipping" role="tabpanel" aria-labelledby="btn-shipping" class="tab-panel" hidden>
+        <h3>Shipping Information</h3>
+        <table class="info-table" aria-label="Shipping rates and delivery times">
+          <thead>
+            <tr><th scope="col">Region</th><th scope="col">Estimated Delivery</th><th scope="col">Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>India</td><td>5–10 business days</td><td>Free over ₹2000 / ₹150 otherwise</td></tr>
+            <tr><td>USA &amp; Canada</td><td>7–14 business days</td><td>Free over $50 / $5.99 otherwise</td></tr>
+            <tr><td>Europe (EU)</td><td>10–18 business days</td><td>Free over €45 / €6.99 otherwise</td></tr>
+            <tr><td>UK</td><td>10–16 business days</td><td>Free over £40 / £5.99 otherwise</td></tr>
+            <tr><td>Australia &amp; NZ</td><td>12–20 business days</td><td>Free over A$60 / A$9.99 otherwise</td></tr>
+            <tr><td>Rest of World</td><td>14–25 business days</td><td>$9.99 flat</td></tr>
+          </tbody>
+        </table>
+        <p class="info-note"><strong>Customs &amp; Duties:</strong> International orders may be subject to import duties or taxes levied by the destination country. These charges are the buyer's responsibility and are not included in our prices. We clearly mark all parcels with accurate customs values.</p>
+        <p><a href="returns.html">View full shipping &amp; returns policy →</a></p>
+      </div>
+
+      <!-- Returns Tab -->
+      <div id="tab-returns" role="tabpanel" aria-labelledby="btn-returns" class="tab-panel" hidden>
+        <h3>Return &amp; Refund Policy</h3>
+        <p>We offer a <strong>14-day return window</strong> on all non-customised products, in compliance with the EU Distance Selling Directive and applicable consumer protection laws.</p>
+        <ul class="info-list">
+          <li>Items must be unworn and in original packaging</li>
+          <li>Contact us within 14 days of delivery to initiate a return</li>
+          <li>Refunds are processed within 5–7 business days of receiving the return</li>
+          <li>Return shipping costs are the buyer's responsibility unless the item is defective</li>
+        </ul>
+        <p><a href="returns.html">View full returns policy →</a></p>
+      </div>
+
+      <!-- Crystal Care Tab -->
+      <div id="tab-care" role="tabpanel" aria-labelledby="btn-care" class="tab-panel" hidden>
+        <h3>Crystal Care Guide</h3>
+        <ul class="info-list">
+          <li>Avoid prolonged exposure to direct sunlight, which may fade natural colours</li>
+          <li>Remove before swimming, bathing, or using chemical cleaners</li>
+          <li>Clean gently with a soft, dry cloth</li>
+          <li>Store in the included gift box or a soft pouch to prevent scratching</li>
+          <li>Elastic cord is high-grade but avoid over-stretching</li>
+        </ul>
+      </div>
+
+    </section>
+
+    <!-- Related Products -->
+    <section class="section related-products" aria-labelledby="related-heading">
+      <div class="container">
+        <h2 id="related-heading" class="section-title">You May Also Like</h2>
+        <div class="product-grid" role="list" aria-label="Related crystal bracelets">
+          <article class="product-card" role="listitem">
+            <a href="product.html?id=rose-quartz" aria-label="View Rose Quartz Love bracelet"><div class="product-img-wrap"><img src="assets/rose-quartz-bracelet.jpg" alt="Handcrafted Rose Quartz crystal bracelet with soft pink beads" class="product-img" loading="lazy" width="400" height="400" /></div></a>
+            <div class="product-info"><h3 class="product-name"><a href="product.html?id=rose-quartz">Rose Quartz Love</a></h3><div class="product-price-row"><span class="product-price" data-usd="22.99">$22.99</span><button class="btn btn-primary btn-sm add-to-cart" data-id="rose-quartz" data-name="Rose Quartz Love" data-price="22.99" aria-label="Add Rose Quartz Love to cart">Add to Cart</button></div></div>
+          </article>
+          <article class="product-card" role="listitem">
+            <a href="product.html?id=lapis-lazuli" aria-label="View Lapis Lazuli Wisdom bracelet"><div class="product-img-wrap"><img src="assets/lapis-bracelet.jpg" alt="Handcrafted Lapis Lazuli bracelet with deep blue beads and gold accents" class="product-img" loading="lazy" width="400" height="400" /></div></a>
+            <div class="product-info"><h3 class="product-name"><a href="product.html?id=lapis-lazuli">Lapis Lazuli Wisdom</a></h3><div class="product-price-row"><span class="product-price" data-usd="32.99">$32.99</span><button class="btn btn-primary btn-sm add-to-cart" data-id="lapis-lazuli" data-name="Lapis Lazuli Wisdom" data-price="32.99" aria-label="Add Lapis Lazuli Wisdom to cart">Add to Cart</button></div></div>
+          </article>
+          <article class="product-card" role="listitem">
+            <a href="product.html?id=black-tourmaline" aria-label="View Black Tourmaline Shield bracelet"><div class="product-img-wrap"><img src="assets/tourmaline-bracelet.jpg" alt="Handcrafted Black Tourmaline bracelet with matte black beads" class="product-img" loading="lazy" width="400" height="400" /></div></a>
+            <div class="product-info"><h3 class="product-name"><a href="product.html?id=black-tourmaline">Black Tourmaline Shield</a></h3><div class="product-price-row"><span class="product-price" data-usd="27.99">$27.99</span><button class="btn btn-primary btn-sm add-to-cart" data-id="black-tourmaline" data-name="Black Tourmaline Shield" data-price="27.99" aria-label="Add Black Tourmaline Shield to cart">Add to Cart</button></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-brand"><a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a><p>Authentic crystal bracelets &amp; numerology readings.</p></div>
+      <nav class="footer-nav" aria-label="Shop navigation"><h4>Shop</h4><ul role="list"><li><a href="shop.html">All Bracelets</a></li><li><a href="cart.html">Cart</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Numerology navigation"><h4>Numerology</h4><ul role="list"><li><a href="numerology.html">Free Calculator</a></li><li><a href="booking.html">Book a Reading</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Legal navigation"><h4>Legal</h4><ul role="list"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="returns.html">Returns &amp; Shipping</a></li></ul></nav>
+    </div>
+    <div class="footer-disclaimer"><div class="container"><p><strong>Numerology Disclaimer:</strong> Numerology readings are for self-insight and entertainment purposes only. Not professional advice.</p><p class="footer-legal-links">&copy; <span class="footer-year"></span> Arise Numero. All rights reserved. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms.html">Terms</a> &nbsp;|&nbsp; <a href="returns.html">Returns</a></p></div></div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Book a personalised numerology reading with Arise Numero. Choose your package, select a time that works for you worldwide, and receive a comprehensive report." />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <title>Book a Numerology Reading — Arise Numero</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <!--
+    EMAILJS SDK
+    Replace YOUR_EMAILJS_PUBLIC_KEY with your actual Public Key.
+    Get it from: emailjs.com → Account → Public Key
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+    })();
+  </script>
+
+  <!--
+    GOOGLE ANALYTICS 4
+    Replace YOUR_GA_MEASUREMENT_ID with your Measurement ID.
+    Get it from: analytics.google.com -> Admin -> Data Streams
+    Format: G-XXXXXXXXXX
+    Only fires if user accepted analytics cookies (GDPR compliant).
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_MEASUREMENT_ID"></script>
+  <script>
+    (function() {
+      var consent = {};
+      try { consent = JSON.parse(localStorage.getItem("ariseNumero_cookieConsent") || "{}"); } catch(e) {}
+      if (consent.analytics) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "YOUR_GA_MEASUREMENT_ID", { anonymize_ip: true });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-inner">
+      <div class="cookie-text"><strong id="cookie-title">🍪 We use cookies</strong><p id="cookie-desc">We use cookies to enhance your experience. See our <a href="privacy.html">Privacy Policy</a>.</p></div>
+      <div class="cookie-actions"><button id="cookie-accept" class="btn btn-primary btn-sm">Accept All</button><button id="cookie-manage" class="btn btn-outline btn-sm">Manage</button><button id="cookie-reject" class="btn btn-ghost btn-sm">Reject</button></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list" role="list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
+          <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+          <li><a href="booking.html" class="nav-link active" aria-current="page">Book a Reading</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <div class="currency-selector"><select id="currency-select" aria-label="Currency selection"><option value="USD">$ USD</option><option value="INR">₹ INR</option><option value="EUR">€ EUR</option><option value="GBP">£ GBP</option><option value="AUD">A$ AUD</option></select></div>
+        
+        <a href="cart.html" class="cart-btn" aria-label="Shopping cart"><span class="cart-icon" aria-hidden="true">🛒</span><span class="cart-count" id="cart-count" aria-live="polite">0</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-nav"><span class="hamburger" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden>
+      <ul class="mobile-nav-list" role="list">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+        <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <ol role="list">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="numerology.html">Numerology</a></li>
+        <li aria-current="page">Book a Reading</li>
+      </ol>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header container">
+      <h1 class="page-title">Book a Personalised Reading</h1>
+      <p class="page-subtitle">A comprehensive, handcrafted numerology report tailored to you.</p>
+      <div class="entertainment-disclaimer" role="note" aria-label="Important disclaimer">
+        <span aria-hidden="true">ℹ️</span>
+        <p><strong>For entertainment &amp; self-insight purposes only.</strong> Numerology readings do not constitute legal, financial, medical, or professional psychological advice.</p>
+      </div>
+    </div>
+
+    <!-- ========== READING PACKAGES ========== -->
+    <section class="section" aria-labelledby="packages-heading">
+      <div class="container">
+        <h2 id="packages-heading" class="section-title text-center">Choose Your Package</h2>
+        <div class="packages-grid" role="list" aria-label="Reading package options">
+
+          <!-- Package 1 -->
+          <article class="package-card" role="listitem">
+            <div class="package-header">
+              <h3 class="package-name">Core Blueprint</h3>
+              <div class="package-price" data-usd="49.99" aria-label="Price: $49.99">$49.99</div>
+            </div>
+            <ul class="package-features" aria-label="What is included">
+              <li>✓ Life Path Number Analysis</li>
+              <li>✓ Expression Number Report</li>
+              <li>✓ Soul Urge Number Insight</li>
+              <li>✓ Written PDF Report (10–12 pages)</li>
+              <li>✓ Delivered in 3–5 business days</li>
+            </ul>
+            <button class="btn btn-outline btn-lg select-package" data-package="core" data-price="49.99" aria-label="Select Core Blueprint package">Select Package</button>
+          </article>
+
+          <!-- Package 2 — Popular -->
+          <article class="package-card package-card--popular" role="listitem" aria-label="Most popular package">
+            <div class="popular-badge" aria-label="Most popular">Most Popular</div>
+            <div class="package-header">
+              <h3 class="package-name">Full Numeroscope</h3>
+              <div class="package-price" data-usd="89.99" aria-label="Price: $89.99">$89.99</div>
+            </div>
+            <ul class="package-features" aria-label="What is included">
+              <li>✓ Everything in Core Blueprint</li>
+              <li>✓ Personal Year &amp; Monthly Forecast</li>
+              <li>✓ Birthday &amp; Personality Numbers</li>
+              <li>✓ Compatibility Overview</li>
+              <li>✓ Comprehensive PDF (20–25 pages)</li>
+              <li>✓ Delivered in 5–7 business days</li>
+            </ul>
+            <button class="btn btn-primary btn-lg select-package" data-package="full" data-price="89.99" aria-label="Select Full Numeroscope package">Select Package</button>
+          </article>
+
+          <!-- Package 3 -->
+          <article class="package-card" role="listitem">
+            <div class="package-header">
+              <h3 class="package-name">Premium + Live Session</h3>
+              <div class="package-price" data-usd="149.99" aria-label="Price: $149.99">$149.99</div>
+            </div>
+            <ul class="package-features" aria-label="What is included">
+              <li>✓ Everything in Full Numeroscope</li>
+              <li>✓ 45-minute live video session</li>
+              <li>✓ Career &amp; Life Purpose Deep Dive</li>
+              <li>✓ Q&amp;A with your numerologist</li>
+              <li>✓ Session recording provided</li>
+              <li>✓ Scheduled at your convenience</li>
+            </ul>
+            <button class="btn btn-outline btn-lg select-package" data-package="premium" data-price="149.99" aria-label="Select Premium plus Live Session package">Select Package</button>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== INTAKE FORM ========== -->
+    <section class="section booking-form-section" id="booking-form-section" aria-labelledby="booking-form-heading">
+      <div class="container booking-layout">
+
+        <div class="booking-form-wrap">
+          <h2 id="booking-form-heading" class="section-title">Your Information</h2>
+
+          <!-- Data collection explanation -->
+          <div class="data-notice" role="note" aria-label="Why we collect this data">
+            <strong>Why we collect this information:</strong>
+            <p>We require your full birth name and date of birth <strong>strictly</strong> to calculate your numeric blueprint. This information is used solely for your reading and is never shared with third parties. For live sessions, your timezone is needed to schedule accurately. Please review our <a href="privacy.html">Privacy Policy</a>.</p>
+          </div>
+
+          <form id="booking-form" class="booking-form" novalidate aria-label="Numerology reading intake form">
+
+            <!-- Selected Package Display -->
+            <div class="selected-package-display" id="selected-package-display" aria-live="polite">
+              <p>Selected: <strong id="selected-package-name">Please select a package above</strong> &mdash; <span id="selected-package-price"></span></p>
+            </div>
+
+            <fieldset class="checkout-fieldset">
+              <legend class="checkout-section-title">Personal Details</legend>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="book-first" class="form-label">First Name <span aria-label="required" class="required">*</span></label>
+                  <input type="text" id="book-first" name="first_name" class="form-input" placeholder="Jane" aria-required="true" autocomplete="given-name" />
+                </div>
+                <div class="form-group">
+                  <label for="book-last" class="form-label">Last Name <span aria-label="required" class="required">*</span></label>
+                  <input type="text" id="book-last" name="last_name" class="form-input" placeholder="Smith" aria-required="true" autocomplete="family-name" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="book-email" class="form-label">Email Address <span aria-label="required" class="required">*</span></label>
+                <input type="email" id="book-email" name="email" class="form-input" placeholder="your@email.com" aria-required="true" autocomplete="email" />
+                <p class="form-hint">Your completed reading will be delivered to this email address.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="book-birth-name" class="form-label">
+                  Full Birth Name <span aria-label="required" class="required">*</span>
+                  <button type="button" class="info-tooltip-btn" aria-label="Your full legal name as recorded on your birth certificate. Used solely to calculate your Expression number." title="Your full legal name as it appears on your birth certificate">ℹ</button>
+                </label>
+                <input type="text" id="book-birth-name" name="birth_name" class="form-input" placeholder="Jane Elizabeth Smith" aria-required="true" aria-describedby="birth-name-hint" />
+                <p class="form-hint" id="birth-name-hint">Enter your full legal name as recorded on your birth certificate (including all middle names). This is used <strong>strictly</strong> to calculate your numeric blueprint.</p>
+              </div>
+
+              <div class="form-group">
+                <label for="book-dob" class="form-label">Date of Birth <span aria-label="required" class="required">*</span></label>
+                <input type="date" id="book-dob" name="date_of_birth" class="form-input" aria-required="true" aria-describedby="dob-hint-book" />
+                <p class="form-hint" id="dob-hint-book">Required to calculate your Life Path number.</p>
+              </div>
+            </fieldset>
+
+            <!-- Timezone (for live sessions) -->
+            <fieldset class="checkout-fieldset" id="timezone-section">
+              <legend class="checkout-section-title">Scheduling &amp; Timezone</legend>
+              <p class="form-hint">All times are automatically converted to your local timezone to prevent scheduling confusion.</p>
+
+              <div class="form-group">
+                <label for="book-timezone" class="form-label">Your Timezone <span aria-label="required" class="required">*</span></label>
+                <select id="book-timezone" name="timezone" class="form-input" aria-required="true">
+                  <option value="">Detecting your timezone…</option>
+                  <option value="Asia/Kolkata">India Standard Time (IST, UTC+5:30)</option>
+                  <option value="America/New_York">Eastern Time (ET, UTC-5/-4)</option>
+                  <option value="America/Chicago">Central Time (CT, UTC-6/-5)</option>
+                  <option value="America/Denver">Mountain Time (MT, UTC-7/-6)</option>
+                  <option value="America/Los_Angeles">Pacific Time (PT, UTC-8/-7)</option>
+                  <option value="Europe/London">GMT / BST (UTC+0/+1)</option>
+                  <option value="Europe/Paris">Central European Time (CET, UTC+1/+2)</option>
+                  <option value="Australia/Sydney">Australian Eastern Time (AEST, UTC+10/+11)</option>
+                  <option value="Asia/Dubai">Gulf Standard Time (GST, UTC+4)</option>
+                  <option value="Asia/Singapore">Singapore Time (SGT, UTC+8)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="session-time-group">
+                <label for="book-session-date" class="form-label">Preferred Session Date <span aria-label="required for live sessions" class="required">*</span></label>
+                <input type="date" id="book-session-date" name="session_date" class="form-input" aria-required="true" />
+                <p class="form-hint">Available Monday–Saturday. Times confirmed by email within 24 hours. Shown in your local timezone.</p>
+              </div>
+            </fieldset>
+
+            <!-- Additional Context -->
+            <fieldset class="checkout-fieldset">
+              <legend class="checkout-section-title">Reading Focus <span class="optional-label">(optional)</span></legend>
+              <div class="form-group">
+                <label for="book-focus" class="form-label">What areas would you like the reading to focus on?</label>
+                <div class="focus-checkboxes" role="group" aria-label="Reading focus areas">
+                  <label class="checkbox-label"><input type="checkbox" name="focus" value="career" aria-label="Career and life purpose focus" /> Career &amp; Life Purpose</label>
+                  <label class="checkbox-label"><input type="checkbox" name="focus" value="relationships" aria-label="Relationships focus" /> Relationships &amp; Compatibility</label>
+                  <label class="checkbox-label"><input type="checkbox" name="focus" value="finance" aria-label="Finances focus" /> Finances &amp; Abundance</label>
+                  <label class="checkbox-label"><input type="checkbox" name="focus" value="health" aria-label="Health and wellbeing focus" /> Health &amp; Wellbeing</label>
+                  <label class="checkbox-label"><input type="checkbox" name="focus" value="spirituality" aria-label="Spiritual growth focus" /> Spiritual Growth</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="book-notes" class="form-label">Additional Notes</label>
+                <textarea id="book-notes" name="additional_notes" class="form-input form-textarea" placeholder="Any specific questions or areas you'd like addressed in your reading…" rows="4" aria-describedby="notes-hint"></textarea>
+                <p class="form-hint" id="notes-hint">Optional. Do not include sensitive personal or medical information.</p>
+              </div>
+            </fieldset>
+
+            <!-- Consent -->
+            <div class="checkout-consent">
+              <label class="checkbox-label">
+                <input type="checkbox" id="booking-privacy" name="privacy_consent" required aria-required="true" />
+                I consent to my name and date of birth being used <strong>strictly</strong> to calculate my numerology reading per the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. <span aria-label="required" class="required">*</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="booking-disclaimer" name="disclaimer_accept" required aria-required="true" />
+                I understand this reading is for <strong>entertainment and self-insight purposes only</strong> and does not constitute professional advice of any kind. <span aria-label="required" class="required">*</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="booking-terms" name="terms_agree" required aria-required="true" />
+                I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms of Service</a> <span aria-label="required" class="required">*</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg" aria-label="Book and pay for your reading securely">
+              🔒 Book &amp; Pay Securely
+            </button>
+
+            <p class="checkout-final-note">Payment is processed securely via Stripe, PayPal, or Razorpay. We never store your card details.</p>
+
+          </form>
+        </div>
+
+        <!-- Booking Sidebar -->
+        <aside class="booking-sidebar" aria-labelledby="booking-sidebar-heading">
+          <h2 id="booking-sidebar-heading" class="summary-title">What to Expect</h2>
+          <ol class="booking-steps-list" role="list" aria-label="Booking process steps">
+            <li><strong>Submit &amp; Pay</strong> — Complete the form and pay securely.</li>
+            <li><strong>Confirmation</strong> — You'll receive an email confirmation within minutes.</li>
+            <li><strong>Reading Prepared</strong> — Your numerologist calculates and writes your report.</li>
+            <li><strong>Delivery</strong> — Your PDF report (and session link if applicable) is emailed to you.</li>
+            <li><strong>Follow-up</strong> — Reply to your report email with any follow-up questions.</li>
+          </ol>
+          <div class="booking-disclaimer-box" role="note">
+            <strong>Reminder:</strong> All readings are for entertainment and self-insight purposes only. Not a substitute for professional advice.
+          </div>
+          <div class="booking-security" aria-label="Security and trust">
+            <p><span aria-hidden="true">🔐</span> Secure payment</p>
+            <p><span aria-hidden="true">🌍</span> Available worldwide</p>
+            <p><span aria-hidden="true">🕐</span> Timezone auto-detected</p>
+            <p><span aria-hidden="true">📩</span> Delivered by email</p>
+          </div>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-brand"><a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a><p>Authentic crystal bracelets &amp; numerology readings delivered worldwide.</p></div>
+      <nav class="footer-nav" aria-label="Shop navigation"><h4>Shop</h4><ul role="list"><li><a href="shop.html">All Bracelets</a></li><li><a href="cart.html">Cart</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Numerology navigation"><h4>Numerology</h4><ul role="list"><li><a href="numerology.html">Free Calculator</a></li><li><a href="booking.html">Book a Reading</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Legal navigation"><h4>Legal</h4><ul role="list"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="returns.html">Returns &amp; Shipping</a></li></ul></nav>
+    </div>
+    <div class="footer-disclaimer">
+      <div class="container">
+        <p><strong>Numerology Disclaimer:</strong> Numerology readings provided by Arise Numero are intended for self-insight and entertainment purposes only. They do not constitute legal, financial, medical, or professional psychological advice.</p>
+        <p class="footer-legal-links">&copy; <span class="footer-year"></span> Arise Numero. All rights reserved. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms.html">Terms of Service</a> &nbsp;|&nbsp; <a href="returns.html">Returns Policy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

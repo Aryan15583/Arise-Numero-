@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!--
+    ================================================================
+    ARISE NUMERO — ADMIN PANEL
+    ================================================================
+    SETUP INSTRUCTIONS:
+    1. Rename this file to your secret page name
+       e.g. rename to "mypage123.html"
+       Access via: yourdomain.com/mypage123.html
+
+    2. Set your PIN via ADMIN_PIN in the server's .env file
+       (see SETUP.md). Change it any time from Settings once
+       logged in — it's stored bcrypt-hashed in the database,
+       never in this file.
+
+    3. NEVER link to this page from anywhere on the website.
+       Only you should know the URL.
+    ================================================================
+  -->
+  <title>Admin — Arise Numero</title>
+  <!-- No index by search engines -->
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet" />
+  <meta name="googlebot" content="noindex, nofollow" />
+  <style>
+    /* ── Reset & Base ────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:        #b8975a;
+      --gold-light:  #d4b47a;
+      --gold-dark:   #8a6e3e;
+      --deep:        #1a1228;
+      --bg:          #f5f1eb;
+      --bg-card:     #ffffff;
+      --bg-sidebar:  #1a1228;
+      --text:        #1a1228;
+      --text-muted:  #7a6e8a;
+      --border:      #ddd6cc;
+      --success:     #2d7a4f;
+      --success-bg:  #edf7f2;
+      --error:       #c0392b;
+      --error-bg:    #fdf0ee;
+      --warning:     #b8600a;
+      --warning-bg:  #fef3e8;
+      --radius:      10px;
+      --shadow:      0 2px 12px rgba(0,0,0,0.08);
+      --shadow-lg:   0 8px 32px rgba(0,0,0,0.14);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:         #0e0b16;
+        --bg-card:    #1a1228;
+        --text:       #f0eafa;
+        --text-muted: #8a7a9a;
+        --border:     #3a2d50;
+        --bg-sidebar: #070510;
+      }
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── PIN SCREEN ──────────────────────────────────── */
+    #pin-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--deep);
+    }
+
+    .pin-box {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 360px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .pin-logo {
+      font-size: 2.5rem;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .pin-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .pin-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .pin-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: transparent;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .pin-dot.filled {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .pin-dot.error {
+      background: var(--error);
+      border-color: var(--error);
+      animation: shake 0.4s ease;
+    }
+
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .pin-key {
+      height: 56px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 1.2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+
+    .pin-key:hover { background: var(--border); }
+    .pin-key:active { transform: scale(0.95); }
+    .pin-key.pin-clear { color: var(--error); font-size: 0.85rem; }
+    .pin-key.pin-enter {
+      background: var(--gold);
+      color: #1a1228;
+      border-color: var(--gold);
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+    .pin-key.pin-enter:hover { background: var(--gold-light); }
+
+    .pin-error-msg {
+      color: var(--error);
+      font-size: 0.85rem;
+      height: 20px;
+      margin-top: 4px;
+    }
+
+    /* ── ADMIN LAYOUT ────────────────────────────────── */
+    #admin-app { display: none; min-height: 100vh; }
+
+    .admin-layout {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ─────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg-sidebar);
+      color: #f0eafa;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-logo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+    }
+
+    .sidebar-subtitle {
+      font-size: 0.72rem;
+      color: rgba(240,234,250,0.4);
+      margin-top: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 0;
+    }
+
+    .nav-section-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(240,234,250,0.3);
+      padding: 16px 20px 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 20px;
+      font-size: 0.875rem;
+      color: rgba(240,234,250,0.65);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      border-left: 3px solid transparent;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .nav-item:hover {
+      background: rgba(255,255,255,0.05);
+      color: #f0eafa;
+    }
+
+    .nav-item.active {
+      background: rgba(184,151,90,0.12);
+      color: var(--gold);
+      border-left-color: var(--gold);
+    }
+
+    .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--gold);
+      color: #1a1228;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logout-btn {
+      width: 100%;
+      padding: 10px;
+      background: rgba(192,57,43,0.15);
+      color: #e57373;
+      border: 1px solid rgba(192,57,43,0.3);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .logout-btn:hover { background: rgba(192,57,43,0.25); }
+
+    /* ── MAIN CONTENT ────────────────────────────────── */
+    .admin-main {
+      padding: 32px;
+      overflow-y: auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .page-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .page-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── STAT CARDS ──────────────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1;
+    }
+
+    .stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+    .stat-gold { border-left: 4px solid var(--gold); }
+    .stat-success { border-left: 4px solid var(--success); }
+    .stat-warning { border-left: 4px solid var(--warning); }
+    .stat-error { border-left: 4px solid var(--error); }
+
+    /* ── CARDS & TABLES ──────────────────────────────── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+    .card-body  { padding: 24px; }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    th {
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(184,151,90,0.04); }
+
+    .product-thumb {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    /* ── BADGES ──────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-active   { background: var(--success-bg); color: var(--success); }
+    .badge-inactive { background: #f0f0f0; color: #888; }
+    .badge-low      { background: var(--warning-bg); color: var(--warning); }
+    .badge-out      { background: var(--error-bg); color: var(--error); }
+    .badge-gold     { background: rgba(184,151,90,0.15); color: var(--gold-dark); }
+
+    /* ── BUTTONS ─────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: 8px;
+      border: 1.5px solid transparent;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-primary { background: var(--gold); color: #1a1228; border-color: var(--gold); }
+    .btn-primary:hover { background: var(--gold-light); }
+
+    .btn-outline { background: transparent; color: var(--gold); border-color: var(--gold); }
+    .btn-outline:hover { background: var(--gold); color: #1a1228; }
+
+    .btn-ghost { background: transparent; color: var(--text-muted); border-color: var(--border); }
+    .btn-ghost:hover { background: var(--border); color: var(--text); }
+
+    .btn-danger { background: var(--error-bg); color: var(--error); border-color: var(--error); }
+    .btn-danger:hover { background: var(--error); color: #fff; }
+
+    .btn-success { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+    .btn-success:hover { background: var(--success); color: #fff; }
+
+    .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+    .btn-lg { padding: 12px 28px; font-size: 1rem; }
+
+    /* ── FORMS ───────────────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .form-full   { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .form-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .form-input {
+      padding: 9px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(184,151,90,0.15);
+    }
+
+    textarea.form-input { resize: vertical; min-height: 80px; }
+
+    .form-hint { font-size: 0.75rem; color: var(--text-muted); }
+
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .toggle {
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: var(--border);
+      position: relative;
+      cursor: pointer;
+      border: none;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+    }
+
+    .toggle.on { background: var(--success); }
+    .toggle.on::after { transform: translateX(20px); }
+
+    .toggle-label { font-size: 0.85rem; color: var(--text); }
+
+    /* ── MODAL ───────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--bg-card);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: fadeUp 0.2s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title { font-size: 1.1rem; font-weight: 600; }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+    }
+
+    .modal-close:hover { background: var(--border); }
+    .modal-body   { padding: 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── TOAST ───────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      background: var(--bg-card);
+      border: 1.5px solid var(--gold);
+      border-radius: 10px;
+      padding: 14px 20px;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-lg);
+      max-width: 320px;
+      animation: fadeUp 0.25s ease;
+    }
+
+    .toast.success { border-color: var(--success); }
+    .toast.error   { border-color: var(--error); }
+
+    /* ── SEARCH & FILTER ─────────────────────────────── */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      padding: 8px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.875rem;
+      font-family: inherit;
+      min-width: 220px;
+    }
+
+    .search-input:focus { outline: none; border-color: var(--gold); }
+
+    /* ── EMPTY STATE ─────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+    .empty-desc { font-size: 0.875rem; }
+
+    /* ── STOCK INDICATOR ─────────────────────────────── */
+    .stock-bar-wrap { display: flex; align-items: center; gap: 8px; }
+
+    .stock-bar {
+      width: 80px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .stock-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    /* ── SECTION PAGES ───────────────────────────────── */
+    .admin-section { display: none; }
+    .admin-section.active { display: block; }
+
+    /* ── ANIMATIONS ──────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60%  { transform: translateX(-8px); }
+      40%, 80%  { transform: translateX(8px); }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 768px) {
+      .admin-layout { grid-template-columns: 1fr; }
+      .sidebar { height: auto; position: static; }
+      .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .admin-main { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     PIN SCREEN
+     ================================================================ -->
+<div id="pin-screen">
+  <div class="pin-box">
+    <div class="pin-logo">✦</div>
+    <div class="pin-title">Arise Numero</div>
+    <div class="pin-subtitle">Admin Panel — Enter PIN to continue</div>
+
+    <div class="pin-dots" id="pin-dots">
+      <!-- Dots rendered by JS based on PIN length -->
+    </div>
+
+    <div class="pin-keypad">
+      <button class="pin-key" data-key="1">1</button>
+      <button class="pin-key" data-key="2">2</button>
+      <button class="pin-key" data-key="3">3</button>
+      <button class="pin-key" data-key="4">4</button>
+      <button class="pin-key" data-key="5">5</button>
+      <button class="pin-key" data-key="6">6</button>
+      <button class="pin-key" data-key="7">7</button>
+      <button class="pin-key" data-key="8">8</button>
+      <button class="pin-key" data-key="9">9</button>
+      <button class="pin-key pin-clear" data-key="clear">⌫ Clear</button>
+      <button class="pin-key" data-key="0">0</button>
+      <button class="pin-key pin-enter" data-key="enter">Enter</button>
+    </div>
+
+    <div class="pin-error-msg" id="pin-error"></div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     ADMIN APP (shown after PIN)
+     ================================================================ -->
+<div id="admin-app">
+  <div class="admin-layout">
+
+    <!-- ── SIDEBAR ──────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">✦ Arise Numero</div>
+        <div class="sidebar-subtitle">Admin Panel</div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Overview</div>
+        <button class="nav-item active" data-section="dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </button>
+
+        <div class="nav-section-label">Catalogue</div>
+        <button class="nav-item" data-section="products">
+          <span class="nav-icon">💎</span> Products
+          <span class="nav-badge" id="badge-products">0</span>
+        </button>
+        <button class="nav-item" data-section="stock">
+          <span class="nav-icon">📦</span> Stock Levels
+        </button>
+
+        <div class="nav-section-label">Sales</div>
+        <button class="nav-item" data-section="orders">
+          <span class="nav-icon">🛍️</span> Orders
+          <span class="nav-badge" id="badge-orders">0</span>
+        </button>
+        <button class="nav-item" data-section="coupons">
+          <span class="nav-icon">🏷️</span> Coupons
+        </button>
+
+        <div class="nav-section-label">Readings</div>
+        <button class="nav-item" data-section="bookings">
+          <span class="nav-icon">📅</span> Bookings
+          <span class="nav-badge" id="badge-bookings">0</span>
+        </button>
+
+        <div class="nav-section-label">Settings</div>
+        <button class="nav-item" data-section="settings">
+          <span class="nav-icon">⚙️</span> Settings
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logout-btn">🔒 Lock Admin</button>
+      </div>
+    </aside>
+
+    <!-- ── MAIN ──────────────────────────────────────── -->
+    <main class="admin-main">
+
+      <!-- ── DASHBOARD ─────────────────────────────── -->
+      <section class="admin-section active" id="section-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle" id="dashboard-date"></div>
+          </div>
+          <button class="btn btn-primary" onclick="showSection('products'); showProductModal()">
+            + Add Product
+          </button>
+        </div>
+
+        <div class="stats-grid" id="stats-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">⚠️ Low Stock Alerts</span>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('stock')">View All Stock</button>
+          </div>
+          <div class="card-body" id="low-stock-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">📅 Recent Bookings</span>
+            <button class="btn btn-ghost btn-sm" onclick="showSection('bookings')">View All</button>
+          </div>
+          <div class="card-body" id="recent-bookings-list">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ── PRODUCTS ───────────────────────────────── -->
+      <section class="admin-section" id="section-products">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Products</div>
+            <div class="page-subtitle">Manage your crystal bracelet catalogue</div>
+          </div>
+          <button class="btn btn-primary" onclick="showProductModal()">+ Add Product</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All Products</span>
+            <div class="toolbar">
+              <input type="text" class="search-input" id="product-search"
+                     placeholder="Search products…" oninput="renderProductsTable()" />
+              <select class="form-input" id="product-filter-cat" onchange="renderProductsTable()"
+                      style="width:auto;padding:8px 12px;">
+                <option value="">All Categories</option>
+                <option value="amethyst">Amethyst</option>
+                <option value="rose-quartz">Rose Quartz</option>
+                <option value="lapis-lazuli">Lapis Lazuli</option>
+                <option value="tourmaline">Tourmaline</option>
+                <option value="citrine">Citrine</option>
+                <option value="obsidian">Obsidian</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Price (USD)</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Featured</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── STOCK ──────────────────────────────────── -->
+      <section class="admin-section" id="section-stock">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Stock Levels</div>
+            <div class="page-subtitle">Update inventory quantities</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All Stock</span>
+            <span class="page-subtitle" id="stock-summary"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Current Stock</th>
+                  <th>Low Stock Threshold</th>
+                  <th>Status</th>
+                  <th>Quick Update</th>
+                </tr>
+              </thead>
+              <tbody id="stock-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── ORDERS ─────────────────────────────────── -->
+      <section class="admin-section" id="section-orders">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Orders</div>
+            <div class="page-subtitle">Track and manage customer orders</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All Orders</span>
+            <div class="toolbar">
+              <input type="text" class="search-input" id="order-search"
+                     placeholder="Search by name or order ID…" oninput="renderOrdersTable()" />
+              <select class="form-input" id="order-filter-status" onchange="renderOrdersTable()"
+                      style="width:auto;padding:8px 12px;">
+                <option value="">All Statuses</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body" id="orders-content">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ── COUPONS ─────────────────────────────────── -->
+      <section class="admin-section" id="section-coupons">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Coupon Codes</div>
+            <div class="page-subtitle">Manage discount codes</div>
+          </div>
+          <button class="btn btn-primary" onclick="showCouponModal()">+ Add Coupon</button>
+        </div>
+
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Discount</th>
+                  <th>Description</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="coupons-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── BOOKINGS ───────────────────────────────── -->
+      <section class="admin-section" id="section-bookings">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Booking Requests</div>
+            <div class="page-subtitle">Numerology reading bookings</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">All Bookings</span>
+            <select class="form-input" id="booking-filter-status" onchange="renderBookingsTable()"
+                    style="width:auto;padding:8px 12px;">
+              <option value="">All Statuses</option>
+              <option value="new">New</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          <div class="card-body" id="bookings-content">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SETTINGS ───────────────────────────────── -->
+      <section class="admin-section" id="section-settings">
+        <div class="page-header">
+          <div class="page-title">Settings</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">🔒 Change PIN</span></div>
+          <div class="card-body">
+            <div class="form-grid" style="max-width:400px;">
+              <div class="form-group form-full">
+                <label class="form-label">Current PIN</label>
+                <input type="password" class="form-input" id="current-pin" placeholder="Enter current PIN" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">New PIN</label>
+                <input type="password" class="form-input" id="new-pin" placeholder="New PIN" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm New PIN</label>
+                <input type="password" class="form-input" id="confirm-pin" placeholder="Confirm PIN" />
+              </div>
+              <div class="form-full">
+                <button class="btn btn-primary" onclick="changePin()">Update PIN</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">💾 Data Management</span></div>
+          <div class="card-body">
+            <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:16px;">
+              Export your product data as a JSON file, or import from a backup.
+            </p>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+              <button class="btn btn-outline" onclick="exportData()">⬇️ Export Data (JSON)</button>
+              <label class="btn btn-ghost" style="cursor:pointer;">
+                ⬆️ Import Data (JSON)
+                <input type="file" accept=".json" onchange="importData(event)" style="display:none;" />
+              </label>
+              <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All Data</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><span class="card-title">ℹ️ About</span></div>
+          <div class="card-body">
+            <p style="font-size:0.875rem;color:var(--text-muted);line-height:1.7;">
+              <strong>Arise Numero Admin Panel</strong><br/>
+              This page is not linked anywhere on your website.<br/>
+              Access it only by typing the URL directly.<br/>
+              Data is stored in a real database on your server — every change here is<br/>
+              live on the storefront immediately. Export a backup from time to time.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     PRODUCT MODAL
+     ================================================================ -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="product-modal-title">Add Product</span>
+      <button class="modal-close" onclick="closeModal('product-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Product Name *</label>
+          <input type="text" class="form-input" id="p-name" placeholder="e.g. Amethyst Serenity" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Product ID *</label>
+          <input type="text" class="form-input" id="p-id" placeholder="e.g. amethyst-8mm" />
+          <span class="form-hint">Lowercase, hyphens only. Used in cart.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Category *</label>
+          <select class="form-input" id="p-category">
+            <option value="amethyst">Amethyst</option>
+            <option value="rose-quartz">Rose Quartz</option>
+            <option value="lapis-lazuli">Lapis Lazuli</option>
+            <option value="tourmaline">Tourmaline</option>
+            <option value="citrine">Citrine</option>
+            <option value="obsidian">Obsidian</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bead Size</label>
+          <select class="form-input" id="p-bead-size">
+            <option value="6mm">6mm</option>
+            <option value="8mm">8mm</option>
+            <option value="10mm">10mm</option>
+            <option value="12mm">12mm</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price (USD) *</label>
+          <input type="number" class="form-input" id="p-price" placeholder="24.99" step="0.01" min="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Original Price (USD)</label>
+          <input type="number" class="form-input" id="p-original-price" placeholder="Leave blank if no sale" step="0.01" min="0" />
+          <span class="form-hint">Fill this to show a strikethrough sale price.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stock Quantity *</label>
+          <input type="number" class="form-input" id="p-stock" placeholder="10" min="0" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Low Stock Alert Threshold</label>
+          <input type="number" class="form-input" id="p-threshold" placeholder="5" min="0" />
+          <span class="form-hint">Show warning when stock falls below this.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Badge</label>
+          <select class="form-input" id="p-badge">
+            <option value="">None</option>
+            <option value="Bestseller">Bestseller</option>
+            <option value="New">New</option>
+            <option value="Sale">Sale</option>
+            <option value="Premium">Premium</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Rating (0–5)</label>
+          <input type="number" class="form-input" id="p-rating" placeholder="4.9" step="0.1" min="0" max="5" />
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Material Description *</label>
+          <input type="text" class="form-input" id="p-material" placeholder="e.g. Authentic 8mm Amethyst beads, elastic cord" />
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Full Description</label>
+          <textarea class="form-input" id="p-description" placeholder="Full product description…"></textarea>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Main Image URL *</label>
+          <input type="text" class="form-input" id="p-image" placeholder="assets/amethyst-bracelet.jpg or https://…" />
+          <span class="form-hint">Use assets/filename.jpg for local images, or a full https:// URL.</span>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-label">Additional Image URLs</label>
+          <input type="text" class="form-input" id="p-images-extra"
+                 placeholder="assets/img2.jpg, assets/img3.jpg (comma separated)" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Active (visible on site)</label>
+          <div class="toggle-wrap">
+            <button class="toggle on" id="p-active-toggle" onclick="toggleBtn(this)" aria-label="Toggle active"></button>
+            <span class="toggle-label" id="p-active-label">Active</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Featured (show on homepage)</label>
+          <div class="toggle-wrap">
+            <button class="toggle" id="p-featured-toggle" onclick="toggleBtn(this)" aria-label="Toggle featured"></button>
+            <span class="toggle-label" id="p-featured-label">Not featured</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('product-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     COUPON MODAL
+     ================================================================ -->
+<div class="modal-overlay" id="coupon-modal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <span class="modal-title" id="coupon-modal-title">Add Coupon</span>
+      <button class="modal-close" onclick="closeModal('coupon-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid" style="grid-template-columns:1fr;">
+        <div class="form-group">
+          <label class="form-label">Coupon Code *</label>
+          <input type="text" class="form-input" id="c-code"
+                 placeholder="e.g. SUMMER20" style="text-transform:uppercase;" />
+          <span class="form-hint">Customers type this at checkout.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Discount Percentage *</label>
+          <input type="number" class="form-input" id="c-discount"
+                 placeholder="e.g. 15 (for 15% off)" min="1" max="100" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-input" id="c-description"
+                 placeholder="e.g. Summer sale discount" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <div class="toggle-wrap">
+            <button class="toggle on" id="c-active-toggle" onclick="toggleBtn(this)"></button>
+            <span class="toggle-label" id="c-active-label">Active</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('coupon-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCoupon()">Save Coupon</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     ORDER DETAIL MODAL
+     ================================================================ -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal" style="max-width:500px;">
+    <div class="modal-header">
+      <span class="modal-title">Order Details</span>
+      <button class="modal-close" onclick="closeModal('order-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="order-modal-body">
+      <!-- Populated by JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('order-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script>
+'use strict';
+
+/* ── CONFIG ────────────────────────────────────────────────────────
+   The admin PIN now lives server-side (bcrypt-hashed in the database),
+   set from ADMIN_PIN in the server's .env the first time it starts.
+   Change it any time from Settings → Change PIN, once logged in.
+   ──────────────────────────────────────────────────────────────── */
+const API_BASE = '/api';
+const TOKEN_KEY = 'ariseNumero_adminToken';
+
+function getToken()      { return sessionStorage.getItem(TOKEN_KEY); }
+function setToken(token) { sessionStorage.setItem(TOKEN_KEY, token); }
+function clearToken()    { sessionStorage.removeItem(TOKEN_KEY); }
+
+// Thin fetch wrapper: attaches the admin bearer token and throws with the
+// server's error message on non-2xx responses.
+async function apiFetch(path, options = {}) {
+  const headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+  const token = getToken();
+  if (token) headers.Authorization = 'Bearer ' + token;
+
+  const resp = await fetch(API_BASE + path, { ...options, headers });
+  const isJson = resp.headers.get('content-type')?.includes('application/json');
+  const data = isJson ? await resp.json() : null;
+
+  if (resp.status === 401) {
+    // Session expired or invalid — send back to the PIN screen.
+    clearToken();
+    document.getElementById('admin-app').style.display = 'none';
+    document.getElementById('pin-screen').style.display = 'flex';
+    throw new Error((data && data.error) || 'Session expired. Please log in again.');
+  }
+  if (!resp.ok) throw new Error((data && data.error) || `Request failed (${resp.status})`);
+  return data;
+}
+
+/* ── DATABASE (in-memory cache of the last fetch, same shape the old
+   localStorage blob used to have, so every render*() function below
+   that reads getDB() keeps working completely unchanged) ──────────── */
+let DB_CACHE = null;
+
+function getDB() { return DB_CACHE; }
+
+async function loadDB() {
+  const [products, coupons, orders, bookings] = await Promise.all([
+    apiFetch('/admin/products'),
+    apiFetch('/admin/coupons'),
+    apiFetch('/admin/orders'),
+    apiFetch('/admin/bookings'),
+  ]);
+  DB_CACHE = {
+    meta: { store_name: 'Arise Numero', currency: 'USD' },
+    products, coupons, orders, bookings,
+  };
+  return DB_CACHE;
+}
+
+/* ── PIN SCREEN ─────────────────────────────────────────────────── */
+let pinEntry = '';
+const PIN_DISPLAY_LEN = 4; // dots shown while typing; the real PIN can be any length
+
+function renderPinDots() {
+  const dots = document.getElementById('pin-dots');
+  dots.innerHTML = Array.from({ length: Math.max(PIN_DISPLAY_LEN, pinEntry.length) }, (_, i) =>
+    `<div class="pin-dot ${i < pinEntry.length ? 'filled' : ''}"></div>`
+  ).join('');
+}
+
+function initPinScreen() {
+  renderPinDots();
+
+  document.querySelectorAll('.pin-key').forEach(key => {
+    key.addEventListener('click', () => {
+      const k = key.dataset.key;
+
+      if (k === 'clear') {
+        pinEntry = pinEntry.slice(0, -1);
+        renderPinDots();
+        return;
+      }
+
+      if (k === 'enter') {
+        checkPin();
+        return;
+      }
+
+      pinEntry += k;
+      renderPinDots();
+      // Auto-submit once a plausible PIN length is reached
+      if (pinEntry.length >= PIN_DISPLAY_LEN) {
+        setTimeout(checkPin, 150);
+      }
+    });
+  });
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('pin-screen').style.display === 'none') return;
+    if (e.key >= '0' && e.key <= '9') {
+      pinEntry += e.key;
+      renderPinDots();
+      if (pinEntry.length >= PIN_DISPLAY_LEN) setTimeout(checkPin, 150);
+    }
+    if (e.key === 'Backspace') { pinEntry = pinEntry.slice(0,-1); renderPinDots(); }
+    if (e.key === 'Enter') checkPin();
+  });
+}
+
+async function checkPin() {
+  if (!pinEntry) return;
+  const submitted = pinEntry;
+  try {
+    const { token } = await apiFetch('/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ pin: submitted }),
+    });
+    setToken(token);
+    await loadDB();
+    document.getElementById('pin-screen').style.display = 'none';
+    document.getElementById('admin-app').style.display  = 'block';
+    initAdminApp();
+  } catch (err) {
+    // Wrong PIN (or network/server error)
+    pinEntry = '';
+    const dots = document.querySelectorAll('.pin-dot');
+    dots.forEach(d => d.classList.add('error'));
+    document.getElementById('pin-error').textContent = err.message || 'Incorrect PIN. Try again.';
+    setTimeout(() => {
+      dots.forEach(d => d.classList.remove('error', 'filled'));
+      document.getElementById('pin-error').textContent = '';
+      renderPinDots();
+    }, 800);
+  }
+}
+
+/* ── ADMIN APP INIT ─────────────────────────────────────────────── */
+function initAdminApp() {
+  // Dashboard date
+  document.getElementById('dashboard-date').textContent =
+    new Date().toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Nav items
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => showSection(item.dataset.section));
+  });
+
+  // Logout
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    if (confirm('Lock the admin panel?')) { clearToken(); location.reload(); }
+  });
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+  });
+
+  refreshAll();
+}
+
+async function refreshAll() {
+  try {
+    await loadDB();
+  } catch (err) {
+    showToast(err.message || 'Could not reach the server.', 'error');
+    return;
+  }
+  updateBadges();
+  renderDashboard();
+  renderProductsTable();
+  renderStockTable();
+  renderOrdersTable();
+  renderCouponsTable();
+  renderBookingsTable();
+}
+
+/* ── NAVIGATION ─────────────────────────────────────────────────── */
+function showSection(name) {
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('section-' + name)?.classList.add('active');
+  document.querySelector(`.nav-item[data-section="${name}"]`)?.classList.add('active');
+}
+
+/* ── BADGES ─────────────────────────────────────────────────────── */
+function updateBadges() {
+  const db = getDB();
+  if (!db) return;
+  document.getElementById('badge-products').textContent = db.products?.length || 0;
+  document.getElementById('badge-orders').textContent   = db.orders?.length   || 0;
+  document.getElementById('badge-bookings').textContent = db.bookings?.length || 0;
+}
+
+/* ── DASHBOARD ──────────────────────────────────────────────────── */
+function renderDashboard() {
+  const db = getDB();
+  if (!db) return;
+
+  const products  = db.products  || [];
+  const orders    = db.orders    || [];
+  const bookings  = db.bookings  || [];
+  const lowStock  = products.filter(p => p.stock <= p.low_stock_threshold && p.stock > 0);
+  const outStock  = products.filter(p => p.stock === 0);
+  const revenue   = orders.reduce((s, o) => s + (o.total_usd || 0), 0);
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card stat-gold">
+      <div class="stat-label">Total Products</div>
+      <div class="stat-value">${products.length}</div>
+      <div class="stat-sub">${products.filter(p=>p.active).length} active</div>
+    </div>
+    <div class="stat-card stat-success">
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value">${orders.length}</div>
+      <div class="stat-sub">$${revenue.toFixed(2)} revenue</div>
+    </div>
+    <div class="stat-card stat-warning">
+      <div class="stat-label">Low Stock</div>
+      <div class="stat-value">${lowStock.length}</div>
+      <div class="stat-sub">${outStock.length} out of stock</div>
+    </div>
+    <div class="stat-card stat-error">
+      <div class="stat-label">Bookings</div>
+      <div class="stat-value">${bookings.length}</div>
+      <div class="stat-sub">${bookings.filter(b=>b.status==='new').length} new</div>
+    </div>`;
+
+  // Low stock list
+  const lowStockEl = document.getElementById('low-stock-list');
+  if (lowStock.length === 0 && outStock.length === 0) {
+    lowStockEl.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">All stock levels are healthy</div></div>';
+  } else {
+    const all = [...outStock, ...lowStock].slice(0, 5);
+    lowStockEl.innerHTML = `<table><thead><tr><th>Product</th><th>Stock</th><th>Status</th><th>Action</th></tr></thead><tbody>
+      ${all.map(p => `
+        <tr>
+          <td><strong>${p.name}</strong></td>
+          <td>${p.stock}</td>
+          <td>${p.stock === 0
+            ? '<span class="badge badge-out">Out of Stock</span>'
+            : '<span class="badge badge-low">Low Stock</span>'}</td>
+          <td><button class="btn btn-sm btn-outline" onclick="quickStockUpdate('${p.id}')">Update Stock</button></td>
+        </tr>`).join('')}
+    </tbody></table>`;
+  }
+
+  // Recent bookings
+  const recentBookEl = document.getElementById('recent-bookings-list');
+  const recentBook   = [...bookings].reverse().slice(0, 4);
+  if (recentBook.length === 0) {
+    recentBookEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No bookings yet</div></div>';
+  } else {
+    recentBookEl.innerHTML = `<table><thead><tr><th>Client</th><th>Package</th><th>Date</th><th>Status</th></tr></thead><tbody>
+      ${recentBook.map(b => `
+        <tr>
+          <td>${b.client_email || 'Unknown'}</td>
+          <td>${b.package_selected || '—'}</td>
+          <td>${b.submitted_at ? b.submitted_at.split(',')[0] : '—'}</td>
+          <td><span class="badge badge-${b.status === 'new' ? 'gold' : 'active'}">${b.status || 'new'}</span></td>
+        </tr>`).join('')}
+    </tbody></table>`;
+  }
+}
+
+/* ── PRODUCTS TABLE ─────────────────────────────────────────────── */
+let editingProductId = null;
+
+function renderProductsTable() {
+  const db       = getDB();
+  const tbody    = document.getElementById('products-table-body');
+  if (!db || !tbody) return;
+
+  const search   = (document.getElementById('product-search')?.value || '').toLowerCase();
+  const filterCat= document.getElementById('product-filter-cat')?.value || '';
+
+  let products = db.products || [];
+  if (search)    products = products.filter(p => p.name.toLowerCase().includes(search) || p.id.includes(search));
+  if (filterCat) products = products.filter(p => p.category === filterCat);
+
+  if (products.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state">
+        <div class="empty-icon">💎</div>
+        <div class="empty-title">No products found</div>
+        <div class="empty-desc">Add your first product using the button above.</div>
+      </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = products.map(p => {
+    const stockStatus = p.stock === 0
+      ? '<span class="badge badge-out">Out</span>'
+      : p.stock <= p.low_stock_threshold
+        ? `<span class="badge badge-low">${p.stock} ⚠️</span>`
+        : `<span class="badge badge-active">${p.stock}</span>`;
+
+    return `<tr>
+      <td><img src="${p.image_url || 'assets/placeholder.jpg'}"
+               onerror="this.src='assets/placeholder.jpg'"
+               class="product-thumb" alt="${p.name}" /></td>
+      <td><strong>${p.name}</strong><br/><small style="color:var(--text-muted)">${p.id}</small></td>
+      <td>${p.category || '—'}</td>
+      <td>
+        $${parseFloat(p.price_usd||0).toFixed(2)}
+        ${p.original_price_usd ? `<br/><small style="text-decoration:line-through;color:var(--text-muted)">$${parseFloat(p.original_price_usd).toFixed(2)}</small>` : ''}
+      </td>
+      <td>${stockStatus}</td>
+      <td>${p.active
+        ? '<span class="badge badge-active">Active</span>'
+        : '<span class="badge badge-inactive">Hidden</span>'}</td>
+      <td>${p.featured
+        ? '<span class="badge badge-gold">⭐ Featured</span>'
+        : '<span style="color:var(--text-muted);font-size:0.8rem">No</span>'}</td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-sm btn-outline" onclick="editProduct('${p.id}')">Edit</button>
+          <button class="btn btn-sm btn-ghost" onclick="quickStockUpdate('${p.id}')">Stock</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteProduct('${p.id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── PRODUCT MODAL ──────────────────────────────────────────────── */
+function showProductModal(id = null) {
+  editingProductId = id;
+  const db = getDB();
+  const product = id ? (db?.products||[]).find(p => p.id === id) : null;
+  const title   = product ? 'Edit Product' : 'Add New Product';
+
+  document.getElementById('product-modal-title').textContent = title;
+
+  // Fill fields
+  document.getElementById('p-name').value          = product?.name              || '';
+  document.getElementById('p-id').value            = product?.id               || '';
+  document.getElementById('p-id').disabled         = !!product;
+  document.getElementById('p-category').value      = product?.category          || 'amethyst';
+  document.getElementById('p-bead-size').value     = product?.bead_size         || '8mm';
+  document.getElementById('p-price').value         = product?.price_usd         || '';
+  document.getElementById('p-original-price').value= product?.original_price_usd|| '';
+  document.getElementById('p-stock').value         = product?.stock             ?? '';
+  document.getElementById('p-threshold').value     = product?.low_stock_threshold ?? 5;
+  document.getElementById('p-badge').value         = product?.badge             || '';
+  document.getElementById('p-rating').value        = product?.rating            || 4.9;
+  document.getElementById('p-material').value      = product?.material          || '';
+  document.getElementById('p-description').value   = product?.description       || '';
+  document.getElementById('p-image').value         = product?.image_url         || '';
+  document.getElementById('p-images-extra').value  = (product?.images||[]).slice(1).join(', ');
+
+  // Toggles
+  setToggle('p-active-toggle',   'p-active-label',   product?.active   !== false, 'Active', 'Hidden');
+  setToggle('p-featured-toggle', 'p-featured-label',  product?.featured === true,  'Featured', 'Not featured');
+
+  openModal('product-modal');
+}
+
+function editProduct(id) { showProductModal(id); }
+
+function saveProduct() {
+  const id   = document.getElementById('p-id').value.trim().toLowerCase().replace(/\s+/g,'-');
+  const name = document.getElementById('p-name').value.trim();
+
+  if (!id || !name) { showToast('Product name and ID are required.', 'error'); return; }
+
+  const extraImgs  = document.getElementById('p-images-extra').value
+    .split(',').map(s => s.trim()).filter(Boolean);
+  const mainImg    = document.getElementById('p-image').value.trim();
+  const allImages  = mainImg ? [mainImg, ...extraImgs] : extraImgs;
+
+  const product = {
+    id,
+    name,
+    material:           document.getElementById('p-material').value.trim(),
+    description:        document.getElementById('p-description').value.trim(),
+    price_usd:          parseFloat(document.getElementById('p-price').value) || 0,
+    original_price_usd: parseFloat(document.getElementById('p-original-price').value) || null,
+    category:           document.getElementById('p-category').value,
+    bead_size:          document.getElementById('p-bead-size').value,
+    stock:              parseInt(document.getElementById('p-stock').value) || 0,
+    low_stock_threshold:parseInt(document.getElementById('p-threshold').value) || 5,
+    image_url:          mainImg,
+    images:             allImages,
+    badge:              document.getElementById('p-badge').value || null,
+    rating:             parseFloat(document.getElementById('p-rating').value) || 4.9,
+    review_count:       0,
+    active:             document.getElementById('p-active-toggle').classList.contains('on'),
+    featured:           document.getElementById('p-featured-toggle').classList.contains('on'),
+  };
+
+  (async () => {
+    try {
+      if (editingProductId) {
+        await apiFetch(`/admin/products/${encodeURIComponent(editingProductId)}`, {
+          method: 'PUT', body: JSON.stringify(product),
+        });
+        showToast(`✅ "${name}" updated successfully.`, 'success');
+      } else {
+        await apiFetch('/admin/products', { method: 'POST', body: JSON.stringify(product) });
+        showToast(`✅ "${name}" added successfully.`, 'success');
+      }
+      closeModal('product-modal');
+      await refreshAll();
+      // This product is now live on shop.html / product.html immediately —
+      // both pages read straight from the same API.
+    } catch (err) {
+      showToast(err.message || 'Could not save product.', 'error');
+    }
+  })();
+}
+
+function deleteProduct(id) {
+  const db = getDB();
+  const p  = db.products.find(p => p.id === id);
+  if (!p) return;
+  if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
+  apiFetch(`/admin/products/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    .then(() => { showToast(`"${p.name}" deleted.`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not delete product.', 'error'));
+}
+
+/* ── STOCK TABLE ────────────────────────────────────────────────── */
+function renderStockTable() {
+  const db    = getDB();
+  const tbody = document.getElementById('stock-table-body');
+  if (!db || !tbody) return;
+
+  const products = db.products || [];
+  const low   = products.filter(p => p.stock <= p.low_stock_threshold && p.stock > 0).length;
+  const out   = products.filter(p => p.stock === 0).length;
+
+  const summary = document.getElementById('stock-summary');
+  if (summary) summary.textContent = `${out} out of stock · ${low} low stock`;
+
+  if (products.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">No products yet</div></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = products.map(p => {
+    const pct   = Math.min(100, (p.stock / Math.max(p.stock, p.low_stock_threshold * 4)) * 100);
+    const color = p.stock === 0 ? 'var(--error)' : p.stock <= p.low_stock_threshold ? 'var(--warning)' : 'var(--success)';
+    const status = p.stock === 0
+      ? '<span class="badge badge-out">Out of Stock</span>'
+      : p.stock <= p.low_stock_threshold
+        ? '<span class="badge badge-low">Low Stock</span>'
+        : '<span class="badge badge-active">In Stock</span>';
+
+    return `<tr>
+      <td><strong>${p.name}</strong><br/><small style="color:var(--text-muted)">${p.category} · ${p.bead_size}</small></td>
+      <td>
+        <div class="stock-bar-wrap">
+          <strong style="min-width:28px;">${p.stock}</strong>
+          <div class="stock-bar"><div class="stock-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        </div>
+      </td>
+      <td>${p.low_stock_threshold}</td>
+      <td>${status}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="number" value="${p.stock}" min="0"
+                 id="stock-input-${p.id}"
+                 style="width:72px;padding:6px 8px;border:1.5px solid var(--border);
+                        border-radius:6px;background:var(--bg);color:var(--text);font-size:0.875rem;" />
+          <button class="btn btn-sm btn-success" onclick="updateStockFromInput('${p.id}')">Save</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function updateStockFromInput(id) {
+  const input = document.getElementById('stock-input-' + id);
+  if (!input) return;
+  const qty = parseInt(input.value);
+  if (isNaN(qty) || qty < 0) { showToast('Enter a valid stock number.', 'error'); return; }
+
+  apiFetch(`/admin/products/${encodeURIComponent(id)}/stock`, {
+    method: 'PUT', body: JSON.stringify({ stock: qty }),
+  })
+    .then(() => { showToast(`Stock updated to ${qty}.`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not update stock.', 'error'));
+}
+
+function quickStockUpdate(id) {
+  const db = getDB();
+  const p  = db?.products?.find(p => p.id === id);
+  if (!p) return;
+  const qty = prompt(`Update stock for "${p.name}"\nCurrent: ${p.stock}\n\nEnter new quantity:`, p.stock);
+  if (qty === null) return;
+  const newQty = parseInt(qty);
+  if (isNaN(newQty) || newQty < 0) { showToast('Invalid quantity.', 'error'); return; }
+  apiFetch(`/admin/products/${encodeURIComponent(id)}/stock`, {
+    method: 'PUT', body: JSON.stringify({ stock: newQty }),
+  })
+    .then(() => { showToast(`Stock for "${p.name}" updated to ${newQty}.`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not update stock.', 'error'));
+}
+
+/* ── ORDERS ─────────────────────────────────────────────────────── */
+function renderOrdersTable() {
+  const db      = getDB();
+  const content = document.getElementById('orders-content');
+  if (!db || !content) return;
+
+  const search    = (document.getElementById('order-search')?.value || '').toLowerCase();
+  const filterSt  = document.getElementById('order-filter-status')?.value || '';
+  let orders      = [...(db.orders || [])].reverse();
+
+  if (search)   orders = orders.filter(o =>
+    (o.id||'').toLowerCase().includes(search) ||
+    (o.customer_name||'').toLowerCase().includes(search) ||
+    (o.customer_email||'').toLowerCase().includes(search));
+  if (filterSt) orders = orders.filter(o => o.status === filterSt);
+
+  if (orders.length === 0) {
+    content.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🛍️</div>
+      <div class="empty-title">No orders yet</div>
+      <div class="empty-desc">Orders placed through PayPal will appear here when you add them manually or sync.</div>
+    </div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-primary" onclick="showAddOrderModal()">+ Add Order Manually</button>
+    </div>`;
+    return;
+  }
+
+  content.innerHTML = `
+    <div style="margin-bottom:12px;">
+      <button class="btn btn-outline btn-sm" onclick="showAddOrderModal()">+ Add Order</button>
+    </div>
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Order ID</th><th>Customer</th><th>Total</th>
+        <th>Items</th><th>Date</th><th>Status</th><th>Actions</th>
+      </tr></thead>
+      <tbody>
+        ${orders.map(o => `<tr>
+          <td><code style="font-size:0.8rem">${o.id || '—'}</code></td>
+          <td>${o.customer_name || '—'}<br/><small style="color:var(--text-muted)">${o.customer_email||''}</small></td>
+          <td>$${parseFloat(o.total_usd||0).toFixed(2)}</td>
+          <td>${o.items?.length || 0} item(s)</td>
+          <td style="white-space:nowrap">${o.date ? o.date.split('T')[0] : '—'}</td>
+          <td>${orderStatusBadge(o.status)}</td>
+          <td>
+            <div style="display:flex;gap:6px;">
+              <button class="btn btn-sm btn-ghost" onclick="viewOrder('${o.id}')">View</button>
+              <select class="form-input" style="padding:4px 8px;font-size:0.78rem;"
+                      onchange="updateOrderStatus('${o.id}', this.value)">
+                <option value="">Change status</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="shipped">Shipped</option>
+                <option value="delivered">Delivered</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+
+function orderStatusBadge(status) {
+  const map = {
+    pending:   'badge-low',
+    confirmed: 'badge-gold',
+    shipped:   'badge-active',
+    delivered: 'badge-active',
+    cancelled: 'badge-out',
+  };
+  return `<span class="badge ${map[status]||'badge-inactive'}">${status||'pending'}</span>`;
+}
+
+function updateOrderStatus(id, status) {
+  if (!status) return;
+  apiFetch(`/admin/orders/${encodeURIComponent(id)}/status`, {
+    method: 'PUT', body: JSON.stringify({ status }),
+  })
+    .then(() => { showToast(`Order status updated to "${status}".`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not update order.', 'error'));
+}
+
+function viewOrder(id) {
+  const db = getDB();
+  const o  = (db.orders||[]).find(o => o.id === id);
+  if (!o) return;
+  const addr = o.shipping_address || {};
+  const addrLines = [
+    [addr.address1, addr.address2].filter(Boolean).join(', '),
+    [addr.city, addr.state, addr.postal_code].filter(Boolean).join(', '),
+    addr.country,
+  ].filter(Boolean);
+  document.getElementById('order-modal-body').innerHTML = `
+    <div style="display:grid;gap:12px;font-size:0.9rem;">
+      <div><strong>Order ID:</strong> <code>${o.id}</code></div>
+      <div><strong>Customer:</strong> ${o.customer_name || '—'}</div>
+      <div><strong>Email:</strong> ${o.customer_email || '—'}</div>
+      <div><strong>Phone:</strong> ${o.customer_phone || '—'}</div>
+      <div><strong>Date:</strong> ${o.date ? new Date(o.date).toLocaleString() : '—'}</div>
+      <div><strong>Status:</strong> ${orderStatusBadge(o.status)}</div>
+      <div><strong>Payment:</strong> ${o.payment_method || '—'} ${o.payment_reference ? `(<code>${o.payment_reference}</code>)` : ''}</div>
+      <div><strong>Items:</strong><br/>
+        ${(o.items||[]).map(i => `• ${i.name} × ${i.qty} — $${((i.priceUSD||0)*i.qty).toFixed(2)}`).join('<br/>')||'—'}
+      </div>
+      <div><strong>Subtotal:</strong> $${parseFloat(o.subtotal_usd||0).toFixed(2)}
+        ${o.discount_usd ? ` &nbsp;·&nbsp; <strong>Discount:</strong> −$${parseFloat(o.discount_usd).toFixed(2)} (${o.coupon_code||''})` : ''}
+      </div>
+      <div><strong>Total:</strong> $${parseFloat(o.total_usd||0).toFixed(2)}</div>
+      <div><strong>Shipping Address:</strong><br/>${addrLines.length ? addrLines.join('<br/>') : '—'}</div>
+    </div>`;
+  openModal('order-modal');
+}
+
+function showAddOrderModal() {
+  const name  = prompt('Customer Name:');
+  if (!name) return;
+  const email = prompt('Customer Email:');
+  const total = parseFloat(prompt('Order Total (USD):'));
+  if (isNaN(total)) return;
+
+  apiFetch('/admin/orders', {
+    method: 'POST',
+    body: JSON.stringify({
+      customer_name: name, customer_email: email || null,
+      total_usd: total, subtotal_usd: total, status: 'pending', payment_method: 'manual',
+    }),
+  })
+    .then((order) => { showToast(`Order ${order.id} added.`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not add order.', 'error'));
+}
+
+/* ── COUPONS ─────────────────────────────────────────────────────── */
+let editingCouponCode = null;
+
+function renderCouponsTable() {
+  const db    = getDB();
+  const tbody = document.getElementById('coupons-table-body');
+  if (!db || !tbody) return;
+
+  const coupons = db.coupons || [];
+  if (coupons.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5">
+      <div class="empty-state">
+        <div class="empty-icon">🏷️</div>
+        <div class="empty-title">No coupons yet</div>
+      </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = coupons.map(c => `<tr>
+    <td><code style="font-size:1rem;font-weight:700;letter-spacing:0.06em;">${c.code}</code></td>
+    <td><strong>${c.discount_percent}% off</strong></td>
+    <td>${c.description || '—'}</td>
+    <td>${c.active
+      ? '<span class="badge badge-active">Active</span>'
+      : '<span class="badge badge-inactive">Inactive</span>'}</td>
+    <td>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-sm btn-outline" onclick="editCoupon('${c.code}')">Edit</button>
+        <button class="btn btn-sm btn-${c.active ? 'ghost' : 'success'}"
+                onclick="toggleCoupon('${c.code}')">
+          ${c.active ? 'Deactivate' : 'Activate'}
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="deleteCoupon('${c.code}')">Delete</button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+function showCouponModal(code = null) {
+  editingCouponCode = code;
+  const db = getDB();
+  const c  = code ? (db?.coupons||[]).find(c => c.code === code) : null;
+
+  document.getElementById('coupon-modal-title').textContent = c ? 'Edit Coupon' : 'Add Coupon';
+  document.getElementById('c-code').value       = c?.code             || '';
+  document.getElementById('c-code').disabled    = !!c;
+  document.getElementById('c-discount').value   = c?.discount_percent || '';
+  document.getElementById('c-description').value= c?.description      || '';
+  setToggle('c-active-toggle', 'c-active-label', c?.active !== false, 'Active', 'Inactive');
+  openModal('coupon-modal');
+}
+
+function editCoupon(code) { showCouponModal(code); }
+
+function saveCoupon() {
+  const code     = document.getElementById('c-code').value.trim().toUpperCase();
+  const discount = parseInt(document.getElementById('c-discount').value);
+  if (!code || isNaN(discount)) { showToast('Code and discount % are required.', 'error'); return; }
+
+  const coupon = {
+    code,
+    discount_percent: discount,
+    description: document.getElementById('c-description').value.trim(),
+    active: document.getElementById('c-active-toggle').classList.contains('on'),
+  };
+
+  (async () => {
+    try {
+      if (editingCouponCode) {
+        await apiFetch(`/admin/coupons/${encodeURIComponent(editingCouponCode)}`, {
+          method: 'PUT', body: JSON.stringify(coupon),
+        });
+        showToast(`Coupon "${code}" updated.`, 'success');
+      } else {
+        await apiFetch('/admin/coupons', { method: 'POST', body: JSON.stringify(coupon) });
+        showToast(`Coupon "${code}" added.`, 'success');
+      }
+      closeModal('coupon-modal');
+      await refreshAll();
+    } catch (err) {
+      showToast(err.message || 'Could not save coupon.', 'error');
+    }
+  })();
+}
+
+function toggleCoupon(code) {
+  const db = getDB();
+  const c  = (db.coupons||[]).find(c => c.code === code);
+  if (!c) return;
+  apiFetch(`/admin/coupons/${encodeURIComponent(code)}`, {
+    method: 'PUT', body: JSON.stringify({ active: !c.active }),
+  })
+    .then(() => { showToast(`Coupon "${code}" ${!c.active ? 'activated' : 'deactivated'}.`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not update coupon.', 'error'));
+}
+
+function deleteCoupon(code) {
+  if (!confirm(`Delete coupon "${code}"?`)) return;
+  apiFetch(`/admin/coupons/${encodeURIComponent(code)}`, { method: 'DELETE' })
+    .then(() => { showToast(`Coupon "${code}" deleted.`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not delete coupon.', 'error'));
+}
+
+/* ── BOOKINGS ────────────────────────────────────────────────────── */
+function renderBookingsTable() {
+  const db      = getDB();
+  const content = document.getElementById('bookings-content');
+  if (!db || !content) return;
+
+  const filterSt = document.getElementById('booking-filter-status')?.value || '';
+  // The API already returns bookings newest-first.
+  let bookings = db.bookings || [];
+  if (filterSt) bookings = bookings.filter(b => (b.status||'new') === filterSt);
+
+  if (bookings.length === 0) {
+    content.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">📅</div>
+      <div class="empty-title">No bookings yet</div>
+      <div class="empty-desc">Bookings submitted through your website will appear here automatically.</div>
+    </div>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="table-wrap"><table>
+    <thead><tr>
+      <th>Email</th><th>Package</th><th>Birth Name</th>
+      <th>DOB</th><th>Session Date</th><th>Status</th><th>Actions</th>
+    </tr></thead>
+    <tbody>
+      ${bookings.map((b) => `<tr>
+        <td>${b.client_email || '—'}</td>
+        <td><span class="badge badge-gold">${b.package_selected||'—'}</span></td>
+        <td>${b.birth_name||'—'}</td>
+        <td>${b.date_of_birth||'—'}</td>
+        <td>${b.session_date||'Written report'}</td>
+        <td>
+          <select class="form-input" style="padding:4px 8px;font-size:0.78rem;"
+                  onchange="updateBookingStatus('${b.id}', this.value)">
+            <option value="new"       ${(b.status||'new')==='new'       ?'selected':''}>🆕 New</option>
+            <option value="confirmed" ${b.status==='confirmed' ?'selected':''}>✅ Confirmed</option>
+            <option value="completed" ${b.status==='completed' ?'selected':''}>🏁 Completed</option>
+            <option value="cancelled" ${b.status==='cancelled' ?'selected':''}>❌ Cancelled</option>
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-ghost" onclick="viewBooking('${b.id}')">View</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteBooking('${b.id}')">Delete</button>
+        </td>
+      </tr>`).join('')}
+    </tbody>
+  </table></div>`;
+}
+
+function updateBookingStatus(id, status) {
+  apiFetch(`/admin/bookings/${encodeURIComponent(id)}/status`, {
+    method: 'PUT', body: JSON.stringify({ status }),
+  })
+    .then(() => { showToast(`Booking status updated to "${status}".`, 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not update booking.', 'error'));
+}
+
+function viewBooking(id) {
+  const db = getDB();
+  const b  = (db.bookings||[]).find(b => b.id === id);
+  if (!b) return;
+  alert(`BOOKING DETAILS\n\nEmail: ${b.client_email||'—'}\nBirth Name: ${b.birth_name||'—'}\nDOB: ${b.date_of_birth||'—'}\nPackage: ${b.package_selected||'—'}\nTimezone: ${b.timezone||'—'}\nSession Date: ${b.session_date||'Written report'}\nFocus: ${b.reading_focus||'—'}\nNotes: ${b.additional_notes||'—'}\nSubmitted: ${b.submitted_at||'—'}`);
+}
+
+function deleteBooking(id) {
+  if (!confirm('Delete this booking?')) return;
+  apiFetch(`/admin/bookings/${encodeURIComponent(id)}`, { method: 'DELETE' })
+    .then(() => { showToast('Booking deleted.', 'success'); return refreshAll(); })
+    .catch(err => showToast(err.message || 'Could not delete booking.', 'error'));
+}
+
+/* ── SETTINGS ────────────────────────────────────────────────────── */
+function changePin() {
+  const current = document.getElementById('current-pin').value;
+  const newPin  = document.getElementById('new-pin').value;
+  const confirmVal = document.getElementById('confirm-pin').value;
+
+  if (!newPin || newPin.length < 4)  { showToast('New PIN must be at least 4 digits.', 'error'); return; }
+  if (newPin !== confirmVal)         { showToast('PINs do not match.', 'error'); return; }
+  if (!/^\d+$/.test(newPin))         { showToast('PIN must be numbers only.', 'error'); return; }
+
+  apiFetch('/admin/pin', {
+    method: 'PUT', body: JSON.stringify({ current_pin: current, new_pin: newPin }),
+  })
+    .then(() => {
+      document.getElementById('current-pin').value = '';
+      document.getElementById('new-pin').value     = '';
+      document.getElementById('confirm-pin').value = '';
+      showToast('✅ PIN updated successfully!', 'success');
+    })
+    .catch(err => showToast(err.message || 'Could not update PIN.', 'error'));
+}
+
+function exportData() {
+  const db   = getDB();
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `arise-numero-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported successfully.', 'success');
+}
+
+// Imports products + coupons from a previously exported backup file, one at
+// a time via the API (creating new ones, updating ones that already exist
+// by id/code). Orders and bookings are real historical records and are
+// intentionally NOT overwritten by an import.
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.products) { showToast('Invalid JSON file.', 'error'); return; }
+      if (!confirm(`Import ${data.products.length} product(s) and ${data.coupons?.length||0} coupon(s)? Existing ones with the same id/code will be overwritten. Orders and bookings are not affected.`)) return;
+
+      for (const p of data.products) {
+        try {
+          await apiFetch(`/admin/products/${encodeURIComponent(p.id)}`, { method: 'PUT', body: JSON.stringify(p) });
+        } catch {
+          await apiFetch('/admin/products', { method: 'POST', body: JSON.stringify(p) }).catch(() => {});
+        }
+      }
+      for (const c of (data.coupons || [])) {
+        try {
+          await apiFetch(`/admin/coupons/${encodeURIComponent(c.code)}`, { method: 'PUT', body: JSON.stringify(c) });
+        } catch {
+          await apiFetch('/admin/coupons', { method: 'POST', body: JSON.stringify(c) }).catch(() => {});
+        }
+      }
+
+      await refreshAll();
+      showToast('✅ Products and coupons imported.', 'success');
+    } catch {
+      showToast('Could not read file. Make sure it is a valid JSON export.', 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// Deletes every product and coupon (not orders/bookings — those are real
+// business records and are never bulk-deleted from the UI).
+function clearAllData() {
+  if (!confirm('⚠️ This will delete ALL products and coupons. Orders and bookings are kept. Are you sure?')) return;
+  if (!confirm('This cannot be undone. Confirm again to proceed.')) return;
+
+  (async () => {
+    const db = getDB();
+    for (const p of (db.products || [])) {
+      await apiFetch(`/admin/products/${encodeURIComponent(p.id)}`, { method: 'DELETE' }).catch(() => {});
+    }
+    for (const c of (db.coupons || [])) {
+      await apiFetch(`/admin/coupons/${encodeURIComponent(c.code)}`, { method: 'DELETE' }).catch(() => {});
+    }
+    await refreshAll();
+    showToast('Products and coupons cleared.', 'success');
+  })();
+}
+
+/* ── MODAL HELPERS ───────────────────────────────────────────────── */
+function openModal(id)  { document.getElementById(id)?.classList.add('open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('open'); }
+
+/* ── TOGGLE BUTTON ───────────────────────────────────────────────── */
+function toggleBtn(btn) {
+  btn.classList.toggle('on');
+  const labelId = btn.id.replace('-toggle', '-label');
+  const label   = document.getElementById(labelId);
+  if (!label) return;
+  const isOn    = btn.classList.contains('on');
+  if (btn.id === 'p-active-toggle')   label.textContent = isOn ? 'Active'   : 'Hidden';
+  if (btn.id === 'p-featured-toggle') label.textContent = isOn ? 'Featured' : 'Not featured';
+  if (btn.id === 'c-active-toggle')   label.textContent = isOn ? 'Active'   : 'Inactive';
+}
+
+function setToggle(toggleId, labelId, isOn, onText, offText) {
+  const toggle = document.getElementById(toggleId);
+  const label  = document.getElementById(labelId);
+  if (!toggle || !label) return;
+  toggle.classList.toggle('on', isOn);
+  label.textContent = isOn ? onText : offText;
+}
+
+/* ── TOAST ───────────────────────────────────────────────────────── */
+function showToast(msg, type = 'success') {
+  document.getElementById('admin-toast')?.remove();
+  const toast = document.createElement('div');
+  toast.id    = 'admin-toast';
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity    = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+/* ── KEYBOARD SHORTCUTS ──────────────────────────────────────────── */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open')
+      .forEach(m => m.classList.remove('open'));
+  }
+});
+
+/* ── BOOT ────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  initPinScreen();
+});
+</script>
+</body>
+</html>

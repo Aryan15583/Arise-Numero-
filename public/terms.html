@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="description" content="Arise Numero Terms of Service — the rules and conditions governing use of our website, purchase of products, and numerology reading services." />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+  <title>Terms of Service — Arise Numero</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  <!--
+    EMAILJS SDK
+    Replace YOUR_EMAILJS_PUBLIC_KEY with your actual Public Key.
+    Get it from: emailjs.com → Account → Public Key
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function() {
+      emailjs.init({ publicKey: "YOUR_EMAILJS_PUBLIC_KEY" });
+    })();
+  </script>
+
+  <!--
+    GOOGLE ANALYTICS 4
+    Replace YOUR_GA_MEASUREMENT_ID with your Measurement ID.
+    Get it from: analytics.google.com -> Admin -> Data Streams
+    Format: G-XXXXXXXXXX
+    Only fires if user accepted analytics cookies (GDPR compliant).
+  -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_GA_MEASUREMENT_ID"></script>
+  <script>
+    (function() {
+      var consent = {};
+      try { consent = JSON.parse(localStorage.getItem("ariseNumero_cookieConsent") || "{}"); } catch(e) {}
+      if (consent.analytics) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){ dataLayer.push(arguments); }
+        gtag("js", new Date());
+        gtag("config", "YOUR_GA_MEASUREMENT_ID", { anonymize_ip: true });
+      }
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-inner">
+      <div class="cookie-text"><strong id="cookie-title">🍪 We use cookies</strong><p id="cookie-desc">We use cookies to enhance your experience. See our <a href="privacy.html">Privacy Policy</a>.</p></div>
+      <div class="cookie-actions"><button id="cookie-accept" class="btn btn-primary btn-sm">Accept All</button><button id="cookie-manage" class="btn btn-outline btn-sm">Manage</button><button id="cookie-reject" class="btn btn-ghost btn-sm">Reject</button></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a>
+      <nav class="main-nav" role="navigation" aria-label="Main navigation">
+        <ul class="nav-list" role="list">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="shop.html" class="nav-link">Shop</a></li>
+          <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+          <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        
+        <a href="cart.html" class="cart-btn" aria-label="Shopping cart"><span class="cart-icon" aria-hidden="true">🛒</span><span class="cart-count" id="cart-count" aria-live="polite">0</span></a>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Open mobile menu" aria-expanded="false" aria-controls="mobile-nav"><span class="hamburger" aria-hidden="true"></span></button>
+      </div>
+    </div>
+    <nav id="mobile-nav" class="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden>
+      <ul class="mobile-nav-list" role="list">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="shop.html" class="nav-link">Shop</a></li>
+        <li><a href="numerology.html" class="nav-link">Numerology</a></li>
+        <li><a href="booking.html" class="nav-link">Book a Reading</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <ol role="list">
+        <li><a href="index.html">Home</a></li>
+        <li aria-current="page">Terms of Service</li>
+      </ol>
+    </nav>
+
+    <div class="container legal-page">
+
+      <!-- Table of Contents -->
+      <aside class="legal-toc" aria-labelledby="toc-heading">
+        <h2 id="toc-heading" class="toc-title">Contents</h2>
+        <nav aria-label="Terms sections">
+          <ol class="toc-list" role="list">
+            <li><a href="#acceptance">1. Acceptance of Terms</a></li>
+            <li><a href="#products">2. Products &amp; Services</a></li>
+            <li><a href="#numerology-terms">3. Numerology Services</a></li>
+            <li><a href="#orders">4. Orders &amp; Pricing</a></li>
+            <li><a href="#payment-terms">5. Payment</a></li>
+            <li><a href="#shipping-terms">6. Shipping &amp; Delivery</a></li>
+            <li><a href="#returns-terms">7. Returns &amp; Refunds</a></li>
+            <li><a href="#accounts">8. User Accounts</a></li>
+            <li><a href="#ip">9. Intellectual Property</a></li>
+            <li><a href="#liability">10. Limitation of Liability</a></li>
+            <li><a href="#disclaimer">11. Disclaimer of Warranties</a></li>
+            <li><a href="#governing">12. Governing Law</a></li>
+            <li><a href="#changes-terms">13. Changes to Terms</a></li>
+            <li><a href="#contact-terms">14. Contact</a></li>
+          </ol>
+        </nav>
+      </aside>
+
+      <!-- Terms Content -->
+      <article class="legal-content" aria-labelledby="terms-heading">
+        <header class="legal-header">
+          <h1 id="terms-heading" class="legal-title">Terms of Service</h1>
+          <p class="legal-meta">Last updated: <time datetime="2025-01-01">1 January 2025</time></p>
+        </header>
+
+        <p>Please read these Terms of Service ("Terms") carefully before using the Arise Numero website or placing an order. By accessing our website or purchasing our products or services, you agree to be bound by these Terms. If you do not agree, please do not use our website.</p>
+
+        <section id="acceptance" aria-labelledby="h-accept">
+          <h2 id="h-accept">1. Acceptance of Terms</h2>
+          <p>These Terms constitute a legally binding agreement between you and Arise Numero. By using our website, you confirm that you are at least 18 years of age (or the legal age of majority in your jurisdiction), have the legal capacity to enter into contracts, and agree to these Terms and our <a href="privacy.html">Privacy Policy</a>.</p>
+        </section>
+
+        <section id="products" aria-labelledby="h-products">
+          <h2 id="h-products">2. Products &amp; Services</h2>
+          <p>Arise Numero offers two categories of products and services:</p>
+          <ul>
+            <li><strong>Physical products:</strong> Handcrafted crystal bracelets made with authentic gemstones</li>
+            <li><strong>Numerology services:</strong> Free calculator and paid personalised readings</li>
+          </ul>
+          <p>Product images are representative. As natural gemstones are used, colour, texture, and pattern may vary from the images shown. These natural variations are characteristics of authentic crystals, not defects, and do not constitute grounds for return unless the item is otherwise defective.</p>
+        </section>
+
+        <section id="numerology-terms" aria-labelledby="h-num-terms">
+          <h2 id="h-num-terms">3. Numerology Services — Important Disclaimer</h2>
+          <div class="legal-disclaimer-box" role="note">
+            <p><strong>IMPORTANT:</strong> All numerology readings provided by Arise Numero, whether free or paid, are intended for <strong>entertainment and self-insight purposes only</strong>. They do not constitute and should not be relied upon as legal, financial, medical, psychological, or any other form of professional advice.</p>
+            <p>Numerology is not a scientifically validated discipline. Results are based on traditional numerological systems and are inherently subjective. Individual results will vary. Arise Numero makes no representations or warranties regarding the accuracy, reliability, completeness, or predictive validity of any reading.</p>
+            <p>By purchasing or using a numerology reading, you acknowledge and agree that: (a) the reading is for entertainment and self-insight only; (b) you will not make significant life decisions based solely on the reading; (c) you will seek appropriately qualified professionals for legal, medical, financial, or psychological matters.</p>
+          </div>
+        </section>
+
+        <section id="orders" aria-labelledby="h-orders">
+          <h2 id="h-orders">4. Orders &amp; Pricing</h2>
+          <p>All prices are displayed in your selected currency and are subject to change without notice. We reserve the right to cancel or refuse any order at our discretion. An order confirmation email constitutes acceptance of your order.</p>
+          <p>We make every effort to display accurate stock levels. In the rare event that an ordered item is out of stock, we will notify you promptly and offer a full refund or alternative product.</p>
+          <p>Promotional prices, coupon codes, and discounts are subject to their stated terms and cannot be combined unless explicitly stated.</p>
+        </section>
+
+        <section id="payment-terms" aria-labelledby="h-payment">
+          <h2 id="h-payment">5. Payment</h2>
+          <p>Payment is processed securely via our third-party payment gateways (Stripe, PayPal, Razorpay). All gateways are PCI-DSS compliant. We do not store, access, or process raw card data on our servers.</p>
+          <p>By providing payment details, you confirm you are authorised to use the payment method provided. If payment is declined or found to be fraudulent, your order will be cancelled.</p>
+          <p>Displayed prices exclude applicable taxes and shipping unless stated otherwise. Final totals are shown at checkout before payment is taken.</p>
+        </section>
+
+        <section id="shipping-terms" aria-labelledby="h-ship">
+          <h2 id="h-ship">6. Shipping &amp; Delivery</h2>
+          <p>Estimated delivery times are provided in good faith but are not guaranteed. We are not responsible for delays caused by customs authorities, postal services, natural disasters, or other circumstances beyond our control.</p>
+          <p>International orders may be subject to import duties, taxes, or customs fees levied by the destination country. These charges are the buyer's sole responsibility. We mark all parcels with accurate customs values as required by law.</p>
+          <p>See our full <a href="returns.html#shipping">Shipping Policy</a> for region-specific delivery times and costs.</p>
+        </section>
+
+        <section id="returns-terms" aria-labelledby="h-returns">
+          <h2 id="h-returns">7. Returns &amp; Refunds</h2>
+          <p>We offer a 14-day return window on non-customised physical products from the date of delivery, in compliance with applicable consumer protection laws including the EU Distance Selling Directive.</p>
+          <p>Items must be returned unworn and in their original packaging. Return shipping costs are the buyer's responsibility unless the item is defective. Refunds are processed within 5–7 business days of receiving the return.</p>
+          <p>Numerology readings are non-refundable once delivered, as they are personalised digital services. If you are unsatisfied with your reading, please contact us and we will do our best to resolve the issue.</p>
+          <p>See our full <a href="returns.html">Returns Policy</a> for complete details.</p>
+        </section>
+
+        <section id="accounts" aria-labelledby="h-accounts">
+          <h2 id="h-accounts">8. User Accounts</h2>
+          <p>You are not required to create an account to make a purchase (guest checkout is available). If you do create an account, you are responsible for maintaining the security of your login credentials. Notify us immediately at <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a> if you suspect unauthorised access.</p>
+          <p>We reserve the right to suspend or terminate accounts that breach these Terms or are used for fraudulent purposes.</p>
+        </section>
+
+        <section id="ip" aria-labelledby="h-ip">
+          <h2 id="h-ip">9. Intellectual Property</h2>
+          <p>All content on this website — including text, images, logos, product descriptions, numerology reports, and design elements — is the intellectual property of Arise Numero and is protected by copyright and applicable intellectual property laws. You may not reproduce, distribute, or create derivative works without our prior written permission.</p>
+        </section>
+
+        <section id="liability" aria-labelledby="h-liability">
+          <h2 id="h-liability">10. Limitation of Liability</h2>
+          <p>To the fullest extent permitted by applicable law, Arise Numero's total liability to you for any claim arising from your use of the website or purchase of products/services shall not exceed the amount you paid for the specific product or service giving rise to the claim.</p>
+          <p>Arise Numero shall not be liable for indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profit, loss of data, or loss of goodwill.</p>
+          <p>Nothing in these Terms limits our liability for death, personal injury, or fraud resulting from our negligence.</p>
+        </section>
+
+        <section id="disclaimer" aria-labelledby="h-disclaimer">
+          <h2 id="h-disclaimer">11. Disclaimer of Warranties</h2>
+          <p>The website and its content are provided "as is" and "as available" without warranties of any kind, either express or implied, except as required by applicable consumer protection law. We do not warrant that the website will be uninterrupted, error-free, or free of viruses.</p>
+        </section>
+
+        <section id="governing" aria-labelledby="h-governing">
+          <h2 id="h-governing">12. Governing Law</h2>
+          <p>These Terms are governed by the laws of India. For consumers in the EU or UK, you also retain the benefit of mandatory protections under the laws of your country of residence.</p>
+          <p>Any disputes shall first be attempted to be resolved amicably. If unresolved, disputes shall be subject to the jurisdiction of the courts of Mumbai, India, without prejudice to any mandatory local consumer rights you may have.</p>
+        </section>
+
+        <section id="changes-terms" aria-labelledby="h-changes-t">
+          <h2 id="h-changes-t">13. Changes to These Terms</h2>
+          <p>We reserve the right to update these Terms at any time. Material changes will be notified by updating the date at the top of this page. Continued use of the website after changes take effect constitutes acceptance of the revised Terms.</p>
+        </section>
+
+        <section id="contact-terms" aria-labelledby="h-contact-t">
+          <h2 id="h-contact-t">14. Contact</h2>
+          <address>
+            <strong>Arise Numero</strong><br />
+            Email: <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a><br />
+            Address: Mumbai, Maharashtra, India
+          </address>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <div class="footer-brand"><a href="index.html" class="logo" aria-label="Arise Numero Home"><span class="logo-symbol" aria-hidden="true">✦</span><span class="logo-text">Arise Numero</span></a><p>Authentic crystal bracelets &amp; numerology readings delivered worldwide.</p></div>
+      <nav class="footer-nav" aria-label="Shop navigation"><h4>Shop</h4><ul role="list"><li><a href="shop.html">All Bracelets</a></li><li><a href="cart.html">Cart</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Numerology navigation"><h4>Numerology</h4><ul role="list"><li><a href="numerology.html">Free Calculator</a></li><li><a href="booking.html">Book a Reading</a></li></ul></nav>
+      <nav class="footer-nav" aria-label="Legal navigation"><h4>Legal</h4><ul role="list"><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Service</a></li><li><a href="returns.html">Returns &amp; Shipping</a></li></ul></nav>
+    </div>
+    <div class="footer-disclaimer">
+      <div class="container">
+        <p><strong>Numerology Disclaimer:</strong> Numerology readings are intended for self-insight and entertainment purposes only. Not professional advice.</p>
+        <p class="footer-legal-links">&copy; <span class="footer-year"></span> Arise Numero. All rights reserved. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> &nbsp;|&nbsp; <a href="terms.html">Terms of Service</a> &nbsp;|&nbsp; <a href="returns.html">Returns Policy</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>
