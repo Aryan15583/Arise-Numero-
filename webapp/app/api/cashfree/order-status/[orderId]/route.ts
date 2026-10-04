@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { getCashfreeOrderStatus } from "@/lib/cashfree";
 import { finalizeOrderAsPaid } from "@/lib/order-fulfillment";
 import { serializeOrder } from "@/lib/serialize";
+import { recordOrderEvent } from "@/lib/order-events";
 
 // PUBLIC: called by the checkout page right after Cashfree's modal closes.
 // Never trusts the client's own claim of success — always re-checks with
@@ -26,6 +27,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ ord
     }
     if (status.orderStatus === "EXPIRED" || status.orderStatus === "TERMINATED") {
       const updated = await prisma.order.update({ where: { id: orderId }, data: { status: "failed" } });
+      await recordOrderEvent(orderId, "failed", "Payment expired or was cancelled");
       return NextResponse.json(serializeOrder(updated));
     }
     return NextResponse.json(serializeOrder(order)); // still pending

@@ -20,11 +20,11 @@ const csp = [
   `form-action 'self'`,
   `frame-ancestors 'none'`,
   `object-src 'none'`,
-  `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://www.paypal.com https://www.paypalobjects.com https://sdk.cashfree.com`,
+  `script-src 'self' 'unsafe-inline' ${isDev ? "'unsafe-eval'" : ""} https://www.paypal.com https://www.paypalobjects.com https://sdk.cashfree.com https://www.googletagmanager.com`,
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
   `img-src 'self' data: https:`,
-  `connect-src 'self' https://ipapi.co https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.paypal.com https://sandbox.cashfree.com https://api.cashfree.com https://*.cashfree.com`,
+  `connect-src 'self' https://ipapi.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://api-m.paypal.com https://api-m.sandbox.paypal.com https://www.paypal.com https://sandbox.cashfree.com https://api.cashfree.com https://*.cashfree.com`,
   `frame-src https://www.paypal.com https://sandbox.cashfree.com https://api.cashfree.com https://*.cashfree.com`,
   `upgrade-insecure-requests`,
 ]

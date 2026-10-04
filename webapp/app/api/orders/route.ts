@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Order } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { serializeOrder } from "@/lib/serialize";
 import { getSiteConfig } from "@/lib/site-config";
 import { sendEmail, notifyAdmin, orderConfirmationEmail, escapeHtml } from "@/lib/email";
 import { orderCreateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { OutOfStockError } from "@/lib/errors";
+import { CouponError, OutOfStockError } from "@/lib/errors";
+import { checkCoupon } from "@/lib/coupons";
+import { notifyLowStock, takeStock } from "@/lib/inventory";
+import { recordOrderEvent } from "@/lib/order-events";
 import type { ResolvedCartLine } from "@/lib/types";
 
 function computeTotals(
@@ -52,14 +56,19 @@ export async function POST(req: NextRequest) {
     resolved.push({ id: product.id, name: product.name, priceUsd: product.priceUsd, qty: line.qty, imageUrl: product.imageUrl });
   }
 
+  // A coupon the shopper was shown must be honoured or clearly refused — never
+  // silently dropped, which would raise the total after they'd seen a discount.
   let discountPercent = 0;
   let appliedCouponCode: string | null = null;
   if (couponCode) {
-    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
-    if (coupon && coupon.active) {
-      discountPercent = coupon.discountPercent;
-      appliedCouponCode = coupon.code;
+    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.trim().toUpperCase() } });
+    const rawSubtotal = resolved.reduce((sum, i) => sum + i.priceUsd * i.qty, 0);
+    const check = checkCoupon(coupon, rawSubtotal);
+    if (!coupon || !check.ok) {
+      return NextResponse.json({ error: check.ok ? "Invalid coupon code." : check.message }, { status: 400 });
     }
+    discountPercent = coupon.discountPercent;
+    appliedCouponCode = coupon.code;
   }
 
   const config = await getSiteConfig();
@@ -71,9 +80,9 @@ export async function POST(req: NextRequest) {
   );
   if (total <= 0) return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
 
-  let order;
+  let result: { order: Order; lowStock: { name: string; left: number }[] };
   try {
-    order = await prisma.$transaction(async (tx) => {
+    result = await prisma.$transaction(async (tx) => {
       const created = await tx.order.create({
         data: {
           customerName: customer.name,
@@ -91,33 +100,43 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Re-check stock inside the transaction (closes the race window
-      // against another order placed between the pre-check above and now)
-      // and roll back the whole order — no charge has happened yet for
-      // COD, so it's safe to just reject rather than oversell silently.
-      for (const item of resolved) {
-        const product = await tx.product.findUnique({ where: { id: item.id } });
-        if (!product || product.stock < item.qty) {
-          throw new OutOfStockError(`Only ${product?.stock ?? 0} left in stock for "${item.name}".`);
-        }
-        await tx.product.update({ where: { id: item.id }, data: { stock: { decrement: item.qty } } });
+      // Re-check stock inside the transaction (closes the race window against
+      // another order placed since the pre-check above). strict: throws and
+      // rolls everything back — no charge has happened yet for COD/bank transfer.
+      const stock = await takeStock(tx, resolved, { strict: true });
+
+      if (appliedCouponCode) {
+        const fresh = await tx.coupon.findUnique({ where: { code: appliedCouponCode } });
+        const recheck = checkCoupon(fresh);
+        if (!fresh || !recheck.ok) throw new CouponError(recheck.ok ? "Invalid coupon code." : recheck.message);
+        await tx.coupon.update({ where: { code: appliedCouponCode }, data: { usedCount: { increment: 1 } } });
       }
 
-      return created;
+      await recordOrderEvent(created.id, "pending", "Order placed", tx);
+      return { order: created, lowStock: stock.lowStock };
     });
   } catch (err) {
-    if (err instanceof OutOfStockError) {
-      return NextResponse.json({ error: err.message }, { status: 409 });
-    }
+    if (err instanceof OutOfStockError) return NextResponse.json({ error: err.message }, { status: 409 });
+    if (err instanceof CouponError) return NextResponse.json({ error: err.message }, { status: 400 });
     throw err;
   }
 
-  const { subject, html } = orderConfirmationEmail(order);
+  const { order, lowStock } = result;
+
+  const { subject, html } = orderConfirmationEmail(order, { bankInstructions: config.bankTransferInstructions });
   await sendEmail({ to: order.customerEmail!, subject, html });
   await notifyAdmin(
     `New order — ${order.id}`,
     `<p>${escapeHtml(order.customerName)} placed an order for $${order.totalUsd.toFixed(2)} (${escapeHtml(order.paymentMethod)}).</p>`
   );
+  await notifyLowStock(lowStock);
 
-  return NextResponse.json(serializeOrder(order), { status: 201 });
+  return NextResponse.json(
+    {
+      ...serializeOrder(order),
+      // Only ever sent to the person who chose bank transfer (never via /api/config).
+      bankInstructions: order.paymentMethod === "bank_transfer" ? config.bankTransferInstructions || null : null,
+    },
+    { status: 201 }
+  );
 }

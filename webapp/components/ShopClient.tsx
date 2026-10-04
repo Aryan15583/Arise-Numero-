@@ -11,10 +11,12 @@ type SortValue = "featured" | "price-low" | "price-high" | "rating";
 export function ShopClient({
   initialProducts,
   initialCat,
+  initialQuery,
   categories,
 }: {
   initialProducts: ProductDTO[];
   initialCat?: string;
+  initialQuery?: string;
   categories: { slug: string; name: string }[];
 }) {
   const [crystal, setCrystal] = useState<string>(
@@ -24,6 +26,7 @@ export function ShopClient({
   const [sizes, setSizes] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
   const [sort, setSort] = useState<SortValue>("featured");
+  const [query, setQuery] = useState((initialQuery || "").slice(0, 80));
 
   function toggleSize(size: string) {
     setSizes((prev) => (prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]));
@@ -35,10 +38,20 @@ export function ShopClient({
     setSizes([]);
     setInStockOnly(false);
     setSort("featured");
+    setQuery("");
   }
 
   const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    const categoryNames = new Map(categories.map((c) => [c.slug, c.name.toLowerCase()]));
     let list = initialProducts.filter((p) => {
+      if (needle) {
+        const haystack = [p.name, p.material, p.description, p.beadSize, categoryNames.get(p.category || "")]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        if (!needle.split(/ +/).every((word) => haystack.includes(word))) return false;
+      }
       if (crystal !== "all" && p.category !== crystal) return false;
       if (price === "0-20" && !(p.priceUsd < 20)) return false;
       if (price === "20-30" && !(p.priceUsd >= 20 && p.priceUsd < 30)) return false;
@@ -55,7 +68,7 @@ export function ShopClient({
     else if (sort === "rating") list.sort((a, b) => b.rating - a.rating);
 
     return list;
-  }, [initialProducts, crystal, price, sizes, inStockOnly, sort]);
+  }, [initialProducts, categories, query, crystal, price, sizes, inStockOnly, sort]);
 
   return (
     <div className="container shop-layout">
@@ -118,6 +131,19 @@ export function ShopClient({
       </aside>
 
       <div className="shop-main">
+        <div className="shop-search" role="search">
+          <label htmlFor="shop-search-input" className="sr-only">Search bracelets</label>
+          <input
+            id="shop-search-input"
+            type="search"
+            className="form-input"
+            placeholder="Search bracelets — try “amethyst”, “protection”, “8mm”…"
+            value={query}
+            maxLength={80}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+
         <div className="shop-toolbar" role="toolbar" aria-label="Sort and view options">
           <p className="results-count" aria-live="polite">
             Showing {filtered.length} product{filtered.length !== 1 ? "s" : ""}
@@ -148,8 +174,8 @@ export function ShopClient({
         {filtered.length === 0 && (
           <div className="cart-empty">
             <div className="cart-empty-icon" aria-hidden="true">💎</div>
-            <h2>No bracelets match your filters</h2>
-            <p>Try adjusting or resetting your filters.</p>
+            <h2>No bracelets match{query.trim() ? ` “${query.trim()}”` : " your filters"}</h2>
+            <p>Try a different search, or adjust or reset your filters.</p>
             <button className="btn btn-primary" onClick={resetFilters}>Reset Filters</button>
           </div>
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useCurrency } from "./CurrencyContext";
 
@@ -69,6 +69,16 @@ const FOCUS_OPTIONS = [
   { value: "spirituality", label: "Spiritual Growth" },
 ];
 
+function browserTimezone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  } catch {
+    return "";
+  }
+}
+
+const noSubscribe = () => () => {};
+
 export function BookingClient() {
   const { format } = useCurrency();
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
@@ -77,7 +87,11 @@ export function BookingClient() {
   const [email, setEmail] = useState("");
   const [birthName, setBirthName] = useState("");
   const [dob, setDob] = useState("");
-  const [timezone, setTimezone] = useState("");
+  // Default to the visitor's own timezone (when it's one we offer) until they pick another. Read via
+  // useSyncExternalStore so the server renders "" and the client fills it in without a hydration mismatch.
+  const detectedTz = useSyncExternalStore(noSubscribe, browserTimezone, () => "");
+  const [pickedTz, setPickedTz] = useState<string | null>(null);
+  const timezone = pickedTz ?? (TIMEZONES.some((t) => t.value === detectedTz) ? detectedTz : "");
   const [sessionDate, setSessionDate] = useState("");
   const [minSessionDate] = useState(() => new Date(Date.now() + 86400000).toISOString().split("T")[0]);
   const [focus, setFocus] = useState<string[]>([]);
@@ -88,15 +102,6 @@ export function BookingClient() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
-
-  useEffect(() => {
-    try {
-      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (TIMEZONES.some((t) => t.value === tz)) setTimezone(tz);
-    } catch {
-      /* ignore */
-    }
-  }, []);
 
   function toggleFocus(value: string) {
     setFocus((prev) => (prev.includes(value) ? prev.filter((f) => f !== value) : [...prev, value]));
@@ -244,7 +249,7 @@ export function BookingClient() {
                   <p className="form-hint">All times are automatically converted to your local timezone.</p>
                   <div className="form-group">
                     <label className="form-label" htmlFor="book-timezone">Your Timezone <span className="required">*</span></label>
-                    <select id="book-timezone" className="form-input" value={timezone} onChange={(e) => setTimezone(e.target.value)}>
+                    <select id="book-timezone" className="form-input" value={timezone} onChange={(e) => setPickedTz(e.target.value)}>
                       <option value="">Select your timezone…</option>
                       {TIMEZONES.map((tz) => <option key={tz.value} value={tz.value}>{tz.label}</option>)}
                     </select>

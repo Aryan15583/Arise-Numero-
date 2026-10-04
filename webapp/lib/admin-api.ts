@@ -10,6 +10,8 @@ export async function adminFetch(input: string, init?: RequestInit) {
   });
 
   if (res.status === 401) {
+    // A full page load (not router.push) on purpose: it discards all client-side state of the expired session.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     if (typeof window !== "undefined") window.location.href = "/admin/login";
     throw new Error("Session expired. Please log in again.");
   }

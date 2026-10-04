@@ -7,9 +7,16 @@ import { serializeBooking } from "@/lib/serialize";
 // aggregate queries instead of loading full tables into memory — this stays
 // fast as products/orders grow into the thousands, unlike `findMany()` +
 // JS filtering which would eventually load the whole table on every visit.
+const CHART_DAYS = 14;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
 export async function GET(req: NextRequest) {
   const denied = await requireAdmin(req);
   if (denied) return denied;
+
+  // Start of the day (UTC) CHART_DAYS - 1 days ago, so the chart covers today plus the 13 days before.
+  const todayUtc = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00.000Z");
+  const chartStart = new Date(todayUtc.getTime() - (CHART_DAYS - 1) * DAY_MS);
 
   const [
     totalProducts,
@@ -23,6 +30,9 @@ export async function GET(req: NextRequest) {
     newBookingsCount,
     newMessagesCount,
     pendingReviewsCount,
+    pendingOrdersCount,
+    activeSubscribers,
+    recentPaidOrders,
   ] = await Promise.all([
     prisma.product.count(),
     prisma.product.count({ where: { active: true } }),
@@ -47,7 +57,27 @@ export async function GET(req: NextRequest) {
     prisma.booking.count({ where: { status: "new" } }),
     prisma.contactMessage.count({ where: { status: "new" } }),
     prisma.review.count({ where: { status: "pending" } }),
+    prisma.order.count({ where: { status: "pending" } }),
+    prisma.subscriber.count({ where: { unsubscribedAt: null } }),
+    prisma.order.findMany({
+      where: { date: { gte: chartStart }, status: { in: ["paid", "completed", "shipped"] } },
+      select: { date: true, totalUsd: true },
+    }),
   ]);
+
+  const revenueByDay = Array.from({ length: CHART_DAYS }, (_, i) => ({
+    date: new Date(chartStart.getTime() + i * DAY_MS).toISOString().slice(0, 10),
+    revenue: 0,
+    orders: 0,
+  }));
+  for (const o of recentPaidOrders) {
+    const day = revenueByDay.find((d) => d.date === o.date.toISOString().slice(0, 10));
+    if (day) {
+      day.revenue += o.totalUsd;
+      day.orders += 1;
+    }
+  }
+  for (const d of revenueByDay) d.revenue = +d.revenue.toFixed(2);
 
   const lowStock = lowStockProducts.filter((p) => p.stock <= p.lowStockThreshold);
 
@@ -64,5 +94,8 @@ export async function GET(req: NextRequest) {
     recentBookings: recentBookings.map(serializeBooking),
     newMessagesCount,
     pendingReviewsCount,
+    pendingOrdersCount,
+    activeSubscribers,
+    revenueByDay,
   });
 }

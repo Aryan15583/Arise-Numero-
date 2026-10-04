@@ -57,6 +57,8 @@ export type OrderDTO = {
   status: string;
   paymentMethod: string | null;
   paymentReference: string | null;
+  trackingNumber: string | null;
+  carrier: string | null;
   date: string;
 };
 

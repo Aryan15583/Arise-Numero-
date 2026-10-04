@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
+import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 
 type Message = {
@@ -64,6 +65,7 @@ export default function AdminMessagesPage() {
           <div className="page-title">Contact Messages</div>
           <div className="page-subtitle">Enquiries submitted through the contact form</div>
         </div>
+        <ExportButton type="messages" />
       </div>
 
       <div className="card">

@@ -8,7 +8,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { ShopClient } from "@/components/ShopClient";
 import { absoluteUrl, breadcrumbJsonLd, pageMetadata, productPath, truncate } from "@/lib/seo";
 
-type Props = { searchParams: Promise<{ cat?: string }> };
+type Props = { searchParams: Promise<{ cat?: string; q?: string }> };
 
 const SHOP_DESCRIPTION =
   "Shop authentic crystal bracelets at Arise Numero. Browse Amethyst, Rose Quartz, Lapis Lazuli, Black Tourmaline and more. Ships worldwide.";
@@ -21,7 +21,11 @@ async function getCategory(cat: string | undefined) {
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const { cat } = await searchParams;
+  const { cat, q } = await searchParams;
+  // Internal search-result pages are thin/duplicate content: keep them out of Google.
+  if (q?.trim()) {
+    return pageMetadata({ title: "Search Crystal Bracelets", description: SHOP_DESCRIPTION, path: "/shop", noindex: true });
+  }
   const category = await getCategory(cat);
   if (!category) {
     return pageMetadata({ title: "Shop Crystal Bracelets", description: SHOP_DESCRIPTION, path: "/shop" });
@@ -36,7 +40,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function ShopPage({ searchParams }: Props) {
-  const { cat } = await searchParams;
+  const { cat, q } = await searchParams;
   const [rows, categories, category] = await Promise.all([
     prisma.product.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
     prisma.category.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" }, select: { slug: true, name: true } }),
@@ -88,7 +92,7 @@ export default async function ShopPage({ searchParams }: Props) {
           <p className="page-subtitle">Handcrafted with authentic gemstones. Each piece is unique with natural variations.</p>
         </div>
 
-        <ShopClient initialProducts={products} initialCat={cat} categories={categories} />
+        <ShopClient initialProducts={products} initialCat={cat} initialQuery={q} categories={categories} />
       </main>
       <Footer />
     </>

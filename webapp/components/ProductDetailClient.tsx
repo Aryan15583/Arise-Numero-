@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { ProductReviews } from "./ProductReviews";
+import { WishlistButton } from "./WishlistButton";
+import { ShareButtons } from "./ShareButtons";
+import { productPath } from "@/lib/seo";
 import type { ProductDTO } from "@/lib/types";
 
 const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
@@ -15,7 +18,6 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
   const [activeImg, setActiveImg] = useState(product.imageUrl || product.images[0] || "/assets/placeholder.svg");
   const [wristSize, setWristSize] = useState("M");
   const [qty, setQty] = useState(1);
-  const [wishlisted, setWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState<"reviews" | "shipping" | "returns" | "care">("reviews");
   const [added, setAdded] = useState(false);
 
@@ -25,7 +27,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
   const maxQty = Math.max(1, Math.min(10, product.stock));
 
   function handleAdd() {
-    addToCart({ id: product.id, name: product.name, priceUsd: product.priceUsd, imageUrl: product.imageUrl }, qty);
+    addToCart({ id: product.id, name: product.name, priceUsd: product.priceUsd, imageUrl: product.imageUrl, stock: product.stock }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
@@ -140,14 +142,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
               <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
                 {added ? "✓ Added to Cart!" : isOut ? "Out of Stock" : "🛒 Add to Cart"}
               </button>
-              <button
-                className="btn btn-outline btn-lg wishlist-btn"
-                aria-pressed={wishlisted}
-                onClick={() => setWishlisted((v) => !v)}
-                style={wishlisted ? { color: "var(--color-error)", borderColor: "var(--color-error)" } : undefined}
-              >
-                {wishlisted ? "♥ Wishlisted" : "♡ Wishlist"}
-              </button>
+              <WishlistButton productId={product.id} productName={product.name} variant="full" />
             </div>
 
             <div className="product-trust" aria-label="Trust indicators">
@@ -156,6 +151,8 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
               <div className="trust-item-sm"><span aria-hidden="true">↩️</span> 14-Day Returns</div>
               <div className="trust-item-sm"><span aria-hidden="true">💎</span> Authentic Crystal</div>
             </div>
+
+            <ShareButtons path={productPath(product.id)} title={product.name} />
 
             <div className="product-description">
               <h2>About This Crystal</h2>

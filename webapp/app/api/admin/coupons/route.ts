@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/require-admin";
 import { adminCouponCreateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
+import { parseCouponExpiry } from "@/lib/coupons";
 
 // ADMIN: list all coupons.
 export async function GET(req: NextRequest) {
@@ -35,6 +36,9 @@ export async function POST(req: NextRequest) {
       discountPercent: parsed.data.discountPercent,
       description: parsed.data.description || null,
       active: parsed.data.active !== false,
+      expiresAt: parsed.data.expiresAt ? parseCouponExpiry(parsed.data.expiresAt) : null,
+      maxUses: parsed.data.maxUses ?? null,
+      minOrderUsd: parsed.data.minOrderUsd ?? null,
     },
   });
 

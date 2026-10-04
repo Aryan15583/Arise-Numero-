@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, useRef, useSyncExternalStore } from "react";
 import { CurrencyCode, EXCHANGE_RATES as DEFAULT_RATES, COUNTRY_CURRENCY } from "@/lib/currency";
 
 const CURRENCY_KEY = "ariseNumero_currency";
@@ -15,8 +15,41 @@ type CurrencyContextValue = {
 
 const CurrencyContext = createContext<CurrencyContextValue | null>(null);
 
+// The shopper's saved choice lives in localStorage, read through
+// useSyncExternalStore (server renders "", client fills it in after hydration —
+// no mismatch and no set-state-in-effect).
+const listeners = new Set<() => void>();
+
+function readSaved(): string {
+  try {
+    return localStorage.getItem(CURRENCY_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function subscribe(onChange: () => void) {
+  listeners.add(onChange);
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === CURRENCY_KEY) onChange();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
 export function CurrencyProvider({ children }: { children: React.ReactNode }) {
-  const [currency, setCurrencyState] = useState<CurrencyCode>("USD");
+  const savedRaw = useSyncExternalStore(subscribe, readSaved, () => "");
+  const saved: CurrencyCode | null = savedRaw && savedRaw in DEFAULT_RATES ? (savedRaw as CurrencyCode) : null;
+  const hasSaved = saved !== null;
+
+  // `override` covers browsers where localStorage is unavailable, so choosing a currency still works.
+  const [override, setOverride] = useState<CurrencyCode | null>(null);
+  const [detected, setDetected] = useState<CurrencyCode>("USD");
+  const currency = override ?? saved ?? detected;
+
   // Rates start from the static defaults so the page renders immediately;
   // they're replaced with the admin-configurable values from /api/config
   // as soon as that resolves (Admin -> Settings can change these without a
@@ -45,11 +78,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem(CURRENCY_KEY) : null;
-    if (saved && saved in DEFAULT_RATES) {
-      setCurrencyState(saved as CurrencyCode);
-      return;
-    }
+    if (hasSaved) return;
     // Best-effort auto-detect. Prefer our own /api/geo (country from the host/CDN
     // headers — no third party sees the visitor's IP); if there's no such header,
     // fall back to a browser-side geo-IP lookup. Silently stays on USD on failure.
@@ -59,12 +88,12 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       .then((r) => r.json())
       .then((data) => {
         if (data?.currency && data.currency in DEFAULT_RATES) {
-          setCurrencyState(data.currency as CurrencyCode);
+          setDetected(data.currency as CurrencyCode);
           return;
         }
         return fetch("https://ipapi.co/json/", { signal: controller.signal })
           .then((r) => r.json())
-          .then((geo) => setCurrencyState(COUNTRY_CURRENCY[geo.country_code] || "USD"));
+          .then((geo) => setDetected(COUNTRY_CURRENCY[geo.country_code] || "USD"));
       })
       .catch(() => {
         /* stay on USD */
@@ -74,15 +103,16 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
       controller.abort();
       clearTimeout(timeout);
     };
-  }, []);
+  }, [hasSaved]);
 
   const setCurrency = useCallback((c: CurrencyCode) => {
-    setCurrencyState(c);
+    setOverride(c);
     try {
       localStorage.setItem(CURRENCY_KEY, c);
     } catch {
       /* ignore */
     }
+    listeners.forEach((l) => l());
   }, []);
 
   const format = useCallback(

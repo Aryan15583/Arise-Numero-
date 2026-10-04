@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
+import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import type { BookingDTO } from "@/lib/types";
 
@@ -57,6 +58,7 @@ export default function AdminBookingsPage() {
           <div className="page-title">Booking Requests</div>
           <div className="page-subtitle">Numerology reading bookings</div>
         </div>
+        <ExportButton type="bookings" />
       </div>
 
       <div className="card">

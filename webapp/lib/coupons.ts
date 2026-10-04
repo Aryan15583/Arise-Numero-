@@ -2,6 +2,13 @@ import type { Coupon } from "@prisma/client";
 
 export type CouponCheck = { ok: true } | { ok: false; message: string };
 
+const BARE_DATE = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
+
+/** A bare date (what an <input type="date"> gives) means "valid through the end of that day" (UTC). */
+export function parseCouponExpiry(value: string): Date {
+  return new Date(BARE_DATE.test(value) ? `${value}T23:59:59.999Z` : value);
+}
+
 /**
  * Single source of truth for "can this coupon be used right now?" — used by the
  * cart validation endpoint and by every order-creation route, so what a shopper

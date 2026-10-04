@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { serializeOrder } from "@/lib/serialize";
 import { finalizeOrderAsPaid } from "@/lib/order-fulfillment";
+import { recordOrderEvent } from "@/lib/order-events";
 
 const PAYPAL_MODE = process.env.PAYPAL_MODE === "live" ? "live" : "sandbox";
 const PAYPAL_BASE = PAYPAL_MODE === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pay
 
     if (!capResp.ok || capData.status !== "COMPLETED") {
       await prisma.order.update({ where: { id: orderRow.id }, data: { status: "failed" } });
+      await recordOrderEvent(orderRow.id, "failed", "Payment was not completed");
       console.error("PayPal capture failed:", capData);
       return NextResponse.json({ error: "Payment was not completed." }, { status: 402 });
     }

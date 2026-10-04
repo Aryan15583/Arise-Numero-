@@ -1,29 +1,65 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const COOKIE_KEY = "ariseNumero_cookieConsent";
+import { usePathname } from "next/navigation";
+import { CONSENT_CHANGED_EVENT, CONSENT_KEY, OPEN_COOKIE_SETTINGS_EVENT } from "@/lib/consent";
 
 type Consent = { essential: boolean; functional: boolean; analytics: boolean; marketing: boolean };
 
+const DEFAULT_PREFS: Consent = { essential: true, functional: true, analytics: false, marketing: false };
+
+function loadSaved(): Consent | null {
+  try {
+    const raw = localStorage.getItem(CONSENT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return {
+      essential: true,
+      functional: parsed.functional !== false,
+      analytics: parsed.analytics === true,
+      marketing: parsed.marketing === true,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export function CookieBanner() {
+  const pathname = usePathname();
   const [visible, setVisible] = useState(false);
   const [showManage, setShowManage] = useState(false);
-  const [prefs, setPrefs] = useState<Consent>({ essential: true, functional: true, analytics: false, marketing: false });
+  const [prefs, setPrefs] = useState<Consent>(DEFAULT_PREFS);
 
   useEffect(() => {
-    const saved = localStorage.getItem(COOKIE_KEY);
-    if (saved) return;
+    if (loadSaved()) return;
     const t = setTimeout(() => setVisible(true), 800);
     return () => clearTimeout(t);
   }, []);
 
+  // The footer's "Cookie settings" link: let visitors review or withdraw consent any time.
+  useEffect(() => {
+    function open() {
+      setPrefs(loadSaved() ?? DEFAULT_PREFS);
+      setVisible(true);
+      setShowManage(true);
+    }
+    window.addEventListener(OPEN_COOKIE_SETTINGS_EVENT, open);
+    return () => window.removeEventListener(OPEN_COOKIE_SETTINGS_EVENT, open);
+  }, []);
+
   function save(consent: Consent) {
-    localStorage.setItem(COOKIE_KEY, JSON.stringify({ ...consent, timestamp: Date.now() }));
+    try {
+      localStorage.setItem(CONSENT_KEY, JSON.stringify({ ...consent, timestamp: Date.now() }));
+    } catch {
+      /* private mode — choice just won't persist */
+    }
+    window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
     setVisible(false);
     setShowManage(false);
   }
 
+  // The admin panel is private and sets no tracking cookies — never nag there.
+  if (pathname?.startsWith("/admin")) return null;
   if (!visible) return null;
 
   return (

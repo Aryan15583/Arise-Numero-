@@ -247,3 +247,36 @@ old `?id=` links redirect permanently); category landing pages
   so the damage is limited, but you should delete that file from `main` (or stop
   publishing it) and never reuse that PIN anywhere. The new Next.js app has no
   PIN at all.
+
+## 13. New store features — what to set up
+
+All of these work out of the box; the items below are the bits only you can fill in.
+
+- [ ] **Bank-transfer details:** Admin → Settings → "Bank transfer instructions". Until
+      you fill it in, customers who choose bank transfer are told you'll email them
+      the details. (They're only shown to that customer — never on the public site.)
+- [ ] **Order emails need email set up (section 3).** Confirmations, "shipped" emails
+      with tracking numbers, newsletter welcome emails and low-stock alerts all go
+      through the same sender. Set `ADMIN_NOTIFY_EMAIL` to get new-order and
+      low-stock alerts. Without email configured they're only logged in the terminal.
+- [ ] **When you ship an order:** Admin → Orders → Update → set status "Shipped", pick a
+      carrier and paste the tracking number. The customer is emailed and their
+      tracking page updates. Cancelling an order puts its stock back automatically.
+- [ ] **Footer social links:** set any of `NEXT_PUBLIC_INSTAGRAM_URL`,
+      `NEXT_PUBLIC_FACEBOOK_URL`, `NEXT_PUBLIC_PINTEREST_URL`, `NEXT_PUBLIC_WHATSAPP_NUMBER`
+      (see `.env.example`). Only the ones you set appear. Rebuild/restart afterwards.
+- [ ] **Google Analytics (optional):** create a GA4 property and set `NEXT_PUBLIC_GA_ID`
+      (`G-XXXXXXXXXX`). It only loads for visitors who accept analytics cookies.
+- [ ] **Newsletter:** the site *collects* subscribers (Admin → Subscribers, with CSV
+      export) but cannot *send* campaigns. Export the list into a tool such as
+      Brevo, Mailchimp or MailerLite to send newsletters. Signup is single opt-in; if
+      you sell in the EU/UK, consider double opt-in. The welcome email offers the coupon
+      in `NEWSLETTER_WELCOME_COUPON` (default `WELCOME10`) if it exists and is valid.
+- [ ] **Coupons:** you can now set an expiry date, a total-uses limit and a minimum
+      order on each coupon (Admin → Coupons). Online-payment orders count toward a
+      coupon's limit when payment succeeds; COD/bank-transfer orders when placed.
+- [ ] Review the **FAQ** page text (`app/faq/page.tsx`) — it summarises your current
+      policies (14-day returns, delivery times, payment methods). Edit it if any of
+      that changes.
+- [ ] **Clean out the test data** before launch (a few test orders, a booking, a
+      message, an audit log) — or reset with `rm prisma/dev.db && npx prisma migrate dev && npm run seed`.

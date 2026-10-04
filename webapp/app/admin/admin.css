@@ -59,6 +59,7 @@
 }
 
 .admin-scope .login-box {
+  border: 1px solid var(--border);
   background: var(--bg-card);
   border-radius: 20px;
   padding: 48px 40px;

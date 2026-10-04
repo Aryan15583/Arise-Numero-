@@ -10,6 +10,9 @@ export type SiteConfig = {
   expressShippingUsd: number;
   freeShippingThresholdUsd: number;
   exchangeRates: { USD: number; INR: number; EUR: number; GBP: number; AUD: number };
+  // Shown only to customers who choose bank transfer (in their confirmation
+  // email and on the order-confirmed screen) — never exposed by /api/config.
+  bankTransferInstructions: string;
 };
 
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
@@ -19,6 +22,7 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   expressShippingUsd: 14.99,
   freeShippingThresholdUsd: 50,
   exchangeRates: { USD: 1, INR: 83.5, EUR: 0.92, GBP: 0.79, AUD: 1.53 },
+  bankTransferInstructions: "",
 };
 
 const SITE_CONFIG_KEY = "site_config";

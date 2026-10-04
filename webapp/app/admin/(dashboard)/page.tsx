@@ -17,7 +17,39 @@ type DashboardData = {
   newBookingsCount: number;
   recentBookings: BookingDTO[];
   newMessagesCount: number;
+  pendingOrdersCount: number;
+  activeSubscribers: number;
+  revenueByDay: { date: string; revenue: number; orders: number }[];
 };
+
+// Dependency-free bar chart (inline SVG) of revenue per day.
+function RevenueChart({ days }: { days: DashboardData["revenueByDay"] }) {
+  const W = 600;
+  const H = 150;
+  const gap = 6;
+  const bar = (W - gap * (days.length - 1)) / days.length;
+  const max = Math.max(...days.map((d) => d.revenue), 1);
+  const total = days.reduce((s, d) => s + d.revenue, 0);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H + 26}`} role="img" aria-label={`Revenue over the last ${days.length} days: $${total.toFixed(2)} total`} style={{ width: "100%", height: "auto" }}>
+      {days.map((d, i) => {
+        const h = d.revenue > 0 ? Math.max(3, Math.round((d.revenue / max) * H)) : 0;
+        const x = i * (bar + gap);
+        return (
+          <g key={d.date}>
+            <title>{`${d.date}: $${d.revenue.toFixed(2)} from ${d.orders} order${d.orders === 1 ? "" : "s"}`}</title>
+            <rect x={x} y={0} width={bar} height={H} rx={3} fill="var(--border)" opacity={0.35} />
+            {h > 0 && <rect x={x} y={H - h} width={bar} height={h} rx={3} fill="var(--gold)" />}
+            {i % 2 === 0 && (
+              <text x={x + bar / 2} y={H + 17} textAnchor="middle" fontSize={10} fill="var(--text-muted)">{d.date.slice(5)}</text>
+            )}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
 
 export default function AdminDashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null);
@@ -61,6 +93,21 @@ export default function AdminDashboardPage() {
           <div className="stat-label">Bookings</div>
           <div className="stat-value">{data.totalBookings}</div>
           <div className="stat-sub">{data.newBookingsCount} new</div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-header">
+          <span className="card-title">💰 Revenue — last {data.revenueByDay.length} days</span>
+          <Link href="/admin/orders" className="btn btn-ghost btn-sm">View Orders</Link>
+        </div>
+        <div className="card-body">
+          <RevenueChart days={data.revenueByDay} />
+          <p className="page-subtitle" style={{ marginTop: 12 }}>
+            Paid, shipped and completed orders only ·{" "}
+            <Link href="/admin/orders">{data.pendingOrdersCount} pending order{data.pendingOrdersCount === 1 ? "" : "s"}</Link>{" "}
+            awaiting action · <Link href="/admin/subscribers">{data.activeSubscribers} newsletter subscriber{data.activeSubscribers === 1 ? "" : "s"}</Link>
+          </p>
         </div>
       </div>
 

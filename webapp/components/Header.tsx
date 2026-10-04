@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
+import { useWishlist } from "./WishlistContext";
 import type { CurrencyCode } from "@/lib/currency";
 
 const NAV_LINKS = [
@@ -20,6 +21,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
   const pathname = usePathname();
   const { totalCount } = useCart();
   const { currency, setCurrency } = useCurrency();
+  const { ids: wishlistIds } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -72,6 +74,11 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
                   <option value="AUD">A$ AUD</option>
                 </select>
               </div>
+
+              <Link href="/wishlist" className="cart-btn" aria-label={`Wishlist, ${wishlistIds.length} saved`}>
+                <span className="cart-icon" aria-hidden="true">♡</span>
+                {wishlistIds.length > 0 && <span className="cart-count">{wishlistIds.length}</span>}
+              </Link>
 
               <Link href="/cart" className="cart-btn" aria-label={`Shopping cart, ${totalCount} items`}>
                 <span className="cart-icon" aria-hidden="true">🛒</span>

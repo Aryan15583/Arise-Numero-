@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyCashfreeWebhookSignature } from "@/lib/cashfree";
 import { finalizeOrderAsPaid } from "@/lib/order-fulfillment";
 import { prisma } from "@/lib/db";
+import { recordOrderEvent } from "@/lib/order-events";
 
 const MAX_WEBHOOK_AGE_SECONDS = 5 * 60;
 
@@ -42,9 +43,10 @@ export async function POST(req: NextRequest) {
   if (paymentStatus === "SUCCESS") {
     await finalizeOrderAsPaid(orderId);
   } else if (paymentStatus === "FAILED" || paymentStatus === "USER_DROPPED") {
-    await prisma.order
+    const failed = await prisma.order
       .updateMany({ where: { id: orderId, status: "pending" }, data: { status: "failed" } })
-      .catch(() => {});
+      .catch(() => ({ count: 0 }));
+    if (failed.count > 0) await recordOrderEvent(orderId, "failed", "Payment failed or was abandoned").catch(() => {});
   }
 
   return NextResponse.json({ ok: true });

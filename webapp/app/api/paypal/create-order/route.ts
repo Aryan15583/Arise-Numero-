@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { checkCoupon } from "@/lib/coupons";
+import { recordOrderEvent } from "@/lib/order-events";
 import type { CartLine, ResolvedCartLine, ShippingAddress } from "@/lib/types";
 
 const PAYPAL_MODE = process.env.PAYPAL_MODE === "live" ? "live" : "sandbox";
@@ -55,11 +57,14 @@ export async function POST(req: NextRequest) {
     let discountPercent = 0;
     let appliedCouponCode: string | null = null;
     if (couponCode) {
-      const coupon = await prisma.coupon.findUnique({ where: { code: couponCode } });
-      if (coupon && coupon.active) {
-        discountPercent = coupon.discountPercent;
-        appliedCouponCode = coupon.code;
+      const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.trim() } });
+      const rawSubtotal = resolved.reduce((sum, i) => sum + i.priceUsd * i.qty, 0);
+      const check = checkCoupon(coupon, rawSubtotal);
+      if (!coupon || !check.ok) {
+        return NextResponse.json({ error: check.ok ? "Invalid coupon code." : check.message }, { status: 400 });
       }
+      discountPercent = coupon.discountPercent;
+      appliedCouponCode = coupon.code;
     }
 
     const { subtotal, discount, total } = computeTotals(resolved, discountPercent);
@@ -85,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     // Record a pending order now so it shows up in the admin panel even if
     // the buyer abandons payment on PayPal's page.
-    await prisma.order.create({
+    const created = await prisma.order.create({
       data: {
         customerName: customer.name || null,
         customerEmail: customer.email || null,
@@ -102,6 +107,7 @@ export async function POST(req: NextRequest) {
         paymentReference: ppOrder.id,
       },
     });
+    await recordOrderEvent(created.id, "pending", "Awaiting payment");
 
     return NextResponse.json({ paypalOrderId: ppOrder.id, totalUsd: total });
   } catch (err) {

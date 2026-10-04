@@ -65,10 +65,44 @@ Where they disagree with this section, **this section is right**.
   - Currency detection called a third-party geo-IP service from the browser for
     every first-time visitor; it now prefers the host/CDN country header
     (`/api/geo`) and only falls back to the old lookup.
-- **Groundwork only (not wired up yet):** the schema/migration for order tracking
-  events, tracking number/carrier, newsletter subscribers and coupon rules
-  (expiry, usage limit, minimum order), plus unused helpers (`lib/inventory.ts`,
-  `lib/coupons.ts`, `lib/csv.ts`, `lib/order-events.ts`). No UI or API uses them yet.
+- **New customer features:**
+  - *Order tracking* — `/track-order` (order number + the order's email; any mismatch
+    gives an identical "not found", so it can't be used to probe). Shows a timeline
+    (`order_events` table), items, totals, tracking number/carrier. The checkout
+    confirmation links to it and remembers the last order on that device.
+  - *Shipping emails* — customers are emailed when an order is paid / shipped (with
+    tracking number) / completed / cancelled. The confirmation email now lists the
+    items and has a "Track your order" button.
+  - *Bank transfer actually works* — instructions are set in Admin → Settings and
+    shown only to the customer who chose bank transfer (email + confirmation screen;
+    never via `/api/config`). Previously the page promised instructions that didn't exist.
+  - *Wishlist* (heart on cards + product page, `/wishlist`, header count — saved on
+    the device), *shop search* (name/material/description/size/crystal), *FAQ* page
+    (with FAQPage markup), *branded 404 + error pages*, *share buttons* (WhatsApp,
+    Facebook, X, Pinterest, copy link), *newsletter signup* in the footer (honeypot +
+    rate limit, welcome email with an optional coupon, token unsubscribe page that
+    needs a button press so email scanners can't unsubscribe people).
+  - *Cart* now enforces the same limits as the server (max 10 per product, never more
+    than in stock) and keeps an applied coupon across refreshes.
+  - *Footer social links* come from env vars and only show if set (the old ones were
+    dead `#` links). *Google Analytics 4* is supported but loads **only** after the
+    visitor accepts analytics cookies and `NEXT_PUBLIC_GA_ID` is set; a "Cookie
+    settings" footer link lets visitors change or withdraw consent.
+- **New admin features:** Update-order dialog (status, carrier, tracking number, note to
+  customer, email toggle); cancelling an order **returns its stock** (and re-opening takes
+  it again — it used to drift); CSV export for orders / bookings / messages / subscribers
+  (formula-injection safe, audit-logged); printable invoice per order; Subscribers page;
+  14-day revenue chart + pending-order and subscriber counts on the dashboard; coupons
+  can have an expiry date, a usage limit and a minimum order; low-stock email alerts.
+- **Order-flow hardening:** an invalid/expired coupon at checkout is now refused with a
+  message instead of silently dropping the discount; payment fulfilment claims the order
+  atomically so a webhook and a status check arriving together can't take stock twice
+  (verified with three simultaneous calls).
+- **Cleanup:** `middleware.ts` → `proxy.ts` (Next 16 rename); the cart/currency/wishlist
+  state now uses `useSyncExternalStore`, which removed all lint warnings (the rule that
+  used to be downgraded is enforced again — `npm run lint` is clean) and the
+  Strict-Mode "wiped cart" class of bug; the cookie banner no longer appears in the
+  admin panel.
 
 ## Stack
 
@@ -351,20 +385,8 @@ With no email configured yet, the code is printed in the terminal running
 
 ## Known non-blocking issues
 
-- `next dev` prints `⚠ The "middleware" file convention is deprecated. Please
-  use "proxy" instead.` — this is a brand-new Next.js 16 rename;
-  `middleware.ts` still works correctly (verified — it's what gates
-  `/admin/*`). Left as-is since `proxy.ts` is very new and not yet what most
-  docs/examples reference. Rename later if you want to silence the warning.
-- `npm run lint` shows 5 warnings (not errors) about calling `setState`
-  inside `useEffect` for one-time reads of `localStorage`/`Intl`/geolocation
-  on mount (cart, currency, coupon-from-sessionStorage, booking timezone
-  detection). This is the textbook-correct React pattern for "defer reading
-  browser-only state until after mount to avoid an SSR/hydration mismatch" —
-  I downgraded the rule in `eslint.config.mjs` with a comment explaining why,
-  rather than rewriting working code to `useSyncExternalStore` for no
-  behavioral difference. If you disagree, the 4 call sites are: `CartContext.tsx`,
-  `CurrencyContext.tsx`, `CheckoutClient.tsx`, `BookingClient.tsx`.
+- (Resolved) The `middleware` deprecation warning — the file is now `proxy.ts`, which is
+  what gates `/admin/*` pages. `npm run lint` is clean with the default rules.
 - SQLite (`prisma/dev.db`) is fine for local dev but has no persistent disk on
   most serverless hosts (Vercel, etc.). If you deploy, either use a host with
   a persistent volume, or swap the Prisma datasource to Postgres/Turso — the

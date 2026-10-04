@@ -7,6 +7,9 @@ import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { JsonLd } from "@/components/JsonLd";
 import { DEFAULT_DESCRIPTION, SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/seo";
+import { getSocialLinks } from "@/lib/social";
+
+const profileLinks = getSocialLinks().filter((s) => s.label !== "WhatsApp").map((s) => s.href);
 
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
@@ -24,6 +27,7 @@ const siteJsonLd = {
       url: getSiteUrl(),
       logo: absoluteUrl("/opengraph-image"),
       description: DEFAULT_DESCRIPTION,
+      ...(profileLinks.length ? { sameAs: profileLinks } : {}),
     },
     {
       "@type": "WebSite",

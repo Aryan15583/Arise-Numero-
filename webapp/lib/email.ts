@@ -9,6 +9,7 @@
 import nodemailer from "nodemailer";
 import type { Transporter } from "nodemailer";
 import { Resend } from "resend";
+import { getSiteUrl } from "./seo";
 
 const FROM_ADDRESS = process.env.EMAIL_FROM || "Arise Numero <onboarding@resend.dev>";
 const ADMIN_NOTIFY_ADDRESS = process.env.ADMIN_NOTIFY_EMAIL || null;
@@ -157,24 +158,142 @@ export function adminLoginCodeEmail(opts: {
   };
 }
 
-export function orderConfirmationEmail(order: {
+function emailShell(inner: string): string {
+  return `
+    <div style="font-family:sans-serif;max-width:520px;margin:auto;color:#1a1228;">
+      <h1 style="color:#b8975a;">Arise Numero</h1>
+      ${inner}
+      <p style="color:#7a6e8a;font-size:12px;margin-top:32px;">Arise Numero · Authentic crystal bracelets &amp; numerology readings</p>
+    </div>
+  `;
+}
+
+export type EmailOrder = {
   id: string;
   customerName: string | null;
   totalUsd: number;
   paymentMethod: string | null;
-}): { subject: string; html: string } {
+  items?: string | null; // the order's JSON items string
+  trackingNumber?: string | null;
+  carrier?: string | null;
+};
+
+const PAYMENT_LABELS: Record<string, string> = {
+  cod: "Cash on Delivery",
+  bank_transfer: "Bank transfer",
+  paypal: "PayPal",
+  cashfree: "UPI / card (Cashfree)",
+};
+
+function itemsTable(itemsJson?: string | null): string {
+  try {
+    const items = JSON.parse(itemsJson || "[]") as { name: string; qty: number; priceUsd: number }[];
+    if (!Array.isArray(items) || items.length === 0) return "";
+    const rows = items
+      .map((i) => {
+        const qty = Number(i.qty) || 0;
+        return `<tr><td style="padding:6px 0;border-bottom:1px solid #eee;">${escapeHtml(i.name)} × ${qty}</td>
+          <td style="padding:6px 0;border-bottom:1px solid #eee;text-align:right;">$${((Number(i.priceUsd) || 0) * qty).toFixed(2)}</td></tr>`;
+      })
+      .join("");
+    return `<table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;">${rows}</table>`;
+  } catch {
+    return "";
+  }
+}
+
+function trackButton(orderId: string): string {
+  const url = `${getSiteUrl()}/track-order?id=${encodeURIComponent(orderId)}`;
+  return `<p><a href="${escapeHtml(url)}" style="display:inline-block;background:#b8975a;color:#1a1228;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Track your order</a></p>`;
+}
+
+export function orderConfirmationEmail(
+  order: EmailOrder,
+  opts: { bankInstructions?: string } = {}
+): { subject: string; html: string } {
+  const bank =
+    order.paymentMethod === "bank_transfer"
+      ? `<h3 style="margin-bottom:4px;">Pay by bank transfer</h3>
+         <p style="white-space:pre-wrap;background:#f5f1eb;padding:12px 14px;border-radius:8px;">${escapeHtml(
+           opts.bankInstructions?.trim() || "We'll email you our bank details shortly."
+         )}</p>
+         <p>Please use <strong>${escapeHtml(order.id)}</strong> as the payment reference. Your order ships once the payment arrives.</p>`
+      : "";
+  const cod = order.paymentMethod === "cod" ? "<p>Please have the exact amount ready for Cash on Delivery.</p>" : "";
+
   return {
     subject: `Order Confirmed — ${order.id}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto;">
-        <h1 style="color:#b8975a;">Arise Numero</h1>
-        <p>Hi ${escapeHtml(order.customerName || "there")},</p>
-        <p>Thank you for your order! Your order <strong>${escapeHtml(order.id)}</strong> for
-        <strong>$${order.totalUsd.toFixed(2)}</strong> has been confirmed.</p>
-        <p>Payment method: ${escapeHtml(order.paymentMethod || "—")}</p>
-        <p>We'll email you again once your order ships.</p>
-      </div>
-    `,
+    html: emailShell(`
+      <p>Hi ${escapeHtml(order.customerName || "there")},</p>
+      <p>Thank you for your order! Order <strong>${escapeHtml(order.id)}</strong> is confirmed.</p>
+      ${itemsTable(order.items)}
+      <p><strong>Total: $${order.totalUsd.toFixed(2)}</strong> · Payment: ${escapeHtml(
+        PAYMENT_LABELS[order.paymentMethod || ""] || order.paymentMethod || "—"
+      )}</p>
+      ${bank}${cod}
+      ${trackButton(order.id)}
+      <p>We'll email you again as soon as your order ships.</p>
+    `),
+  };
+}
+
+/** Customer email for an order status change; null for statuses we don't email about. */
+export function orderStatusEmail(
+  order: EmailOrder,
+  status: string,
+  message?: string | null
+): { subject: string; html: string } | null {
+  const note = message?.trim() ? `<p style="background:#f5f1eb;padding:10px 14px;border-radius:8px;">${escapeHtml(message.trim())}</p>` : "";
+  const hi = `<p>Hi ${escapeHtml(order.customerName || "there")},</p>`;
+  const id = escapeHtml(order.id);
+
+  switch (status) {
+    case "paid":
+      return {
+        subject: `Payment received — ${order.id}`,
+        html: emailShell(`${hi}<p>We've received your payment for order <strong>${id}</strong> and are getting it ready to ship.</p>${note}${trackButton(order.id)}`),
+      };
+    case "shipped": {
+      const tracking = order.trackingNumber
+        ? `<p><strong>Tracking number:</strong> ${escapeHtml(order.trackingNumber)}${order.carrier ? ` (${escapeHtml(order.carrier)})` : ""}</p>`
+        : "";
+      return {
+        subject: `Your order ${order.id} has shipped`,
+        html: emailShell(`${hi}<p>Good news — order <strong>${id}</strong> is on its way!</p>${tracking}${note}${trackButton(order.id)}`),
+      };
+    }
+    case "completed":
+      return {
+        subject: `Your order ${order.id} is complete`,
+        html: emailShell(`${hi}<p>Order <strong>${id}</strong> is complete. We hope you love your crystals — if you do, a review on the product page means the world to us.</p>${note}`),
+      };
+    case "cancelled":
+      return {
+        subject: `Your order ${order.id} was cancelled`,
+        html: emailShell(`${hi}<p>Order <strong>${id}</strong> has been cancelled. If you already paid online, any refund is returned to your original payment method.</p>${note}<p>If this is unexpected, just reply to this email or contact us.</p>`),
+      };
+    default:
+      return null;
+  }
+}
+
+export function newsletterWelcomeEmail(opts: {
+  unsubscribeUrl: string;
+  couponCode?: string | null;
+  discountPercent?: number | null;
+}): { subject: string; html: string } {
+  const offer = opts.couponCode
+    ? `<p>As a thank-you, use code <strong style="font-size:18px;letter-spacing:2px;">${escapeHtml(opts.couponCode)}</strong>${
+        opts.discountPercent ? ` for ${opts.discountPercent}% off` : ""
+      } on your first order.</p>`
+    : "";
+  return {
+    subject: "Welcome to Arise Numero ✦",
+    html: emailShell(`
+      <p>Thanks for subscribing! You'll hear from us about new crystal collections and numerology insights — never spam.</p>
+      ${offer}
+      <p style="font-size:12px;color:#7a6e8a;">Changed your mind? <a href="${escapeHtml(opts.unsubscribeUrl)}">Unsubscribe</a> any time.</p>
+    `),
   };
 }
 

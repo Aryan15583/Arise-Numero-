@@ -5,6 +5,7 @@ import Link from "next/link";
 import Script from "next/script";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
+import { LAST_ORDER_KEY } from "./TrackOrderClient";
 
 const COUNTRIES = [
   { value: "", label: "Select country…" },
@@ -25,6 +26,7 @@ type OrderConfirmation = {
   id: string;
   totalUsd: number;
   paymentMethod: string;
+  bankInstructions?: string | null;
 };
 
 type PaymentMethod = "cod" | "bank_transfer" | "paypal" | "cashfree";
@@ -73,14 +75,21 @@ export function CheckoutClient() {
 
     const savedCoupon = sessionStorage.getItem("ariseNumero_coupon");
     if (savedCoupon) {
-      setCouponCode(savedCoupon);
       fetch("/api/coupons/validate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: savedCoupon }),
       })
         .then((r) => r.json())
-        .then((d) => setDiscountPercent(d.valid ? d.discountPercent : 0));
+        .then((d) => {
+          if (d.valid) {
+            setCouponCode(savedCoupon);
+            setDiscountPercent(d.discountPercent);
+          } else {
+            sessionStorage.removeItem("ariseNumero_coupon");
+          }
+        })
+        .catch(() => {});
     }
 
     // Some payment methods inside Cashfree's checkout (notably netbanking on
@@ -101,6 +110,18 @@ export function CheckoutClient() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Remember the last order on this device so the Track Order page can prefill it.
+  const confirmedId = confirmation?.id;
+  useEffect(() => {
+    if (!confirmedId) return;
+    try {
+      localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({ id: confirmedId, email: email.trim() || undefined }));
+    } catch {
+      /* private mode */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [confirmedId]);
 
   const isInternational = country !== "" && country !== "IN";
   const discount = subtotalUsd * (discountPercent / 100);
@@ -156,7 +177,7 @@ export function CheckoutClient() {
 
       sessionStorage.removeItem("ariseNumero_coupon");
       clearCart();
-      setConfirmation({ id: data.id, totalUsd: data.totalUsd, paymentMethod: data.paymentMethod });
+      setConfirmation({ id: data.id, totalUsd: data.totalUsd, paymentMethod: data.paymentMethod, bankInstructions: data.bankInstructions });
     } catch {
       setErrors(["Network error. Please check your connection and try again."]);
     } finally {
@@ -180,7 +201,19 @@ export function CheckoutClient() {
           {confirmation.paymentMethod === "paypal" && "Your PayPal payment has been captured successfully."}
           {confirmation.paymentMethod === "cashfree" && "Your payment has been confirmed successfully."}
         </p>
-        <div style={{ marginTop: 24 }}>
+        {confirmation.paymentMethod === "bank_transfer" && (
+          <div className="confirm-bank" role="note">
+            <h2 className="confirm-bank-title">Bank transfer details</h2>
+            <p className="confirm-bank-body">
+              {confirmation.bankInstructions?.trim() || "We'll email you our bank details shortly."}
+            </p>
+            <p className="text-muted">
+              Use <code>{confirmation.id}</code> as the payment reference.
+            </p>
+          </div>
+        )}
+        <div style={{ marginTop: 24, display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href={`/track-order?id=${encodeURIComponent(confirmation.id)}`} className="btn btn-outline btn-lg">Track this order</Link>
           <Link href="/shop" className="btn btn-primary btn-lg">Continue Shopping</Link>
         </div>
       </div>

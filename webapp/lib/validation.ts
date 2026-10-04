@@ -54,6 +54,8 @@ export const contactCreateSchema = z.object({
 
 export const couponValidateSchema = z.object({
   code: z.string().min(1).max(40),
+  // Cart subtotal in USD, so a minimum-order rule can be checked in the cart.
+  subtotalUsd: z.number().min(0).max(1_000_000).optional(),
 });
 
 export const reviewCreateSchema = z.object({
@@ -119,21 +121,57 @@ export const adminOrderCreateSchema = z.object({
 
 export const adminOrderStatusSchema = z.object({
   status: z.enum(["pending", "paid", "shipped", "completed", "cancelled", "failed"]),
+  trackingNumber: z.string().trim().max(100).optional().nullable(),
+  carrier: z.string().trim().max(60).optional().nullable(),
+  // Optional note: shown on the customer's tracking timeline and in the email.
+  message: z.string().trim().max(500).optional().nullable(),
+  notifyCustomer: z.boolean().optional(),
+});
+
+// ── Public: order tracking, newsletter ────────────────────────────────────
+
+export const trackOrderSchema = z.object({
+  orderId: z.string().trim().min(1).max(64),
+  email: z.string().trim().email().max(200),
+});
+
+export const newsletterSubscribeSchema = z.object({
+  email: z.string().trim().toLowerCase().email().max(200),
+  // Honeypot: real visitors never see or fill this field, bots do.
+  website: z.string().max(200).optional(),
+});
+
+export const newsletterUnsubscribeSchema = z.object({
+  token: z.string().trim().min(10).max(100),
 });
 
 // ── Admin coupons ─────────────────────────────────────────────────────────
+
+const couponRules = {
+  // ISO date or datetime; null clears it. A bare date (YYYY-MM-DD) means "valid through the end of that day".
+  expiresAt: z
+    .string()
+    .max(40)
+    .refine((v) => !Number.isNaN(Date.parse(v)), "Invalid expiry date")
+    .optional()
+    .nullable(),
+  maxUses: z.number().int().min(1).max(1_000_000).optional().nullable(),
+  minOrderUsd: z.number().min(0).max(1_000_000).optional().nullable(),
+};
 
 export const adminCouponCreateSchema = z.object({
   code: z.string().min(1).max(40),
   discountPercent: z.number().int().min(1).max(100),
   description: z.string().max(300).optional().nullable(),
   active: z.boolean().optional(),
+  ...couponRules,
 });
 
 export const adminCouponUpdateSchema = z.object({
   discountPercent: z.number().int().min(1).max(100).optional(),
   description: z.string().max(300).optional().nullable(),
   active: z.boolean().optional(),
+  ...couponRules,
 });
 
 // ── Admin bookings / messages ─────────────────────────────────────────────
@@ -172,6 +210,7 @@ export const adminSiteConfigSchema = z.object({
   standardShippingUsd: z.number().min(0).optional(),
   expressShippingUsd: z.number().min(0).optional(),
   freeShippingThresholdUsd: z.number().min(0).optional(),
+  bankTransferInstructions: z.string().max(1000).optional(),
   exchangeRates: z
     .object({
       USD: z.number().positive(),

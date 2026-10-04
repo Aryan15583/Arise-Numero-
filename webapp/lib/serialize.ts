@@ -57,6 +57,8 @@ export function serializeOrder(o: Order): OrderDTO {
     status: o.status,
     paymentMethod: o.paymentMethod,
     paymentReference: o.paymentReference,
+    trackingNumber: o.trackingNumber,
+    carrier: o.carrier,
     date: o.date.toISOString(),
   };
 }

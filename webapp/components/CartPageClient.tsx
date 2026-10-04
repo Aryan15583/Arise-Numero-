@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useCart } from "./CartContext";
+import { lineLimit, useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 
 export function CartPageClient() {
@@ -21,32 +21,56 @@ export function CartPageClient() {
       .catch(() => {});
   }, []);
 
+  type CouponResult = { valid: boolean; discountPercent?: number; message?: string };
+
+  async function fetchCouponCheck(code: string): Promise<CouponResult> {
+    const res = await fetch("/api/coupons/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, subtotalUsd }),
+    });
+    return res.json();
+  }
+
+  function showCouponResult(code: string, data: CouponResult, restoring: boolean) {
+    if (data.valid) {
+      if (restoring) setCouponInput(code.toUpperCase());
+      setDiscountPercent(data.discountPercent ?? 0);
+      setCouponFeedback({ message: `✓ Coupon applied! ${data.discountPercent}% off your order.`, ok: true });
+      sessionStorage.setItem("ariseNumero_coupon", code.toUpperCase());
+    } else {
+      setDiscountPercent(0);
+      sessionStorage.removeItem("ariseNumero_coupon");
+      setCouponFeedback({ message: `✕ ${data.message || "Invalid coupon code."}`, ok: false });
+    }
+  }
+
   async function applyCoupon() {
     const code = couponInput.trim();
     if (!code) return;
     setApplying(true);
     try {
-      const res = await fetch("/api/coupons/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
-      });
-      const data = await res.json();
-      if (data.valid) {
-        setDiscountPercent(data.discountPercent);
-        setCouponFeedback({ message: `✓ Coupon applied! ${data.discountPercent}% off your order.`, ok: true });
-        sessionStorage.setItem("ariseNumero_coupon", code.toUpperCase());
-      } else {
-        setDiscountPercent(0);
-        sessionStorage.removeItem("ariseNumero_coupon");
-        setCouponFeedback({ message: `✕ ${data.message || "Invalid coupon code."}`, ok: false });
-      }
+      showCouponResult(code, await fetchCouponCheck(code), false);
     } catch {
       setCouponFeedback({ message: "✕ Could not validate coupon. Please try again.", ok: false });
     } finally {
       setApplying(false);
     }
   }
+
+  // A coupon applied earlier lives in sessionStorage; without this, refreshing the
+  // cart page showed no discount even though checkout would still apply it. Re-check
+  // it (against the current subtotal) once the saved cart has loaded.
+  const hasItems = items.length > 0;
+  useEffect(() => {
+    if (!hasItems) return;
+    const saved = sessionStorage.getItem("ariseNumero_coupon");
+    if (!saved) return;
+    fetchCouponCheck(saved)
+      .then((data) => showCouponResult(saved, data, true))
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasItems, Math.round(subtotalUsd * 100)]);
 
   const discount = subtotalUsd * (discountPercent / 100);
   const afterDiscount = subtotalUsd - discount;
@@ -104,12 +128,24 @@ export function CartPageClient() {
                       className="qty-input cart-qty"
                       value={item.qty}
                       min={1}
-                      max={10}
+                      max={lineLimit(item.stock)}
                       aria-label={`Quantity of ${item.name}`}
-                      onChange={(e) => updateQty(item.id, Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                      onChange={(e) => updateQty(item.id, Math.max(1, Math.min(lineLimit(item.stock), parseInt(e.target.value) || 1)))}
                     />
-                    <button className="qty-btn qty-plus" aria-label={`Increase quantity of ${item.name}`} onClick={() => updateQty(item.id, item.qty + 1)}>+</button>
+                    <button
+                      className="qty-btn qty-plus"
+                      aria-label={`Increase quantity of ${item.name}`}
+                      disabled={item.qty >= lineLimit(item.stock)}
+                      onClick={() => updateQty(item.id, item.qty + 1)}
+                    >
+                      +
+                    </button>
                   </div>
+                  {item.qty >= lineLimit(item.stock) && (
+                    <p className="qty-limit" role="status">
+                      {item.stock !== undefined && item.stock < 10 ? `Only ${item.stock} in stock` : "Max 10 per order"}
+                    </p>
+                  )}
                 </td>
                 <td className="cart-subtotal">{format(item.priceUsd * item.qty)}</td>
                 <td className="cart-remove-cell">

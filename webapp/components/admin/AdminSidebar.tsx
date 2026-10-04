@@ -31,6 +31,7 @@ const NAV_SECTIONS = [
     items: [
       { href: "/admin/bookings", icon: "📅", label: "Bookings" },
       { href: "/admin/messages", icon: "✉️", label: "Messages" },
+      { href: "/admin/subscribers", icon: "📰", label: "Subscribers" },
     ],
   },
   {

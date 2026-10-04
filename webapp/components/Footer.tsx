@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { CookieSettingsLink } from "./CookieSettingsLink";
+import { NewsletterForm } from "./NewsletterForm";
+import { getSocialLinks } from "@/lib/social";
 
 export function Footer({ minimal = false }: { minimal?: boolean }) {
   const year = new Date().getFullYear();
@@ -17,6 +20,8 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
     );
   }
 
+  const socials = getSocialLinks();
+
   return (
     <footer className="site-footer" role="contentinfo">
       <div className="container footer-inner">
@@ -26,11 +31,16 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
             <span className="logo-text">Arise Numero</span>
           </Link>
           <p>Authentic crystal bracelets &amp; numerology readings delivered worldwide.</p>
-          <div className="footer-socials" aria-label="Social media links">
-            <a href="#" aria-label="Follow Arise Numero on Instagram" rel="noopener noreferrer">Instagram</a>
-            <a href="#" aria-label="Follow Arise Numero on Facebook" rel="noopener noreferrer">Facebook</a>
-            <a href="#" aria-label="Follow Arise Numero on Pinterest" rel="noopener noreferrer">Pinterest</a>
-          </div>
+          {socials.length > 0 && (
+            <div className="footer-socials" aria-label="Social media links">
+              {socials.map((s) => (
+                <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={`Arise Numero on ${s.label}`}>
+                  {s.label}
+                </a>
+              ))}
+            </div>
+          )}
+          <NewsletterForm />
         </div>
         <nav className="footer-nav" aria-label="Shop navigation">
           <h4>Shop</h4>
@@ -39,6 +49,7 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
             <li><Link href="/shop?cat=amethyst">Amethyst</Link></li>
             <li><Link href="/shop?cat=rose-quartz">Rose Quartz</Link></li>
             <li><Link href="/shop?cat=lapis-lazuli">Lapis Lazuli</Link></li>
+            <li><Link href="/wishlist">Wishlist</Link></li>
             <li><Link href="/cart">Cart</Link></li>
           </ul>
         </nav>
@@ -53,11 +64,14 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
         <nav className="footer-nav" aria-label="Legal and help navigation">
           <h4>Help &amp; Legal</h4>
           <ul role="list">
+            <li><Link href="/track-order">Track Your Order</Link></li>
+            <li><Link href="/faq">FAQ</Link></li>
             <li><Link href="/about">About Us</Link></li>
             <li><Link href="/contact">Contact</Link></li>
             <li><Link href="/returns">Returns &amp; Shipping</Link></li>
             <li><Link href="/privacy">Privacy Policy</Link></li>
             <li><Link href="/terms">Terms of Service</Link></li>
+            <li><CookieSettingsLink /></li>
           </ul>
         </nav>
       </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
+import { WishlistButton } from "./WishlistButton";
 import type { ProductDTO } from "@/lib/types";
 
 export function ProductCard({ product }: { product: ProductDTO }) {
@@ -15,7 +16,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
   const isLow = !isOut && product.stock <= product.lowStockThreshold;
 
   function handleAdd() {
-    addToCart({ id: product.id, name: product.name, priceUsd: product.priceUsd, imageUrl: product.imageUrl });
+    addToCart({ id: product.id, name: product.name, priceUsd: product.priceUsd, imageUrl: product.imageUrl, stock: product.stock });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }
@@ -55,6 +56,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
           )}
         </div>
       </Link>
+      <WishlistButton productId={product.id} productName={product.name} />
       <div className="product-info">
         <h3 className="product-name">
           <Link href={`/product/${encodeURIComponent(product.id)}`}>{product.name}</Link>

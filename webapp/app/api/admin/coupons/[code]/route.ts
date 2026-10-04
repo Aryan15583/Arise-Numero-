@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/require-admin";
 import { adminCouponUpdateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
+import { parseCouponExpiry } from "@/lib/coupons";
 
 // ADMIN: update a coupon.
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ code: string }> }) {
@@ -28,6 +29,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ code
       discountPercent: c.discountPercent !== undefined ? c.discountPercent : existing.discountPercent,
       description: c.description !== undefined ? c.description : existing.description,
       active: c.active !== undefined ? c.active : existing.active,
+      expiresAt: c.expiresAt === undefined ? existing.expiresAt : c.expiresAt ? parseCouponExpiry(c.expiresAt) : null,
+      maxUses: c.maxUses === undefined ? existing.maxUses : c.maxUses,
+      minOrderUsd: c.minOrderUsd === undefined ? existing.minOrderUsd : c.minOrderUsd,
     },
   });
 

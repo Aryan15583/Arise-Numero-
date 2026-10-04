@@ -4,6 +4,8 @@ import { createCashfreeOrder, isCashfreeConfigured } from "@/lib/cashfree";
 import { getSiteConfig } from "@/lib/site-config";
 import { cashfreeCreateOrderSchema, formatZodError } from "@/lib/validation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { checkCoupon } from "@/lib/coupons";
+import { recordOrderEvent } from "@/lib/order-events";
 import type { ResolvedCartLine } from "@/lib/types";
 
 function computeTotals(items: ResolvedCartLine[], discountPercent: number, shippingMethod: string, config: { standardShippingUsd: number; expressShippingUsd: number; freeShippingThresholdUsd: number }) {
@@ -51,11 +53,14 @@ export async function POST(req: NextRequest) {
   let discountPercent = 0;
   let appliedCouponCode: string | null = null;
   if (couponCode) {
-    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
-    if (coupon && coupon.active) {
-      discountPercent = coupon.discountPercent;
-      appliedCouponCode = coupon.code;
+    const coupon = await prisma.coupon.findUnique({ where: { code: couponCode.trim().toUpperCase() } });
+    const rawSubtotal = resolved.reduce((sum, i) => sum + i.priceUsd * i.qty, 0);
+    const check = checkCoupon(coupon, rawSubtotal);
+    if (!coupon || !check.ok) {
+      return NextResponse.json({ error: check.ok ? "Invalid coupon code." : check.message }, { status: 400 });
     }
+    discountPercent = coupon.discountPercent;
+    appliedCouponCode = coupon.code;
   }
 
   const config = await getSiteConfig();
@@ -85,6 +90,7 @@ export async function POST(req: NextRequest) {
       paymentMethod: "cashfree",
     },
   });
+  await recordOrderEvent(order.id, "pending", "Awaiting payment");
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin;
 
@@ -106,6 +112,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ paymentSessionId: cfOrder.paymentSessionId, orderId: order.id, totalInr });
   } catch (err) {
     await prisma.order.update({ where: { id: order.id }, data: { status: "failed" } });
+    await recordOrderEvent(order.id, "failed", "Could not start payment");
     const message = err instanceof Error ? err.message : "Could not start Cashfree checkout.";
     return NextResponse.json({ error: message }, { status: 502 });
   }

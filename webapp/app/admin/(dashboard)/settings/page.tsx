@@ -10,6 +10,7 @@ type SiteConfig = {
   standardShippingUsd: number;
   expressShippingUsd: number;
   freeShippingThresholdUsd: number;
+  bankTransferInstructions: string;
   exchangeRates: { USD: number; INR: number; EUR: number; GBP: number; AUD: number };
 };
 
@@ -88,6 +89,19 @@ export default function AdminSettingsPage() {
               <div className="form-group">
                 <label className="form-label">Free Shipping Threshold (USD)</label>
                 <input type="number" step="0.01" className="form-input" value={config.freeShippingThresholdUsd} onChange={(e) => setConfig({ ...config, freeShippingThresholdUsd: parseFloat(e.target.value) || 0 })} />
+              </div>
+              <div className="form-full">
+                <label className="form-label" htmlFor="bank-instructions">Bank transfer instructions</label>
+                <textarea
+                  id="bank-instructions"
+                  className="form-input"
+                  rows={4}
+                  maxLength={1000}
+                  value={config.bankTransferInstructions || ""}
+                  onChange={(e) => setConfig({ ...config, bankTransferInstructions: e.target.value })}
+                  placeholder={"Account name, bank, account number / IFSC or IBAN, etc."}
+                />
+                <p className="form-hint">Shown only to customers who choose bank transfer — in their confirmation email and on the order-confirmed screen. Leave empty to say &quot;we&apos;ll email you our bank details&quot;.</p>
               </div>
               <div className="form-full">
                 <label className="form-label" style={{ marginBottom: 8, display: "block" }}>Currency Exchange Rates (per 1 USD)</label>
