@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="g-amethyst-bracelet-box" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2b1f3d" />
+      <stop offset="100%" stop-color="#5a3d75" />
+    </linearGradient>
+    <radialGradient id="glow-amethyst-bracelet-box" cx="50%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#b8975a" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#b8975a" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#g-amethyst-bracelet-box)" />
+  <rect width="400" height="400" fill="url(#glow-amethyst-bracelet-box)" />
+  <circle cx="200" cy="150" r="70" fill="#b8975a" opacity="0.18" />
+  <text x="200" y="168" font-family="Georgia, serif" font-size="64" fill="#b8975a" text-anchor="middle" opacity="0.9">✦</text>
+  <text x="200" y="330" font-family="Georgia, serif" font-size="26" fill="#f0eafa" text-anchor="middle" opacity="0.92">Gift Box</text>
+  <text x="200" y="358" font-family="Arial, sans-serif" font-size="12" letter-spacing="3" fill="#f0eafa" text-anchor="middle" opacity="0.55">ARISE NUMERO</text>
+</svg>

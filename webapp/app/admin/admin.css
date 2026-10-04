@@ -1,0 +1,308 @@
+/* =============================================================
+   ARISE NUMERO — Admin panel styles.
+   Ported from the original ADMINDBMP.html embedded <style> block.
+   Scoped under .admin-scope so these class names (.btn, .card, .badge,
+   etc.) never collide with the public storefront's globals.css, which
+   defines the same class names differently.
+   ============================================================= */
+
+.admin-scope {
+  --gold:        #b8975a;
+  --gold-light:  #d4b47a;
+  --gold-dark:   #8a6e3e;
+  --deep:        #1a1228;
+  --bg:          #f5f1eb;
+  --bg-card:     #ffffff;
+  --bg-sidebar:  #1a1228;
+  --text:        #1a1228;
+  --text-muted:  #7a6e8a;
+  --border:      #ddd6cc;
+  --success:     #2d7a4f;
+  --success-bg:  #edf7f2;
+  --error:       #c0392b;
+  --error-bg:    #fdf0ee;
+  --warning:     #b8600a;
+  --warning-bg:  #fef3e8;
+  --radius:      10px;
+  --shadow:      0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:   0 8px 32px rgba(0,0,0,0.14);
+
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+@media (prefers-color-scheme: dark) {
+  .admin-scope {
+    --bg:         #0e0b16;
+    --bg-card:    #1a1228;
+    --text:       #f0eafa;
+    --text-muted: #8a7a9a;
+    --border:     #3a2d50;
+    --bg-sidebar: #070510;
+  }
+}
+
+.admin-scope *, .admin-scope *::before, .admin-scope *::after { box-sizing: border-box; }
+
+.admin-scope button { font-family: inherit; }
+.admin-scope input, .admin-scope select, .admin-scope textarea { font-family: inherit; }
+
+/* ── LOGIN SCREEN ──────────────────────────────────── */
+.admin-scope #login-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--deep);
+}
+
+.admin-scope .login-box {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 360px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+}
+
+.admin-scope .login-logo { font-size: 2.5rem; color: var(--gold); margin-bottom: 8px; }
+.admin-scope .login-title { font-size: 1.4rem; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.admin-scope .login-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 32px; }
+
+.admin-scope .login-box.otp-box { width: 400px; max-width: calc(100vw - 32px); }
+
+.admin-scope .otp-lead { font-size: 0.9rem; color: var(--text-muted); line-height: 1.55; margin: -8px 0 24px; }
+.admin-scope .otp-lead strong { color: var(--text); }
+
+.admin-scope .otp-input {
+  width: 100%;
+  height: 58px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.admin-scope .otp-input::placeholder { color: var(--border); }
+.admin-scope .otp-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,151,90,0.25); }
+.admin-scope .otp-input.error { border-color: var(--error); animation: admin-shake 0.4s ease; }
+
+.admin-scope .otp-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  border: 1.5px solid var(--gold);
+  background: var(--gold);
+  color: #1a1228;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.admin-scope .otp-btn:hover:not(:disabled) { background: var(--gold-light); }
+.admin-scope .otp-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.admin-scope .otp-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-top: 14px;
+  text-decoration: underline;
+}
+.admin-scope .otp-link:disabled { opacity: 0.6; cursor: default; text-decoration: none; }
+
+.admin-scope .otp-msg { font-size: 0.85rem; min-height: 20px; margin-top: 12px; line-height: 1.4; }
+.admin-scope .otp-msg.error { color: var(--error); }
+.admin-scope .otp-msg.info { color: var(--text-muted); }
+.admin-scope .otp-note { margin-top: 18px; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ── ADMIN LAYOUT ────────────────────────────────── */
+.admin-scope .admin-layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+.admin-scope .sidebar {
+  background: var(--bg-sidebar);
+  color: #f0eafa;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-scope .sidebar-header { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.admin-scope .sidebar-logo { font-size: 1.2rem; font-weight: 700; color: var(--gold); letter-spacing: 0.04em; }
+.admin-scope .sidebar-subtitle { font-size: 0.72rem; color: rgba(240,234,250,0.4); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+.admin-scope .sidebar-nav { flex: 1; padding: 16px 0; }
+
+.admin-scope .nav-section-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(240,234,250,0.3); padding: 16px 20px 6px; }
+
+.admin-scope .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 20px;
+  font-size: 0.875rem;
+  color: rgba(240,234,250,0.65);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-left: 3px solid transparent;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.admin-scope .nav-item:hover { background: rgba(255,255,255,0.05); color: #f0eafa; }
+.admin-scope .nav-item.active { background: rgba(184,151,90,0.12); color: var(--gold); border-left-color: var(--gold); }
+
+.admin-scope .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+.admin-scope .nav-badge { margin-left: auto; background: var(--gold); color: #1a1228; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+
+.admin-scope .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
+
+.admin-scope .logout-btn {
+  width: 100%;
+  padding: 10px;
+  background: rgba(192,57,43,0.15);
+  color: #e57373;
+  border: 1px solid rgba(192,57,43,0.3);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.admin-scope .logout-btn:hover { background: rgba(192,57,43,0.25); }
+
+/* ── MAIN CONTENT ────────────────────────────────── */
+.admin-scope .admin-main { padding: 32px; overflow-y: auto; }
+
+.admin-scope .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+.admin-scope .page-title { font-size: 1.6rem; font-weight: 700; color: var(--text); }
+.admin-scope .page-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+
+/* ── STAT CARDS ──────────────────────────────────── */
+.admin-scope .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+
+.admin-scope .stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.admin-scope .stat-label { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.admin-scope .stat-value { font-size: 2rem; font-weight: 700; color: var(--text); line-height: 1; }
+.admin-scope .stat-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+.admin-scope .stat-gold { border-left: 4px solid var(--gold); }
+.admin-scope .stat-success { border-left: 4px solid var(--success); }
+.admin-scope .stat-warning { border-left: 4px solid var(--warning); }
+.admin-scope .stat-error { border-left: 4px solid var(--error); }
+
+/* ── CARDS & TABLES ──────────────────────────────── */
+.admin-scope .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
+.admin-scope .card-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+.admin-scope .card-title { font-size: 1rem; font-weight: 600; color: var(--text); }
+.admin-scope .card-body { padding: 24px; }
+
+.admin-scope .table-wrap { overflow-x: auto; }
+
+.admin-scope table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.admin-scope th { text-align: left; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 14px; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.admin-scope td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+.admin-scope tr:last-child td { border-bottom: none; }
+.admin-scope tr:hover td { background: rgba(184,151,90,0.04); }
+
+.admin-scope .product-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+
+/* ── BADGES ──────────────────────────────────────── */
+.admin-scope .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
+.admin-scope .badge-active   { background: var(--success-bg); color: var(--success); }
+.admin-scope .badge-inactive { background: #f0f0f0; color: #888; }
+.admin-scope .badge-low      { background: var(--warning-bg); color: var(--warning); }
+.admin-scope .badge-out      { background: var(--error-bg); color: var(--error); }
+.admin-scope .badge-gold     { background: rgba(184,151,90,0.15); color: var(--gold-dark); }
+
+/* ── BUTTONS ─────────────────────────────────────── */
+.admin-scope .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; border: 1.5px solid transparent; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; text-decoration: none; }
+.admin-scope .btn-primary { background: var(--gold); color: #1a1228; border-color: var(--gold); }
+.admin-scope .btn-primary:hover { background: var(--gold-light); }
+.admin-scope .btn-outline { background: transparent; color: var(--gold); border-color: var(--gold); }
+.admin-scope .btn-outline:hover { background: var(--gold); color: #1a1228; }
+.admin-scope .btn-ghost { background: transparent; color: var(--text-muted); border-color: var(--border); }
+.admin-scope .btn-ghost:hover { background: var(--border); color: var(--text); }
+.admin-scope .btn-danger { background: var(--error-bg); color: var(--error); border-color: var(--error); }
+.admin-scope .btn-danger:hover { background: var(--error); color: #fff; }
+.admin-scope .btn-success { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.admin-scope .btn-success:hover { background: var(--success); color: #fff; }
+.admin-scope .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+.admin-scope .btn-lg { padding: 12px 28px; font-size: 1rem; }
+.admin-scope .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── FORMS ───────────────────────────────────────── */
+.admin-scope .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.admin-scope .form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.admin-scope .form-full { grid-column: 1 / -1; }
+.admin-scope .form-group { display: flex; flex-direction: column; gap: 6px; }
+.admin-scope .form-label { font-size: 0.8rem; font-weight: 600; color: var(--text); letter-spacing: 0.01em; }
+.admin-scope .form-input { padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.9rem; font-family: inherit; transition: border-color 0.15s, box-shadow 0.15s; width: 100%; }
+.admin-scope .form-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(184,151,90,0.15); }
+.admin-scope textarea.form-input { resize: vertical; min-height: 80px; }
+.admin-scope .form-hint { font-size: 0.75rem; color: var(--text-muted); }
+
+.admin-scope .toggle-wrap { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.admin-scope .toggle { width: 44px; height: 24px; border-radius: 12px; background: var(--border); position: relative; cursor: pointer; border: none; transition: background 0.2s; flex-shrink: 0; }
+.admin-scope .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: transform 0.2s; }
+.admin-scope .toggle.on { background: var(--success); }
+.admin-scope .toggle.on::after { transform: translateX(20px); }
+.admin-scope .toggle-label { font-size: 0.85rem; color: var(--text); }
+
+/* ── MODAL ───────────────────────────────────────── */
+.admin-scope .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.admin-scope .modal { background: var(--bg-card); border-radius: 16px; width: 100%; max-width: 620px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); animation: admin-fadeUp 0.2s ease; }
+.admin-scope .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.admin-scope .modal-title { font-size: 1.1rem; font-weight: 600; }
+.admin-scope .modal-close { width: 32px; height: 32px; border-radius: 50%; background: var(--bg); border: 1px solid var(--border); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-muted); }
+.admin-scope .modal-close:hover { background: var(--border); }
+.admin-scope .modal-body { padding: 24px; }
+.admin-scope .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ── TOAST ───────────────────────────────────────── */
+.admin-scope .toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--bg-card); border: 1.5px solid var(--gold); border-radius: 10px; padding: 14px 20px; font-size: 0.9rem; box-shadow: var(--shadow-lg); max-width: 320px; animation: admin-fadeUp 0.25s ease; color: var(--text); }
+.admin-scope .toast.success { border-color: var(--success); }
+.admin-scope .toast.error { border-color: var(--error); }
+
+/* ── SEARCH & FILTER ─────────────────────────────── */
+.admin-scope .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.admin-scope .search-input { padding: 8px 14px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 0.875rem; font-family: inherit; min-width: 220px; }
+.admin-scope .search-input:focus { outline: none; border-color: var(--gold); }
+
+/* ── EMPTY STATE ─────────────────────────────────── */
+.admin-scope .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+.admin-scope .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.admin-scope .empty-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+.admin-scope .empty-desc { font-size: 0.875rem; }
+
+/* ── STOCK INDICATOR ─────────────────────────────── */
+.admin-scope .stock-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.admin-scope .stock-bar { width: 80px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.admin-scope .stock-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+/* ── ANIMATIONS ──────────────────────────────────── */
+@keyframes admin-fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes admin-shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+/* ── RESPONSIVE ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .admin-scope .admin-layout { grid-template-columns: 1fr; }
+  .admin-scope .sidebar { height: auto; position: static; }
+  .admin-scope .form-grid, .admin-scope .form-grid-3 { grid-template-columns: 1fr; }
+  .admin-scope .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .admin-scope .admin-main { padding: 16px; }
+}

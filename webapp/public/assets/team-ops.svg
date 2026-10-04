@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="p-undefined" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5a3d10" />
+      <stop offset="100%" stop-color="#b8975a" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#p-undefined)" />
+  <circle cx="200" cy="160" r="72" fill="#f0eafa" opacity="0.14" />
+  <text x="200" y="182" font-family="Georgia, serif" font-size="56" fill="#f0eafa" text-anchor="middle" opacity="0.9">KM</text>
+</svg>

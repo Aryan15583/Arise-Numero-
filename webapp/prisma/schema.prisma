@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  slug        String   @id
+  name        String
+  description String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
+}
+
+model Product {
+  id                String   @id
+  name              String
+  material          String?
+  description       String?
+  priceUsd          Float    @default(0) @map("price_usd")
+  originalPriceUsd  Float?   @map("original_price_usd")
+  category          String?
+  beadSize          String?  @map("bead_size")
+  stock             Int      @default(0)
+  lowStockThreshold Int      @default(5) @map("low_stock_threshold")
+  imageUrl          String?  @map("image_url")
+  images            String   @default("[]") // JSON-encoded string array
+  badge             String?
+  rating            Float    @default(4.9)
+  reviewCount       Int      @default(0) @map("review_count")
+  active            Boolean  @default(true)
+  featured          Boolean  @default(false)
+  sortOrder         Int      @default(0) @map("sort_order")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  reviews Review[]
+
+  @@index([active])
+  @@index([category])
+  @@index([featured])
+  @@map("products")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  productId   String   @map("product_id")
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  authorName  String   @map("author_name")
+  authorEmail String?  @map("author_email")
+  rating      Int // 1-5
+  title       String?
+  comment     String
+  status      String   @default("pending") // pending, approved, rejected
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([productId])
+  @@index([status])
+  @@map("reviews")
+}
+
+model Coupon {
+  code            String    @id
+  discountPercent Int       @map("discount_percent")
+  description     String?
+  active          Boolean   @default(true)
+  expiresAt       DateTime? @map("expires_at")
+  maxUses         Int?      @map("max_uses")
+  usedCount       Int       @default(0) @map("used_count")
+  minOrderUsd     Float?    @map("min_order_usd")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@map("coupons")
+}
+
+model Order {
+  id               String   @id @default(cuid())
+  customerName     String?  @map("customer_name")
+  customerEmail    String?  @map("customer_email")
+  customerPhone    String?  @map("customer_phone")
+  shippingAddress  String   @default("{}") @map("shipping_address") // JSON
+  items            String   @default("[]") // JSON
+  subtotalUsd      Float    @default(0) @map("subtotal_usd")
+  discountUsd      Float    @default(0) @map("discount_usd")
+  couponCode       String?  @map("coupon_code")
+  shippingUsd      Float    @default(0) @map("shipping_usd")
+  totalUsd         Float    @default(0) @map("total_usd")
+  status           String   @default("pending") // pending, paid, shipped, completed, cancelled, failed
+  paymentMethod    String?  @map("payment_method") // cod, bank_transfer, paypal, cashfree
+  paymentReference String?  @map("payment_reference")
+  trackingNumber   String?  @map("tracking_number")
+  carrier          String?
+  date             DateTime @default(now())
+
+  events OrderEvent[]
+
+  @@index([status])
+  @@index([date])
+  @@index([paymentReference])
+  @@map("orders")
+}
+
+// Append-only timeline shown to the customer on the order-tracking page.
+model OrderEvent {
+  id        String   @id @default(cuid())
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  status    String
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@map("order_events")
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  firstName       String?  @map("first_name")
+  lastName        String?  @map("last_name")
+  clientEmail     String   @map("client_email")
+  birthName       String   @map("birth_name")
+  dateOfBirth     String   @map("date_of_birth")
+  packageSelected String?  @map("package_selected")
+  packagePriceUsd Float?   @map("package_price_usd")
+  timezone        String?
+  sessionDate     String?  @map("session_date")
+  readingFocus    String?  @map("reading_focus")
+  additionalNotes String?  @map("additional_notes")
+  status          String   @default("new") // new, confirmed, completed, cancelled
+  submittedAt     DateTime @default(now()) @map("submitted_at")
+
+  @@index([status])
+  @@map("bookings")
+}
+
+model ContactMessage {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  subject     String?
+  orderNumber String?  @map("order_number")
+  message     String
+  status      String   @default("new") // new, read, replied
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([status])
+  @@map("contact_messages")
+}
+
+model Subscriber {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  token          String    @unique // random, used only for the unsubscribe link
+  source         String?
+  subscribedAt   DateTime  @default(now()) @map("subscribed_at")
+  unsubscribedAt DateTime? @map("unsubscribed_at")
+
+  @@index([subscribedAt])
+  @@map("subscribers")
+}
+
+model AdminSetting {
+  key   String @id
+  value String
+
+  @@map("admin_settings")
+}
+
+// At most one row ("current"): the single outstanding admin login code.
+// Only a keyed hash of the code is stored, never the code itself.
+model AdminLoginCode {
+  id        String   @id @default("current")
+  codeHash  String   @map("code_hash")
+  expiresAt DateTime @map("expires_at")
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("admin_login_codes")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String // e.g. "admin.login.success", "product.delete", "settings.update"
+  detail    String? // short human-readable description, no secrets
+  ip        String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
