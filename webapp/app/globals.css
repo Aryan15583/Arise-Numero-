@@ -3242,3 +3242,18 @@ select.form-input {
 @media (max-width: 768px) {
   .newsletter-form { max-width: none; }
 }
+
+/* ── Review star picker + empty rating states ─────────────────────── */
+.product-rating-empty { color: var(--text-muted); font-size: 0.8125rem; }
+.review-date { display: block; margin-top: var(--space-2); font-size: 0.75rem; color: var(--text-muted); }
+.star-input-group { border: 0; padding: 0; margin: 0; min-width: 0; }
+.star-input { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.star-input-btn {
+  background: none; border: 0; padding: 2px 4px; cursor: pointer;
+  font-size: 1.75rem; line-height: 1; color: var(--text-muted); opacity: 0.45;
+  transition: color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+.star-input-btn.is-on { color: var(--brand-gold); opacity: 1; }
+.star-input-btn:hover { transform: scale(1.12); }
+.star-input-btn:focus-visible { outline: 2px solid var(--brand-gold); outline-offset: 2px; border-radius: 4px; }
+.star-input-label { margin-left: var(--space-2); font-size: 0.875rem; color: var(--text-muted); }

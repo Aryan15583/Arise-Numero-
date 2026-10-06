@@ -37,8 +37,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       imageUrl: p.imageUrl !== undefined ? p.imageUrl : existing.imageUrl,
       images: p.images !== undefined ? JSON.stringify(p.images) : existing.images,
       badge: p.badge !== undefined ? p.badge : existing.badge,
-      rating: p.rating !== undefined ? p.rating : existing.rating,
-      reviewCount: p.reviewCount !== undefined ? p.reviewCount : existing.reviewCount,
       active: p.active !== undefined ? p.active : existing.active,
       featured: p.featured !== undefined ? p.featured : existing.featured,
     },

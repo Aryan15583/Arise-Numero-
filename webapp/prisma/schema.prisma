@@ -32,7 +32,8 @@ model Product {
   imageUrl          String?  @map("image_url")
   images            String   @default("[]") // JSON-encoded string array
   badge             String?
-  rating            Float    @default(4.9)
+  // Cached from approved reviews (lib/ratings.ts) — never edited by hand.
+  rating            Float    @default(0)
   reviewCount       Int      @default(0) @map("review_count")
   active            Boolean  @default(true)
   featured          Boolean  @default(false)

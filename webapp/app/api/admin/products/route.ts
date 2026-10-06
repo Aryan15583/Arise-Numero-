@@ -79,8 +79,6 @@ export async function POST(req: NextRequest) {
       imageUrl: p.imageUrl || null,
       images: JSON.stringify(p.images || []),
       badge: p.badge || null,
-      rating: p.rating ?? 4.9,
-      reviewCount: p.reviewCount ?? 0,
       active: p.active !== false,
       featured: !!p.featured,
       sortOrder: (maxSort._max.sortOrder ?? -1) + 1,

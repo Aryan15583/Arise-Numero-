@@ -9,6 +9,7 @@ import { WishlistButton } from "./WishlistButton";
 import { ShareButtons } from "./ShareButtons";
 import { productPath } from "@/lib/seo";
 import type { ProductDTO } from "@/lib/types";
+import { reviewsLabel, starString } from "@/lib/stars";
 
 const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
 
@@ -68,10 +69,16 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
 
             <h1 id="product-heading" className="product-detail-title">{product.name}</h1>
 
-            <div className="product-detail-rating" aria-label={`Customer rating: ${product.rating} out of 5 stars, ${product.reviewCount} reviews`}>
-              <span className="stars" aria-hidden="true">★★★★★</span>
-              <a href="#reviews" className="rating-link">{product.rating} ({product.reviewCount} reviews)</a>
-            </div>
+            {product.reviewCount > 0 ? (
+              <div className="product-detail-rating" aria-label={`Customer rating: ${product.rating} out of 5 stars, ${reviewsLabel(product.reviewCount)}`}>
+                <span className="stars" aria-hidden="true">{starString(product.rating)}</span>
+                <a href="#reviews" className="rating-link">{product.rating} ({reviewsLabel(product.reviewCount)})</a>
+              </div>
+            ) : (
+              <div className="product-detail-rating">
+                <a href="#reviews" className="rating-link">No reviews yet — be the first to review</a>
+              </div>
+            )}
 
             <div className="product-detail-price" aria-label="Product pricing">
               <span className="price-main">{format(product.priceUsd)}</span>
@@ -179,11 +186,15 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
         {activeTab === "reviews" && (
           <div className="tab-panel">
             <div className="reviews-summary">
-              <div className="rating-big" aria-label={`Overall rating: ${product.rating} out of 5`}>
-                <span className="rating-number">{product.rating}</span>
-                <span className="rating-stars" aria-hidden="true">★★★★★</span>
-                <span className="rating-total">Based on {product.reviewCount} reviews</span>
-              </div>
+              {product.reviewCount > 0 ? (
+                <div className="rating-big" aria-label={`Overall rating: ${product.rating} out of 5`}>
+                  <span className="rating-number">{product.rating}</span>
+                  <span className="rating-stars" aria-hidden="true">{starString(product.rating)}</span>
+                  <span className="rating-total">Based on {reviewsLabel(product.reviewCount)}</span>
+                </div>
+              ) : (
+                <p className="rating-total">No reviews yet. Bought this bracelet? Share your experience below.</p>
+              )}
             </div>
             <ProductReviews productId={product.id} />
           </div>

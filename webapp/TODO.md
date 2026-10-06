@@ -87,7 +87,8 @@ contact message, and review.
 - [ ] Review the auto-generated category descriptions (Admin → Categories)
       and adjust to your own voice.
 - [ ] Moderate incoming reviews regularly — Admin → Reviews, they start as
-      "Pending" and won't show publicly until you approve them.
+      "Pending" and won't show publicly until you approve them. Approving,
+      rejecting or deleting a review updates that product's rating instantly.
 
 ## 6. If/when you outgrow SQLite
 
@@ -215,13 +216,14 @@ old `?id=` links redirect permanently); category landing pages
       Webmaster Tools** (`BING_SITE_VERIFICATION`).
 - [ ] Replace the generated SVG placeholder product images with real photos
       (JPG/PNG/WebP, ideally 1200×1200). Google shows photo results, not SVGs.
-- [ ] The seeded **star ratings / review counts** (e.g. "4.9 · 128 reviews") are
-      placeholder numbers shown on product cards. Edit them in Admin → Products
-      to match reality or set them to 0 — claiming reviews you don't have
-      can get a store penalised. (Search-result markup only ever uses real,
-      approved customer reviews, never these numbers.)
-- [ ] The homepage testimonials and the "4.9/5 rating" badge are hard-coded text —
-      swap in real ones.
+- [x] **Ratings are real now.** Product star ratings and review counts are
+      calculated automatically from *approved* customer reviews (they can't be
+      typed in by hand any more). Products with no approved reviews show "No
+      reviews yet". The homepage rating badge, the About page "Average Rating"
+      stat and the homepage testimonials also come from approved reviews, and
+      are hidden until you have some.
+- [ ] The About page still claims "50+ Countries Served" and "12k+ Happy
+      Customers" — edit `app/about/page.tsx` if those aren't accurate yet.
 - [ ] Write a unique description for each product (Admin → Products) — the first
       ~155 characters become the Google snippet.
 - [ ] Fill in the footer social links (they are placeholders) and consider a

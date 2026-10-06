@@ -6,6 +6,7 @@ import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { WishlistButton } from "./WishlistButton";
 import type { ProductDTO } from "@/lib/types";
+import { reviewsLabel, starString } from "@/lib/stars";
 
 export function ProductCard({ product }: { product: ProductDTO }) {
   const { addToCart } = useCart();
@@ -62,10 +63,14 @@ export function ProductCard({ product }: { product: ProductDTO }) {
           <Link href={`/product/${encodeURIComponent(product.id)}`}>{product.name}</Link>
         </h3>
         <p className="product-material">{product.material}</p>
-        <div className="product-rating" aria-label={`Rating: ${product.rating} out of 5 stars`}>
-          <span aria-hidden="true">{"★".repeat(Math.round(product.rating))}{"☆".repeat(5 - Math.round(product.rating))}</span>
-          <span className="rating-count">({product.reviewCount})</span>
-        </div>
+        {product.reviewCount > 0 ? (
+          <div className="product-rating" aria-label={`Rating: ${product.rating} out of 5 stars, ${reviewsLabel(product.reviewCount)}`}>
+            <span aria-hidden="true">{starString(product.rating)}</span>
+            <span className="rating-count">({product.reviewCount})</span>
+          </div>
+        ) : (
+          <div className="product-rating product-rating-empty">No reviews yet</div>
+        )}
         <div className="product-price-row">
           <span>
             <span className="product-price">{format(product.priceUsd)}</span>

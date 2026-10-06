@@ -22,7 +22,8 @@ type FormState = {
   stock: string;
   lowStockThreshold: string;
   badge: string;
-  rating: string;
+  // Read-only: shown in the dialog, derived from approved reviews.
+  ratingSummary: string;
   material: string;
   description: string;
   imageUrl: string;
@@ -42,7 +43,7 @@ function emptyForm(defaultCategory: string): FormState {
     stock: "",
     lowStockThreshold: "5",
     badge: "",
-    rating: "4.9",
+    ratingSummary: "No approved reviews yet",
     material: "",
     description: "",
     imageUrl: "",
@@ -110,7 +111,7 @@ export default function AdminProductsPage() {
       stock: String(p.stock),
       lowStockThreshold: String(p.lowStockThreshold),
       badge: p.badge || "",
-      rating: String(p.rating),
+      ratingSummary: p.reviewCount > 0 ? `${p.rating} ★ from ${p.reviewCount} approved review${p.reviewCount === 1 ? "" : "s"}` : "No approved reviews yet",
       material: p.material || "",
       description: p.description || "",
       imageUrl: p.imageUrl || "",
@@ -144,7 +145,6 @@ export default function AdminProductsPage() {
       imageUrl: form.imageUrl.trim(),
       images,
       badge: form.badge || null,
-      rating: parseFloat(form.rating) || 4.9,
       active: form.active,
       featured: form.featured,
     };
@@ -323,8 +323,8 @@ export default function AdminProductsPage() {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Rating (0–5)</label>
-                  <input type="number" step="0.1" min="0" max="5" className="form-input" value={form.rating} onChange={(e) => setForm((f) => ({ ...f, rating: e.target.value }))} />
+                  <label className="form-label">Customer Rating</label>
+                  <input className="form-input" value={form.ratingSummary} readOnly disabled title="Calculated automatically from approved reviews (Admin → Reviews)" />
                 </div>
                 <div className="form-group form-full">
                   <label className="form-label">Material Description *</label>

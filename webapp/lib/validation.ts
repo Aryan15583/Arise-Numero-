@@ -89,8 +89,6 @@ export const adminProductCreateSchema = z.object({
   imageUrl: z.string().max(500).optional().nullable(),
   images: z.array(z.string().max(500)).optional(),
   badge: z.string().max(40).optional().nullable(),
-  rating: z.number().min(0).max(5).optional(),
-  reviewCount: z.number().int().min(0).optional(),
   active: z.boolean().optional(),
   featured: z.boolean().optional(),
 });

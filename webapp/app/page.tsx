@@ -8,6 +8,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { JsonLd } from "@/components/JsonLd";
 import { DEFAULT_DESCRIPTION, SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/seo";
 import { getSocialLinks } from "@/lib/social";
+import { getStoreRating } from "@/lib/ratings";
+import { starString } from "@/lib/stars";
 
 const profileLinks = getSocialLinks().filter((s) => s.label !== "WhatsApp").map((s) => s.href);
 
@@ -40,11 +42,21 @@ const siteJsonLd = {
 };
 
 export default async function HomePage() {
-  const featured = await prisma.product.findMany({
-    where: { active: true, featured: true },
-    orderBy: { sortOrder: "asc" },
-    take: 4,
-  });
+  const [featured, storeRating, testimonials] = await Promise.all([
+    prisma.product.findMany({
+      where: { active: true, featured: true },
+      orderBy: { sortOrder: "asc" },
+      take: 4,
+    }),
+    getStoreRating(),
+    // Real, moderator-approved 4–5 star reviews — never invented quotes.
+    prisma.review.findMany({
+      where: { status: "approved", rating: { gte: 4 }, product: { active: true } },
+      orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+      take: 3,
+      include: { product: { select: { name: true } } },
+    }),
+  ]);
   const products = featured.map(serializeProduct);
 
   return (
@@ -87,7 +99,9 @@ export default async function HomePage() {
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">💳</span><span>Secure Payments</span></div>
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">🌍</span><span>Worldwide Shipping</span></div>
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">↩️</span><span>14-Day Returns</span></div>
-            <div className="trust-item"><span className="trust-icon" aria-hidden="true">⭐</span><span>4.9/5 Rating</span></div>
+            {storeRating && (
+              <div className="trust-item"><span className="trust-icon" aria-hidden="true">⭐</span><span>{storeRating.rating}/5 Rating</span></div>
+            )}
           </div>
         </section>
 
@@ -161,34 +175,24 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="section testimonials" aria-labelledby="testimonials-heading">
-          <div className="container">
-            <h2 id="testimonials-heading" className="section-title text-center">What Our Customers Say</h2>
-            <div className="testimonial-grid" role="list">
-              <blockquote className="testimonial-card" role="listitem">
-                <p>&ldquo;The amethyst bracelet is absolutely stunning. The crystals have beautiful natural variations and the quality is exceptional.&rdquo;</p>
-                <footer>
-                  <cite>— Priya M., Mumbai</cite>
-                  <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-                </footer>
-              </blockquote>
-              <blockquote className="testimonial-card" role="listitem">
-                <p>&ldquo;My numerology reading was incredibly insightful. The intake process was clear and respectful of my privacy.&rdquo;</p>
-                <footer>
-                  <cite>— Sarah K., London</cite>
-                  <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-                </footer>
-              </blockquote>
-              <blockquote className="testimonial-card" role="listitem">
-                <p>&ldquo;Fast shipping to Australia, great packaging, and the crystals look exactly like the photos. Highly recommend!&rdquo;</p>
-                <footer>
-                  <cite>— James T., Sydney</cite>
-                  <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-                </footer>
-              </blockquote>
+        {testimonials.length > 0 && (
+          <section className="section testimonials" aria-labelledby="testimonials-heading">
+            <div className="container">
+              <h2 id="testimonials-heading" className="section-title text-center">What Our Customers Say</h2>
+              <div className="testimonial-grid" role="list">
+                {testimonials.map((t) => (
+                  <blockquote className="testimonial-card" role="listitem" key={t.id}>
+                    <p>&ldquo;{t.comment}&rdquo;</p>
+                    <footer>
+                      <cite>— {t.authorName}, on {t.product.name}</cite>
+                      <div className="testimonial-stars" aria-label={`${t.rating} stars`}>{starString(t.rating)}</div>
+                    </footer>
+                  </blockquote>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
       <Footer />
     </>
