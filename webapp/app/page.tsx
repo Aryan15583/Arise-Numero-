@@ -100,7 +100,7 @@ export default async function HomePage() {
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">🌍</span><span>Worldwide Shipping</span></div>
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">↩️</span><span>14-Day Returns</span></div>
             {storeRating && (
-              <div className="trust-item"><span className="trust-icon" aria-hidden="true">⭐</span><span>{storeRating.rating}/5 Rating</span></div>
+              <div className="trust-item"><span className="trust-icon" aria-hidden="true">⭐</span><span>{storeRating.rating.toFixed(1)}/5 Rating</span></div>
             )}
           </div>
         </section>

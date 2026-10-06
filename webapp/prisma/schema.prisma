@@ -41,7 +41,8 @@ model Product {
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
-  reviews Review[]
+  reviews     Review[]
+  stockAlerts StockAlert[]
 
   @@index([active])
   @@index([category])
@@ -59,11 +60,29 @@ model Review {
   title       String?
   comment     String
   status      String   @default("pending") // pending, approved, rejected
+  // True when authorEmail matches an order for this product that was paid /
+  // placed (decided once, at submission). Shown as a "Verified buyer" badge.
+  verified    Boolean  @default(false)
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([productId])
   @@index([status])
   @@map("reviews")
+}
+
+// "Email me when it's back" sign-ups on sold-out products. notifiedAt is set
+// once the restock email has gone out, so each sign-up is emailed only once.
+model StockAlert {
+  id         String    @id @default(cuid())
+  productId  String    @map("product_id")
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  email      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  notifiedAt DateTime? @map("notified_at")
+
+  @@unique([productId, email])
+  @@index([notifiedAt])
+  @@map("stock_alerts")
 }
 
 model Coupon {

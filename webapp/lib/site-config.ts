@@ -13,6 +13,9 @@ export type SiteConfig = {
   // Shown only to customers who choose bank transfer (in their confirmation
   // email and on the order-confirmed screen) — never exposed by /api/config.
   bankTransferInstructions: string;
+  // Optional site-wide banner above the header (empty = hidden), e.g. a sale.
+  announcementText: string;
+  announcementLink: string; // "/shop" or "https://…" — empty for no link
 };
 
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
@@ -23,6 +26,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   freeShippingThresholdUsd: 50,
   exchangeRates: { USD: 1, INR: 83.5, EUR: 0.92, GBP: 0.79, AUD: 1.53 },
   bankTransferInstructions: "",
+  announcementText: "",
+  announcementLink: "",
 };
 
 const SITE_CONFIG_KEY = "site_config";

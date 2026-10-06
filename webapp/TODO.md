@@ -279,3 +279,24 @@ All of these work out of the box; the items below are the bits only you can fill
       that changes.
 - [ ] **Clean out the test data** before launch (a few test orders, a booking, a
       message, an audit log) — or reset with `rm prisma/dev.db && npx prisma migrate dev && npm run seed`.
+
+## 14. Newer store features — how to use them
+
+All built and working; nothing to configure except the announcement text.
+
+- **Announcement bar:** Admin → Settings → "Announcement bar". Type a message (e.g. a
+  sale and coupon code) and an optional link (`/shop` or a full `https://` URL). It
+  shows at the top of every page; leave the text empty to hide it.
+- **Back-in-stock alerts:** sold-out product pages show "Email me when it's back".
+  Admin → Stock Levels shows how many people are waiting per product. Raising a
+  sold-out product's stock (Stock Levels, the product editor, or cancelling an order)
+  emails each of them once. Needs email set up (section 3).
+- **Verified buyer reviews:** a review whose email matches an order for that product
+  gets a "✓ Verified buyer" badge (also shown in Admin → Reviews). Product pages show
+  a star breakdown you can click to filter, sorting, and "show more".
+- **Shopping helpers:** search box in the header (inside the menu on phones), a
+  free-shipping progress bar in the cart (uses your Free Shipping Threshold setting),
+  "Recently viewed" products, related products from the same crystal type first,
+  and a real 2× hover zoom on product photos.
+- **Add to Home screen:** the site has a web app manifest and app icons, so it can be
+  installed on phones with the Arise Numero icon.

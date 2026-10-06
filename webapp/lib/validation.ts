@@ -139,6 +139,13 @@ export const newsletterSubscribeSchema = z.object({
   website: z.string().max(200).optional(),
 });
 
+export const stockAlertSchema = z.object({
+  productId: z.string().min(1).max(100),
+  email: z.string().trim().toLowerCase().email().max(200),
+  // Honeypot, same as the newsletter form.
+  website: z.string().max(200).optional(),
+});
+
 export const newsletterUnsubscribeSchema = z.object({
   token: z.string().trim().min(10).max(100),
 });
@@ -209,6 +216,15 @@ export const adminSiteConfigSchema = z.object({
   expressShippingUsd: z.number().min(0).optional(),
   freeShippingThresholdUsd: z.number().min(0).optional(),
   bankTransferInstructions: z.string().max(1000).optional(),
+  announcementText: z.string().trim().max(160).optional(),
+  announcementLink: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((v) => v === "" || (v.startsWith("/") && !v.startsWith("//")) || /^https:\/\/[^\s]+$/.test(v), {
+      message: "Announcement link must be a site path like /shop or a full https:// URL.",
+    })
+    .optional(),
   exchangeRates: z
     .object({
       USD: z.number().positive(),

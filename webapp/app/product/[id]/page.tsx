@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 import { ProductCard } from "@/components/ProductCard";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { SITE_NAME, absoluteUrl, breadcrumbJsonLd, pageMetadata, productPath, truncate } from "@/lib/seo";
 
 // generateMetadata and the page both need the row; cache() makes it one query.
@@ -37,7 +38,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const product = serializeProduct(row);
 
   const [relatedRows, categoryRow, reviewStats] = await Promise.all([
-    prisma.product.findMany({ where: { active: true, id: { not: product.id } }, take: 3 }),
+    // Same crystal type first, then fill up with other bestsellers/featured pieces.
+    prisma.product.findMany({
+      where: { active: true, id: { not: product.id } },
+      orderBy: [{ featured: "desc" }, { sortOrder: "asc" }],
+    }),
     product.category ? prisma.category.findUnique({ where: { slug: product.category } }) : Promise.resolve(null),
     // Structured data only ever uses real, moderator-approved customer reviews.
     prisma.review.aggregate({
@@ -46,7 +51,12 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       _count: { rating: true },
     }),
   ]);
-  const related = relatedRows.map(serializeProduct);
+  const related = [
+    ...relatedRows.filter((p) => p.category && p.category === product.category),
+    ...relatedRows.filter((p) => !p.category || p.category !== product.category),
+  ]
+    .slice(0, 3)
+    .map(serializeProduct);
 
   const url = absoluteUrl(productPath(product.id));
   const imageUrls = [...new Set([product.imageUrl, ...product.images].filter((u): u is string => !!u))].map(absoluteUrl);
@@ -118,6 +128,8 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
         </section>
+
+        <RecentlyViewed currentId={product.id} />
       </main>
       <Footer />
     </>

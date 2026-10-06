@@ -9,8 +9,12 @@ type Review = {
   rating: number;
   title: string | null;
   comment: string;
+  verified: boolean;
   createdAt: string;
 };
+
+type SortKey = "newest" | "highest" | "lowest";
+const PAGE = 5;
 
 export function ProductReviews({ productId }: { productId: string }) {
   const [reviews, setReviews] = useState<Review[] | null>(null);
@@ -22,6 +26,9 @@ export function ProductReviews({ productId }: { productId: string }) {
   const [comment, setComment] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [submitting, setSubmitting] = useState(false);
+  const [sort, setSort] = useState<SortKey>("newest");
+  const [starFilter, setStarFilter] = useState(0);
+  const [visible, setVisible] = useState(PAGE);
 
   useEffect(() => {
     fetch(`/api/products/${productId}/reviews`)
@@ -59,6 +66,14 @@ export function ProductReviews({ productId }: { productId: string }) {
   const ratingLabels = ["", "Poor", "Fair", "Good", "Very good", "Excellent"];
   const shownRating = hoverRating || rating;
 
+  const sortedReviews = (reviews || [])
+    .filter((r) => !starFilter || r.rating === starFilter)
+    .sort((a, b) =>
+      sort === "highest" ? b.rating - a.rating || b.createdAt.localeCompare(a.createdAt)
+      : sort === "lowest" ? a.rating - b.rating || b.createdAt.localeCompare(a.createdAt)
+      : b.createdAt.localeCompare(a.createdAt)
+    );
+
   return (
     <>
       {reviews === null ? (
@@ -66,21 +81,68 @@ export function ProductReviews({ productId }: { productId: string }) {
       ) : reviews.length === 0 ? (
         <p className="rating-total">No reviews yet.</p>
       ) : (
-        <div className="reviews-list" role="list" aria-label="Customer reviews">
-          {reviews.map((r) => (
-            <article className="review-card" role="listitem" key={r.id}>
-              <header className="review-header">
-                <strong className="reviewer-name">{r.authorName}</strong>
-                <div className="review-stars" aria-label={`${r.rating} stars`}>{starString(r.rating)}</div>
-              </header>
-              {r.title && <p style={{ fontWeight: 600, marginBottom: 4 }}>{r.title}</p>}
-              <p className="review-text">&ldquo;{r.comment}&rdquo;</p>
-              <time className="review-date" dateTime={r.createdAt}>
-                {new Date(r.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
-              </time>
-            </article>
-          ))}
-        </div>
+        <>
+          <div className="review-breakdown" aria-label="Rating breakdown">
+            {[5, 4, 3, 2, 1].map((n) => {
+              const count = reviews.filter((r) => r.rating === n).length;
+              const pct = Math.round((count / reviews.length) * 100);
+              return (
+                <button
+                  type="button"
+                  key={n}
+                  className={`review-breakdown-row ${starFilter === n ? "is-active" : ""}`}
+                  onClick={() => { setStarFilter(starFilter === n ? 0 : n); setVisible(PAGE); }}
+                  disabled={count === 0}
+                  aria-pressed={starFilter === n}
+                  aria-label={`${n} star: ${count} review${count === 1 ? "" : "s"}${count ? " — click to filter" : ""}`}
+                >
+                  <span className="review-breakdown-label">{n} ★</span>
+                  <span className="review-breakdown-bar" aria-hidden="true"><span style={{ width: `${pct}%` }} /></span>
+                  <span className="review-breakdown-count">{count}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="review-toolbar">
+            <span className="rating-total">
+              {starFilter ? `Showing ${starFilter}-star reviews` : `${reviews.length} review${reviews.length === 1 ? "" : "s"}`}
+              {starFilter > 0 && (
+                <button type="button" className="btn-link" onClick={() => setStarFilter(0)}> · Show all</button>
+              )}
+            </span>
+            <label className="review-sort">
+              <span>Sort by</span>
+              <select className="form-input" value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
+                <option value="newest">Newest</option>
+                <option value="highest">Highest rated</option>
+                <option value="lowest">Lowest rated</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="reviews-list" role="list" aria-label="Customer reviews">
+            {sortedReviews.slice(0, visible).map((r) => (
+              <article className="review-card" role="listitem" key={r.id}>
+                <header className="review-header">
+                  <strong className="reviewer-name">{r.authorName}</strong>
+                  {r.verified && <span className="review-verified" title="This reviewer bought this product from us">✓ Verified buyer</span>}
+                  <div className="review-stars" aria-label={`${r.rating} stars`}>{starString(r.rating)}</div>
+                </header>
+                {r.title && <p style={{ fontWeight: 600, marginBottom: 4 }}>{r.title}</p>}
+                <p className="review-text">&ldquo;{r.comment}&rdquo;</p>
+                <time className="review-date" dateTime={r.createdAt}>
+                  {new Date(r.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}
+                </time>
+              </article>
+            ))}
+          </div>
+          {sortedReviews.length > visible && (
+            <button type="button" className="btn btn-ghost" style={{ marginTop: "var(--space-4)" }} onClick={() => setVisible((v) => v + PAGE)}>
+              Show more reviews ({sortedReviews.length - visible} more)
+            </button>
+          )}
+        </>
       )}
 
       <div style={{ marginTop: "var(--space-6)" }}>
@@ -100,7 +162,7 @@ export function ProductReviews({ productId }: { productId: string }) {
                 <input id="review-name" className="form-input" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Smith" />
               </div>
               <div className="form-group">
-                <label className="form-label" htmlFor="review-email">Email <span className="optional-label">(optional, not shown)</span></label>
+                <label className="form-label" htmlFor="review-email">Email <span className="optional-label">(optional, never shown — use your order email for a ✓ Verified buyer badge)</span></label>
                 <input id="review-email" type="email" className="form-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" />
               </div>
             </div>

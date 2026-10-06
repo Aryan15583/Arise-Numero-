@@ -16,5 +16,7 @@ export async function GET() {
     expressShippingUsd: config.expressShippingUsd,
     freeShippingThresholdUsd: config.freeShippingThresholdUsd,
     exchangeRates: config.exchangeRates,
+    announcementText: config.announcementText,
+    announcementLink: config.announcementLink,
   });
 }

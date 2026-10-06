@@ -67,7 +67,7 @@ export default async function AboutPage() {
                 <div className="stat-item"><span className="stat-num">12k+</span><span className="stat-label">Happy Customers</span></div>
                 <div className="stat-item"><span className="stat-num">100%</span><span className="stat-label">Authentic Crystals</span></div>
                 {storeRating && (
-                  <div className="stat-item"><span className="stat-num">{storeRating.rating}★</span><span className="stat-label">Average Rating</span></div>
+                  <div className="stat-item"><span className="stat-num">{storeRating.rating.toFixed(1)}★</span><span className="stat-label">Average Rating</span></div>
                 )}
               </div>
             </div>

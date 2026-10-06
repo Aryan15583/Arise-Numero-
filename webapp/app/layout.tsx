@@ -30,7 +30,6 @@ export const metadata: Metadata = {
   ],
   category: "shopping",
   formatDetection: { telephone: false, email: false, address: false },
-  icons: { icon: "/favicon.ico" },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,

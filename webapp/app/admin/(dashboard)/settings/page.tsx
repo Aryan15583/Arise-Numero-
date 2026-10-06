@@ -11,6 +11,8 @@ type SiteConfig = {
   expressShippingUsd: number;
   freeShippingThresholdUsd: number;
   bankTransferInstructions: string;
+  announcementText: string;
+  announcementLink: string;
   exchangeRates: { USD: number; INR: number; EUR: number; GBP: number; AUD: number };
 };
 
@@ -89,6 +91,27 @@ export default function AdminSettingsPage() {
               <div className="form-group">
                 <label className="form-label">Free Shipping Threshold (USD)</label>
                 <input type="number" step="0.01" className="form-input" value={config.freeShippingThresholdUsd} onChange={(e) => setConfig({ ...config, freeShippingThresholdUsd: parseFloat(e.target.value) || 0 })} />
+              </div>
+              <div className="form-full">
+                <label className="form-label" htmlFor="announcement-text">Announcement bar</label>
+                <input
+                  id="announcement-text"
+                  className="form-input"
+                  maxLength={160}
+                  value={config.announcementText || ""}
+                  onChange={(e) => setConfig({ ...config, announcementText: e.target.value })}
+                  placeholder="e.g. Diwali sale — 15% off everything with code DIWALI15"
+                />
+                <input
+                  className="form-input"
+                  style={{ marginTop: 8 }}
+                  maxLength={300}
+                  value={config.announcementLink || ""}
+                  onChange={(e) => setConfig({ ...config, announcementLink: e.target.value })}
+                  placeholder="Optional link, e.g. /shop or https://…"
+                  aria-label="Announcement link"
+                />
+                <p className="form-hint">Shown in a slim bar at the top of every page. Leave the text empty to hide it. Visitors can dismiss it; changing the text shows it again.</p>
               </div>
               <div className="form-full">
                 <label className="form-label" htmlFor="bank-instructions">Bank transfer instructions</label>

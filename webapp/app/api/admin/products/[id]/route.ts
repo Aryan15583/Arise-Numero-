@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/require-admin";
 import { serializeProduct } from "@/lib/serialize";
+import { notifyBackInStock } from "@/lib/stock-alerts";
 import { adminProductUpdateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
@@ -43,6 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   });
 
   await logAudit("product.update", `Updated "${updated.name}" (${updated.id})`, getClientIp(req));
+  if (existing.stock <= 0 && updated.stock > 0) await notifyBackInStock(updated.id);
 
   return NextResponse.json(serializeProduct(updated));
 }

@@ -15,6 +15,7 @@ type Review = {
   title: string | null;
   comment: string;
   status: string;
+  verified: boolean;
   createdAt: string;
 };
 
@@ -98,7 +99,7 @@ export default function AdminReviewsPage() {
                 reviews.map((r) => (
                   <tr key={r.id}>
                     <td>{r.productName}</td>
-                    <td>{r.authorName}</td>
+                    <td>{r.authorName}{r.verified && <><br /><span className="badge badge-active" title="Email matches an order for this product">✓ Verified buyer</span></>}</td>
                     <td>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</td>
                     <td style={{ maxWidth: 280 }}>{r.title && <strong>{r.title}<br /></strong>}{r.comment}</td>
                     <td style={{ whiteSpace: "nowrap" }}>{new Date(r.createdAt).toLocaleDateString()}</td>

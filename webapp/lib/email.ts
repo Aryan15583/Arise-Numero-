@@ -312,3 +312,15 @@ export function bookingConfirmationEmail(booking: {
     `,
   };
 }
+
+export function backInStockEmail(opts: { productName: string; productUrl: string }): { subject: string; html: string } {
+  return {
+    subject: `Back in stock: ${opts.productName}`,
+    html: emailShell(`
+      <p>Good news — <strong>${escapeHtml(opts.productName)}</strong> is back in stock.</p>
+      <p>You asked us to let you know. Stock is limited, so it may sell out again soon.</p>
+      <p><a href="${escapeHtml(opts.productUrl)}" style="display:inline-block;background:#b8975a;color:#1a1228;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Shop it now</a></p>
+      <p style="font-size:12px;color:#7a6e8a;">This was a one-time alert — we won't email you about this product again.</p>
+    `),
+  };
+}
