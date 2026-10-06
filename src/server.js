@@ -41,6 +41,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Arise Numero server running on http://localhost:${PORT}`);
   console.log(`  Storefront:  http://localhost:${PORT}/index.html`);
-  console.log(`  Admin panel: http://localhost:${PORT}/ADMINDBMP.html`);
   console.log(`  API:         http://localhost:${PORT}/api/products`);
 });

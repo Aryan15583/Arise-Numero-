@@ -233,20 +233,17 @@ old `?id=` links redirect permanently); category landing pages
   site (`arisenumero.co.in`) via GitHub Pages** (`.github/workflows/static.yml`).
   GitHub Pages can only serve static files — it **cannot run this Next.js app**
   (it needs a server for the database, payments, and admin).
-- So the new app lives on its own branch, `nextjs-app`, and nothing deploys from
-  it. Don't merge it into `main` unless you first change the workflow to publish
-  only the old static files — otherwise `webapp/` would be copied onto the public site.
+- The Pages workflow now publishes **only** the old static storefront files
+  (`*.html`, `styles.css`, `main.js`, `CNAME`, `assets/` if present). `webapp/`,
+  `src/` and the docs are no longer copied onto the public site, so `webapp/` can
+  safely live on `main`.
 - To put the new app live, deploy `webapp/` to a Node host (Vercel is easiest:
-  import the repo, pick branch `nextjs-app`, set **Root Directory = `webapp`**) and
+  import the repo, pick branch `main`, set **Root Directory = `webapp`**) and
   point your domain there. SQLite needs a persistent disk — on Vercel/serverless,
   switch to Postgres first (section 6).
-- **Heads-up on the old live site:** the static `ADMINDBMP.html` in the repo root has
-  its default admin PIN written into the page source (line ~1238), and `main`
-  publishes it at `arisenumero.co.in/ADMINDBMP.html` — anyone can read it with
-  "View source". That old panel only edits browser-local data (no real backend),
-  so the damage is limited, but you should delete that file from `main` (or stop
-  publishing it) and never reuse that PIN anywhere. The new Next.js app has no
-  PIN at all.
+- **Old admin panel removed:** the static `ADMINDBMP.html` (which had its default
+  PIN in the page source and was published on the live site) has been deleted.
+  Never reuse that PIN anywhere. The new Next.js app has no PIN at all.
 
 ## 13. New store features — what to set up
 
