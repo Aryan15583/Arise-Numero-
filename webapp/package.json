@@ -9,6 +9,7 @@
     "lint": "eslint",
     "seed": "tsx prisma/seed.ts",
     "gen-placeholders": "node scripts/gen-placeholders.mjs",
+    "render-images": "node scripts/render-product-images.mjs",
     "test-email": "tsx scripts/test-email.ts"
   },
   "prisma": {
@@ -31,6 +32,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "playwright-core": "^1.56.1",
     "prisma": "6.19.3",
     "tsx": "^4.23.13",
     "typescript": "^5"

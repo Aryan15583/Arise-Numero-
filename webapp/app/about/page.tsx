@@ -42,7 +42,7 @@ export default async function AboutPage() {
           <div className="container about-story-inner">
             <div className="about-story-img">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/about-founder.svg" alt="Arise Numero founder handcrafting a crystal bracelet" width={500} height={600} loading="lazy" />
+              <img src="/assets/products/about-workbench.jpg" alt="An amethyst and rose quartz bracelet surrounded by loose crystal beads" width={600} height={600} loading="lazy" />
             </div>
             <div className="about-story-text">
               <h2 id="story-heading" className="section-title">How Arise Numero Began</h2>

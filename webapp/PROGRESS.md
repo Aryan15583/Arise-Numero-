@@ -422,7 +422,7 @@ Cashfree, set env vars, etc.) — this is just the short version:
 1. Sign up for Cashfree sandbox keys and test a real payment end-to-end (TODO.md §1).
 2. Set a real `JWT_SECRET` and configure email (Gmail App Password, TODO.md §3) before deploying anywhere reachable — admin login needs it.
 3. Delete this session's test records (a few orders, a booking, a message, an audit log full of test login attempts) or reseed.
-4. Real product photos, replacing the generated SVG placeholders (also matters for SEO — TODO.md §11).
+4. Real product photos, replacing the rendered product images (TODO.md §5).
 5. Set `NEXT_PUBLIC_SITE_URL` to the real domain and submit the sitemap to Google (TODO.md §11).
 6. If deploying to Vercel/serverless: swap SQLite for Postgres (TODO.md §6).
 7. Consider nonce-based CSP and a pen test before a high-stakes launch (TODO.md's Security section).

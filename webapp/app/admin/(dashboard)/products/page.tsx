@@ -336,7 +336,7 @@ export default function AdminProductsPage() {
                 </div>
                 <div className="form-group form-full">
                   <label className="form-label">Main Image URL *</label>
-                  <input className="form-input" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="/assets/amethyst-bracelet.svg or https://…" />
+                  <input className="form-input" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="/assets/products/amethyst-8mm.jpg or https://…" />
                 </div>
                 <div className="form-group form-full">
                   <label className="form-label">Additional Image URLs</label>

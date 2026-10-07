@@ -1,0 +1,11 @@
+-- Swap the flat SVG placeholder art for the rendered product images.
+-- Only rows still pointing at the old placeholder are changed, so any photo
+-- an admin has already uploaded is left alone.
+UPDATE "products" SET "image_url" = '/assets/products/amethyst-8mm.jpg', "images" = '["/assets/products/amethyst-8mm.jpg","/assets/products/amethyst-8mm-closeup.jpg","/assets/products/amethyst-8mm-slate.jpg","/assets/products/amethyst-8mm-box.jpg"]' WHERE "id" = 'amethyst-8mm' AND "image_url" = '/assets/amethyst-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/lapis-lazuli.jpg', "images" = '["/assets/products/lapis-lazuli.jpg","/assets/products/lapis-lazuli-closeup.jpg"]' WHERE "id" = 'lapis-lazuli' AND "image_url" = '/assets/lapis-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/rose-quartz.jpg', "images" = '["/assets/products/rose-quartz.jpg","/assets/products/rose-quartz-closeup.jpg"]' WHERE "id" = 'rose-quartz' AND "image_url" = '/assets/rose-quartz-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/black-tourmaline.jpg', "images" = '["/assets/products/black-tourmaline.jpg","/assets/products/black-tourmaline-closeup.jpg"]' WHERE "id" = 'black-tourmaline' AND "image_url" = '/assets/tourmaline-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/citrine.jpg', "images" = '["/assets/products/citrine.jpg","/assets/products/citrine-closeup.jpg"]' WHERE "id" = 'citrine' AND "image_url" = '/assets/citrine-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/obsidian.jpg', "images" = '["/assets/products/obsidian.jpg","/assets/products/obsidian-closeup.jpg"]' WHERE "id" = 'obsidian' AND "image_url" = '/assets/obsidian-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/amethyst-6mm.jpg', "images" = '["/assets/products/amethyst-6mm.jpg","/assets/products/amethyst-6mm-closeup.jpg"]' WHERE "id" = 'amethyst-6mm' AND "image_url" = '/assets/amethyst-6mm-bracelet.svg';
+UPDATE "products" SET "image_url" = '/assets/products/rose-quartz-premium.jpg', "images" = '["/assets/products/rose-quartz-premium.jpg","/assets/products/rose-quartz-premium-pair.jpg"]' WHERE "id" = 'rose-quartz-premium' AND "image_url" = '/assets/rose-quartz-premium.svg';

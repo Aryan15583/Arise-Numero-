@@ -81,9 +81,13 @@ contact message, and review.
 
 ## 5. Product content
 
-- [ ] Replace the generated SVG placeholder images (`public/assets/*.svg`)
-      with real product photography. Update each product's Image URL from
-      Admin → Products, or directly in the database.
+- [ ] **Product images are computer renders, not photos.** Every product now has
+      realistic rendered images (`public/assets/products/*.jpg`: bracelet, close-up,
+      and for some a gift-box or second-surface shot), made by
+      `scripts/render-product-images.mjs`. They show the right stone, colour, bead
+      size and bead count, but they are illustrations: swap in real photos of your
+      own bracelets when you can (Admin → Products → Image URL), ideally square
+      JPG/WebP around 1200×1200. Customers trust real photos more.
 - [ ] Review the auto-generated category descriptions (Admin → Categories)
       and adjust to your own voice.
 - [ ] Moderate incoming reviews regularly — Admin → Reviews, they start as
@@ -214,8 +218,8 @@ old `?id=` links redirect permanently); category landing pages
       verify ownership (paste the code into `GOOGLE_SITE_VERIFICATION` in `.env`),
       and submit `https://yourdomain/sitemap.xml`. Do the same in **Bing
       Webmaster Tools** (`BING_SITE_VERIFICATION`).
-- [ ] Replace the generated SVG placeholder product images with real photos
-      (JPG/PNG/WebP, ideally 1200×1200). Google shows photo results, not SVGs.
+- [ ] Replace the rendered product images with real photos when you have them
+      (JPG/WebP, ideally 1200×1200) — see section 5.
 - [x] **Ratings are real now.** Product star ratings and review counts are
       calculated automatically from *approved* customer reviews (they can't be
       typed in by hand any more). Products with no approved reviews show "No
@@ -223,7 +227,9 @@ old `?id=` links redirect permanently); category landing pages
       stat and the homepage testimonials also come from approved reviews, and
       are hidden until you have some.
 - [ ] The About page still claims "50+ Countries Served" and "12k+ Happy
-      Customers" — edit `app/about/page.tsx` if those aren't accurate yet.
+      Customers" — edit `app/about/page.tsx` if those aren't accurate yet. Its
+      three team portraits are still initials placeholders: add real photos of
+      your team (or remove that section) rather than stock photos of strangers.
 - [ ] Write a unique description for each product (Admin → Products) — the first
       ~155 characters become the Google snippet.
 - [ ] Fill in the footer social links (they are placeholders) and consider a
