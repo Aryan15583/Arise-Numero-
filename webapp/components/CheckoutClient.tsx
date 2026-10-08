@@ -6,6 +6,7 @@ import Script from "next/script";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { LAST_ORDER_KEY } from "./TrackOrderClient";
+import { Icon } from "./Icon";
 
 const COUNTRIES = [
   { value: "", label: "Select country…" },
@@ -325,20 +326,20 @@ export function CheckoutClient() {
 
         <fieldset className="checkout-fieldset" id="payment-section">
           <legend className="checkout-section-title">
-            <span aria-hidden="true">🔒</span> Payment Method
+            <Icon name="lock" size={16} /> Payment Method
           </legend>
           <p className="payment-note">Choose how you&apos;d like to pay. We never ask for card numbers directly on this site.</p>
 
           <div className="payment-tabs" role="tablist" aria-label="Select payment method">
             <button type="button" className={`payment-tab ${paymentMethod === "cod" ? "active" : ""}`} onClick={() => setPaymentMethod("cod")}>
-              <span aria-hidden="true">💵</span> Cash on Delivery
+              <Icon name="cash" size={16} /> Cash on Delivery
             </button>
             <button type="button" className={`payment-tab ${paymentMethod === "bank_transfer" ? "active" : ""}`} onClick={() => setPaymentMethod("bank_transfer")}>
-              <span aria-hidden="true">🏦</span> Bank Transfer
+              <Icon name="bank" size={16} /> Bank Transfer
             </button>
             {cashfreeEnabled && (
               <button type="button" className={`payment-tab ${paymentMethod === "cashfree" ? "active" : ""}`} onClick={() => setPaymentMethod("cashfree")}>
-                <span aria-hidden="true">📱</span> UPI / GPay / Card
+                <Icon name="phone" size={16} /> UPI / GPay / Card
               </button>
             )}
             {paypalClientId && (
@@ -431,7 +432,7 @@ export function CheckoutClient() {
             onClick={placeOrder}
             disabled={submitting}
           >
-            {submitting ? "Placing Order…" : "🔒 Place Order Securely"}
+            {submitting ? "Placing Order…" : "Place Order Securely"}
           </button>
         )}
 
@@ -468,7 +469,7 @@ export function CheckoutClient() {
           <div className="summary-row"><dt>Shipping</dt><dd>{shippingCost === 0 ? "Free" : format(shippingCost)}</dd></div>
           <div className="summary-row summary-total"><dt>Total</dt><dd><strong>{format(total)}</strong></dd></div>
         </dl>
-        <p className="security-note"><span aria-hidden="true">🔐</span> No card numbers are ever collected on this site.</p>
+        <p className="security-note"><Icon name="lock" size={16} /> No card numbers are ever collected on this site.</p>
       </aside>
     </div>
   );
@@ -615,7 +616,7 @@ function CashfreePanel({
 
   return (
     <button type="button" className="btn btn-primary btn-lg btn-full" onClick={pay} disabled={starting}>
-      {starting ? "Opening secure payment…" : "🔒 Pay with UPI / GPay / Card"}
+      {starting ? "Opening secure payment…" : "Pay with UPI / GPay / Card"}
     </button>
   );
 }

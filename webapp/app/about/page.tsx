@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { pageMetadata } from "@/lib/seo";
 import { getStoreRating } from "@/lib/ratings";
+import { Icon } from "@/components/Icon";
 
 // The average-rating stat comes from approved reviews in the database.
 export const revalidate = 60;
@@ -79,32 +80,32 @@ export default async function AboutPage() {
             <h2 id="values-heading" className="section-title text-center">What We Stand For</h2>
             <div className="values-grid" role="list">
               <div className="value-card" role="listitem">
-                <div className="value-icon" aria-hidden="true">💎</div>
+                <div className="value-icon"><Icon name="gem" size={26} /></div>
                 <h3>Authenticity</h3>
                 <p>We source only genuine, certified gemstones. Natural colour variations are celebrated, not hidden.</p>
               </div>
               <div className="value-card" role="listitem">
-                <div className="value-icon" aria-hidden="true">🌱</div>
+                <div className="value-icon"><Icon name="leaf" size={26} /></div>
                 <h3>Ethical Sourcing</h3>
                 <p>We work exclusively with suppliers who adhere to fair labour practices and responsible mining standards.</p>
               </div>
               <div className="value-card" role="listitem">
-                <div className="value-icon" aria-hidden="true">🔍</div>
+                <div className="value-icon"><Icon name="search" size={26} /></div>
                 <h3>Transparency</h3>
                 <p>Our readings are clearly labelled as entertainment and self-insight tools. We never make false claims.</p>
               </div>
               <div className="value-card" role="listitem">
-                <div className="value-icon" aria-hidden="true">🌍</div>
+                <div className="value-icon"><Icon name="globe" size={26} /></div>
                 <h3>Accessibility</h3>
                 <p>We ship to 50+ countries, support multiple currencies, and offer a free numerology calculator to all visitors.</p>
               </div>
               <div className="value-card" role="listitem">
-                <div className="value-icon" aria-hidden="true">🔒</div>
+                <div className="value-icon"><Icon name="lock" size={26} /></div>
                 <h3>Privacy &amp; Security</h3>
                 <p>We handle your personal data with the highest care, complying with GDPR, CCPA, and international standards.</p>
               </div>
               <div className="value-card" role="listitem">
-                <div className="value-icon" aria-hidden="true">♿</div>
+                <div className="value-icon"><Icon name="accessibility" size={26} /></div>
                 <h3>Inclusivity</h3>
                 <p>Our website is built to WCAG 2.1 AA accessibility standards — everyone can shop and explore with ease.</p>
               </div>
@@ -145,12 +146,12 @@ export default async function AboutPage() {
           <div className="container">
             <h2 id="cert-heading" className="section-title text-center">Our Commitments</h2>
             <div className="cert-grid" role="list">
-              <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">🔐</span><h3>SSL / TLS Encrypted</h3><p>All communication between your browser and our servers is encrypted via HTTPS.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">💳</span><h3>Card Data Never Stored</h3><p>We don&apos;t collect raw card numbers on this site. Pay by Cash on Delivery, Bank Transfer, or PayPal.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="lock" size={26} /></span><h3>SSL / TLS Encrypted</h3><p>All communication between your browser and our servers is encrypted via HTTPS.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="card" size={26} /></span><h3>Card Data Never Stored</h3><p>We don&apos;t collect raw card numbers on this site. Pay by Cash on Delivery, Bank Transfer, or PayPal.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">🇪🇺</span><h3>GDPR Compliant</h3><p>We meet European Union data protection standards. Cookie consent, data access rights, and full transparency.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">🇺🇸</span><h3>CCPA Compliant</h3><p>California residents can request, delete, or opt out of data sale at any time.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">♿</span><h3>WCAG 2.1 AA</h3><p>Designed to meet Web Content Accessibility Guidelines 2.1 Level AA.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">↩️</span><h3>EU Distance Selling</h3><p>14-day return window on non-customised products, in compliance with EU consumer law.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="accessibility" size={26} /></span><h3>WCAG 2.1 AA</h3><p>Designed to meet Web Content Accessibility Guidelines 2.1 Level AA.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="returns" size={26} /></span><h3>EU Distance Selling</h3><p>14-day return window on non-customised products, in compliance with EU consumer law.</p></div>
             </div>
           </div>
         </section>

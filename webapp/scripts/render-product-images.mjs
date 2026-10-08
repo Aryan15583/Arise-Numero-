@@ -29,6 +29,7 @@ export const IMAGES = {
   "rose-quartz-premium": { scene: "box", stone: "roseQuartz", beadMm: 8, seed: 81, pair: true, pattern: "goldPairs" },
   "rose-quartz-premium-pair": { scene: "pair", stone: "roseQuartz", beadMm: 8, seed: 82, pattern: "goldPairs" },
   "about-workbench": { scene: "workbench", seed: 91 },
+  "hero-still-life": { scene: "hero", seed: 101, width: 1200, height: 1350 },
 };
 
 // The rest of the catalogue (prisma/catalogue.json): one image per product,

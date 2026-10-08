@@ -8,6 +8,7 @@ import { useCurrency } from "./CurrencyContext";
 import { useWishlist } from "./WishlistContext";
 import type { CurrencyCode } from "@/lib/currency";
 import { AnnouncementBar } from "./AnnouncementBar";
+import { Icon } from "./Icon";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -48,7 +49,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
 
         {variant === "checkout" ? (
           <div className="checkout-header-secure" aria-label="Secure checkout indicator">
-            <span aria-hidden="true">🔒</span> Secure Checkout
+            <Icon name="lock" size={16} /> Secure Checkout
           </div>
         ) : (
           <nav className="main-nav" role="navigation" aria-label="Main navigation">
@@ -97,16 +98,16 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
                 aria-controls="header-search"
                 onClick={() => setSearchOpen((v) => !v)}
               >
-                <span className="cart-icon" aria-hidden="true">{searchOpen ? "×" : "⌕"}</span>
+                <Icon name={searchOpen ? "close" : "search"} />
               </button>
 
               <Link href="/wishlist" className="cart-btn" aria-label={`Wishlist, ${wishlistIds.length} saved`}>
-                <span className="cart-icon" aria-hidden="true">♡</span>
+                <Icon name="heart" />
                 {wishlistIds.length > 0 && <span className="cart-count">{wishlistIds.length}</span>}
               </Link>
 
               <Link href="/cart" className="cart-btn" aria-label={`Shopping cart, ${totalCount} items`}>
-                <span className="cart-icon" aria-hidden="true">🛒</span>
+                <Icon name="bag" />
                 <span className="cart-count" aria-live="polite">{totalCount}</span>
               </Link>
 

@@ -129,7 +129,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
         <ProductDetailClient product={product} />
 
-        <section className="section related-products" aria-labelledby="related-heading">
+        <section data-reveal className="section related-products" aria-labelledby="related-heading">
           <div className="container">
             <h2 id="related-heading" className="section-title">You May Also Like</h2>
             <div className="product-grid" role="list" aria-label="Related products">

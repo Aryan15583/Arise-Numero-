@@ -5,7 +5,8 @@
    No toggle button — updates live when OS/browser setting changes.
    ============================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+/* Fonts are self-hosted (imported in app/layout.tsx via @fontsource) — no
+   render-blocking request to Google, and they work behind strict networks. */
 
 :root {
   /* --- Brand Colours --- */
@@ -16,9 +17,9 @@
   --brand-amethyst:   #7c4d99;
 
   /* --- Light Mode Surface Colours --- */
-  --bg-page:          #faf8f4;
+  --bg-page:          #fdfbf7;
   --bg-surface:       #ffffff;
-  --bg-surface-2:     #f5f1eb;
+  --bg-surface-2:     #f7f2ea;
   --bg-surface-3:     #ede8e0;
   --bg-header:        rgba(250, 248, 244, 0.95);
   --bg-footer:        #1a1228;
@@ -63,9 +64,9 @@
   --shadow-card-hover:0 8px 32px rgba(26,18,40,0.16);
 
   /* --- Typography --- */
-  --font-display:     'Cinzel Decorative', serif;
+  --font-display:     'Cinzel Decorative', 'Cormorant Garamond', serif;
   --font-heading:     'Cormorant Garamond', serif;
-  --font-body:        'DM Sans', sans-serif;
+  --font-body:        'DM Sans Variable', 'DM Sans', system-ui, sans-serif;
 
   /* --- Spacing Scale --- */
   --space-1:  0.25rem;
@@ -3368,3 +3369,244 @@ a.add-to-cart, a.add-to-cart-main { text-decoration: none; display: inline-flex;
 /* Grid items default to min-width:auto, which let the pill row widen the page. */
 .shop-main { min-width: 0; }
 @media (min-width: 769px) { .type-pills { flex-wrap: wrap; overflow-x: visible; } }
+
+/* =============================================================
+   PREMIUM REFRESH — refined type, buttons, hero, tiles, cards.
+   Layered on top of the styles above (same tokens, so dark mode
+   keeps working).
+   ============================================================= */
+
+/* ── Type ─────────────────────────────────────────────────────── */
+body { font-feature-settings: "kern", "liga"; -webkit-font-smoothing: antialiased; }
+.section-title {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.4rem + 2.2vw, 3rem);
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+.section-subtitle { font-size: 1rem; color: var(--text-muted); max-width: 52ch; margin-inline: auto; }
+.section-header { text-align: center; margin-bottom: var(--space-12); }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 12px;
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-body); font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.26em; text-transform: uppercase; color: var(--brand-gold-dark);
+}
+.eyebrow::before, .section-header .eyebrow::after {
+  content: ""; width: 28px; height: 1px; background: currentColor; opacity: 0.6;
+}
+.eyebrow--light { color: var(--brand-gold-light); }
+@media (prefers-color-scheme: dark) { .eyebrow { color: var(--brand-gold-light); } }
+.icon { flex: none; vertical-align: middle; }
+
+/* ── Buttons: squarer, spaced capitals, gold that glows a little ─ */
+.btn {
+  border-radius: 2px;
+  border-width: 1px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.75rem;
+}
+.btn-lg { font-size: 0.82rem; padding: 1.15rem 2.25rem; }
+.btn-sm { font-size: 0.7rem; padding: 0.55rem 1rem; letter-spacing: 0.14em; }
+.btn-primary {
+  background: linear-gradient(135deg, #c9a96b 0%, #b8975a 45%, #9f7f45 100%);
+  border-color: #a8884c;
+  color: #1a1228;
+  box-shadow: 0 6px 18px -8px rgba(184, 151, 90, 0.6);
+}
+.btn-primary:hover { background: linear-gradient(135deg, #d4b47a 0%, #c2a163 50%, #a8884c 100%); color: #1a1228; box-shadow: 0 10px 24px -10px rgba(184, 151, 90, 0.75); }
+.btn-outline { border-color: var(--brand-gold); color: var(--brand-gold-dark); background: transparent; }
+.btn-outline:hover { background: var(--brand-gold); color: #1a1228; }
+.btn-outline--light { color: #f3ead8; border-color: rgba(212, 180, 122, 0.7); }
+.btn-outline--light:hover { background: rgba(212, 180, 122, 0.14); color: #fff; border-color: var(--brand-gold-light); }
+@media (prefers-color-scheme: dark) { .btn-outline { color: var(--brand-gold-light); } }
+
+/* ── Announcement bar: deep, quiet, gold type ─────────────────── */
+.announcement-bar { background: #1a1228; color: #e9d6ac; font-weight: 500; letter-spacing: 0.04em; }
+.announcement-close:hover { background: rgba(255, 255, 255, 0.08); }
+.announcement-close:focus-visible { outline-color: #e9d6ac; }
+
+/* ── Header ───────────────────────────────────────────────────── */
+.site-header { backdrop-filter: saturate(140%) blur(10px); -webkit-backdrop-filter: saturate(140%) blur(10px); }
+.nav-link { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; }
+.cart-btn { background: transparent; border: 1px solid transparent; color: var(--text-primary); }
+.cart-btn:hover { background: var(--bg-surface-2); border-color: var(--border-color); }
+.cart-btn .icon { width: 20px; height: 20px; }
+
+/* ── Hero: copy left, still life right ────────────────────────── */
+.hero--split { min-height: min(88vh, 860px); }
+.hero-split {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center; gap: clamp(2rem, 5vw, 5rem);
+  padding-block: clamp(3rem, 7vw, 6rem);
+}
+.hero--split .hero-content { padding-block: 0; max-width: 600px; }
+.hero-title { font-weight: 400; font-size: clamp(2.6rem, 1.6rem + 4vw, 4.6rem); line-height: 1.04; letter-spacing: -0.015em; }
+.hero-subtitle { font-size: 1.0625rem; line-height: 1.7; color: rgba(240, 234, 250, 0.78); max-width: 46ch; }
+.hero-cta-group { gap: var(--space-4); }
+.hero-trust {
+  list-style: none; padding: 0; margin: var(--space-10) 0 0;
+  display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-8);
+  font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(240, 234, 250, 0.62);
+}
+.hero-trust li { display: inline-flex; align-items: center; gap: 8px; }
+.hero-trust .icon { color: var(--brand-gold-light); }
+.hero-visual { position: relative; }
+.hero-frame { position: relative; aspect-ratio: 1200 / 1350; max-height: 72vh; margin-left: auto; }
+.hero-frame::before {
+  content: ""; position: absolute; inset: -14px 14px 14px -14px;
+  border: 1px solid rgba(212, 180, 122, 0.45); pointer-events: none;
+}
+.hero-frame img {
+  position: relative; width: 100%; height: 100%; object-fit: cover; display: block;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.75);
+}
+@media (max-width: 900px) {
+  .hero-split { grid-template-columns: 1fr; }
+  .hero-visual { order: -1; max-width: 420px; width: 100%; margin-inline: auto; }
+  .hero-frame { max-height: 46vh; margin-inline: auto; }
+  .hero--split .hero-content { max-width: none; }
+}
+
+/* ── Trust bar: small capitals, gold line icons ───────────────── */
+.trust-bar { border-bottom: 1px solid var(--border-color); }
+.trust-bar-inner { gap: var(--space-4) var(--space-10); }
+.trust-item { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-body); gap: 10px; }
+.trust-item .icon { color: var(--brand-gold); }
+
+/* ── Category tiles: image-led, name over a soft scrim ────────── */
+.category-tiles { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: var(--space-5, 1.25rem); }
+.category-tile { border: 0; border-radius: 4px; aspect-ratio: 4 / 5; background: #1a1228; isolation: isolate; }
+.category-tile img { position: absolute; inset: 0; height: 100%; aspect-ratio: auto; transition: transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.category-tile::after {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(180deg, rgba(18, 11, 31, 0) 45%, rgba(18, 11, 31, 0.82) 100%);
+}
+.category-tile:hover { transform: none; box-shadow: 0 18px 40px -20px rgba(26, 18, 40, 0.55); }
+.category-tile:hover img { transform: scale(1.06); }
+.category-tile-body { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: var(--space-5, 1.25rem); color: #fff; }
+.category-tile-name { display: block; padding: 0; font-family: var(--font-heading); font-size: 1.45rem; font-weight: 500; line-height: 1.15; }
+.category-tile-count {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 0 0;
+  font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: #e9d6ac;
+}
+.category-tile:hover .category-tile-count .icon { transform: translateX(3px); }
+.category-tile-count .icon { transition: transform 0.25s ease; }
+
+/* ── Feature promises: no boxes, icon in a hairline circle ────── */
+.feature-card { background: transparent; border: 0; padding: var(--space-6) var(--space-4); }
+.feature-card:hover { box-shadow: none; }
+.feature-icon {
+  display: inline-grid; place-items: center; width: 64px; height: 64px; margin: 0 auto var(--space-5, 1.25rem);
+  border-radius: 50%; border: 1px solid var(--brand-gold); color: var(--brand-gold-dark); font-size: 0;
+}
+@media (prefers-color-scheme: dark) { .feature-icon { color: var(--brand-gold-light); } }
+.feature-card h3 { font-size: 1.4rem; font-weight: 500; }
+.feature-card p { line-height: 1.7; }
+
+/* ── Product cards: hairline, serif name, calmer button ───────── */
+.product-card { border-radius: 4px; border-color: var(--border-color); box-shadow: none; }
+.product-card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -24px rgba(26, 18, 40, 0.35); }
+.product-card .product-img { transition: transform 0.6s cubic-bezier(.2,.7,.2,1); }
+.product-name { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 500; letter-spacing: 0; }
+.product-name a { color: inherit; text-decoration: none; }
+.product-price { font-family: var(--font-heading); font-size: 1.35rem; font-weight: 600; }
+.product-card .add-to-cart { border-radius: 2px; }
+.product-badge { border-radius: 2px; letter-spacing: 0.14em; font-size: 0.62rem; }
+.wishlist-heart { box-shadow: none; background: rgba(255, 255, 255, 0.9); border-color: transparent; }
+
+/* ── Product page details ─────────────────────────────────────── */
+.product-detail-title { font-weight: 500; letter-spacing: -0.01em; }
+.price-main { font-family: var(--font-heading); font-weight: 600; }
+.rating-link { color: var(--text-muted); text-decoration: none; border-bottom: 1px solid var(--border-color); }
+.rating-link:hover { color: var(--brand-gold-dark); }
+.stock-status { background: transparent !important; border: 0 !important; padding: 0 !important; font-size: 0.85rem; letter-spacing: 0.04em; }
+.price-note { color: var(--text-muted); }
+.product-trust .trust-item-sm { gap: 8px; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; }
+.product-trust .icon { color: var(--brand-gold); }
+.badge-authentic { display: inline-flex; align-items: center; gap: 6px; }
+
+/* ── Footer: a touch more air ─────────────────────────────────── */
+.site-footer h4 { letter-spacing: 0.22em; }
+
+/* Logo: classic serif capitals (the decorative font's "N" read oddly). */
+.logo-text { font-family: var(--font-heading); font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; font-size: 1.05rem; }
+/* Category tiles: an even 4-up grid, 2-up on phones. */
+.category-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { .category-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); } }
+@media (max-width: 900px) { .category-tile-name { font-size: 1.2rem; } .category-tile-body { padding: var(--space-3); } }
+/* Sharper corners to match the cards. */
+.gallery-main, .gallery-thumb, .filter-section, .shop-sidebar, .shop-toolbar, .cart-summary, .specs-list { border-radius: 4px; }
+.specs-list { border-color: var(--border-color); }
+@media (max-width: 480px) {
+  .logo-text { font-size: 0.88rem; letter-spacing: 0.08em; }
+  .header-actions { gap: 4px; }
+  .header-actions .cart-btn, .mobile-menu-btn { width: 36px; height: 36px; }
+  .currency-selector select { padding-inline: 6px; font-size: 0.75rem; }
+}
+
+/* =============================================================
+   SMOOTH & BRIGHT — gentle motion, gold sheen, lighter surfaces.
+   Motion is disabled for visitors who prefer reduced motion.
+   ============================================================= */
+html { scroll-behavior: smooth; }
+
+/* Gold sheen that sweeps across primary buttons on hover. */
+.btn-primary { position: relative; overflow: hidden; isolation: isolate; }
+.btn-primary::after {
+  content: ""; position: absolute; inset: -40% auto -40% -60%; width: 45%; z-index: -1;
+  background: linear-gradient(100deg, transparent, rgba(255, 248, 228, 0.65), transparent);
+  transform: translateX(0) skewX(-18deg); transition: transform 0.9s cubic-bezier(.2,.7,.2,1);
+}
+.btn-primary:hover::after { transform: translateX(420%) skewX(-18deg); }
+.btn { transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease; }
+.btn:hover { transform: translateY(-1px); }
+
+/* Shimmering gold headline accent. */
+.hero-title .accent {
+  background: linear-gradient(100deg, #b8975a 0%, #f3dca4 22%, #c9a96b 40%, #e9cf91 62%, #b8975a 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: gold-shimmer 7s ease-in-out infinite;
+}
+@keyframes gold-shimmer { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* Brighter hero: warm glow behind the still life, light catching the frame. */
+.hero--split .hero-bg::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(60% 55% at 72% 45%, rgba(212, 180, 122, 0.22), transparent 70%),
+    radial-gradient(40% 40% at 15% 20%, rgba(124, 77, 153, 0.35), transparent 70%);
+}
+.hero-frame img { animation: hero-float 9s ease-in-out infinite; }
+@keyframes hero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+/* Product imagery: soft lift and glow on hover. */
+.product-card:hover { box-shadow: 0 24px 48px -26px rgba(124, 77, 153, 0.45), 0 0 0 1px rgba(212, 180, 122, 0.35); }
+.product-card:hover .product-img { transform: scale(1.05); }
+.category-tile:hover { box-shadow: 0 24px 50px -24px rgba(124, 77, 153, 0.6); }
+.gallery-main { box-shadow: 0 30px 60px -36px rgba(26, 18, 40, 0.45); }
+
+/* Scroll reveal: sections drift up and fade in (only once JS has started,
+   so nothing stays hidden if scripts are blocked). */
+.js-reveal [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.2,.7,.2,1); }
+.js-reveal [data-reveal].is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .hero-title .accent, .hero-frame img { animation: none; }
+  .btn-primary::after { display: none; }
+  .js-reveal [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .btn:hover, .product-card:hover { transform: none; }
+}
+/* Phones: spaced-capital buttons may wrap instead of widening the page. */
+@media (max-width: 480px) {
+  .btn { white-space: normal; text-align: center; letter-spacing: 0.1em; }
+  .site-header--checkout .btn-sm { letter-spacing: 0.04em; padding-inline: 0.6rem; }
+  .cart-main, .cart-layout > *, .checkout-layout > * { min-width: 0; }
+}

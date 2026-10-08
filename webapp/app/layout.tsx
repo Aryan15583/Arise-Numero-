@@ -1,8 +1,17 @@
 import type { Metadata, Viewport } from "next";
+import "@fontsource/cormorant-garamond/latin-300.css";
+import "@fontsource/cormorant-garamond/latin-400.css";
+import "@fontsource/cormorant-garamond/latin-500.css";
+import "@fontsource/cormorant-garamond/latin-600.css";
+import "@fontsource/cormorant-garamond/latin-400-italic.css";
+import "@fontsource/cinzel-decorative/latin-400.css";
+import "@fontsource/cinzel-decorative/latin-700.css";
+import "@fontsource-variable/dm-sans/opsz.css";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@/components/Analytics";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl, isIndexableSite } from "@/lib/seo";
 
 const defaultTitle = `${SITE_NAME} — ${SITE_TAGLINE}`;
@@ -68,6 +77,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <Providers>
           <CookieBanner />
+          <ScrollReveal />
           {children}
           <Analytics />
         </Providers>

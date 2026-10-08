@@ -5,6 +5,7 @@ import { ProductCard } from "./ProductCard";
 import type { ProductDTO } from "@/lib/types";
 import { isPriced } from "@/lib/pricing";
 import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
+import { Icon } from "./Icon";
 
 const SIZE_OPTIONS = ["6mm", "8mm", "10mm"];
 
@@ -239,7 +240,7 @@ export function ShopClient({
 
         {filtered.length === 0 && (
           <div className="cart-empty">
-            <div className="cart-empty-icon" aria-hidden="true">💎</div>
+            <div className="cart-empty-icon"><Icon name="gem" size={40} /></div>
             <h2>No products match{query.trim() ? ` “${query.trim()}”` : " your filters"}</h2>
             <p>Try a different search, or adjust or reset your filters.</p>
             <button className="btn btn-primary" onClick={resetFilters}>Reset Filters</button>
