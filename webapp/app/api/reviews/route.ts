@@ -3,6 +3,27 @@ import { prisma } from "@/lib/db";
 import { notifyAdmin, escapeHtml } from "@/lib/email";
 import { reviewCreateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { orderHoldsStock } from "@/lib/inventory";
+
+// A review is from a "verified buyer" when its email matches an order that
+// contains this product and is a real purchase (paid, or a live COD/bank order).
+async function isVerifiedBuyer(email: string, productId: string): Promise<boolean> {
+  const emails = [...new Set([email.trim(), email.trim().toLowerCase()])];
+  const orders = await prisma.order.findMany({
+    where: { customerEmail: { in: emails } },
+    select: { items: true, status: true, paymentMethod: true },
+    take: 50,
+  });
+  return orders.some((o) => {
+    if (!orderHoldsStock(o)) return false;
+    try {
+      const items = JSON.parse(o.items || "[]") as { id?: string }[];
+      return Array.isArray(items) && items.some((i) => i.id === productId);
+    } catch {
+      return false;
+    }
+  });
+}
 
 // PUBLIC: submit a product review. Goes in as "pending" — an admin approves
 // it (Admin -> Reviews) before it appears on the product page. This keeps
@@ -23,6 +44,8 @@ export async function POST(req: NextRequest) {
   const product = await prisma.product.findUnique({ where: { id: r.productId } });
   if (!product) return NextResponse.json({ error: "Product not found." }, { status: 404 });
 
+  const verified = r.authorEmail ? await isVerifiedBuyer(r.authorEmail, r.productId) : false;
+
   const review = await prisma.review.create({
     data: {
       productId: r.productId,
@@ -32,12 +55,13 @@ export async function POST(req: NextRequest) {
       title: r.title || null,
       comment: r.comment,
       status: "pending",
+      verified,
     },
   });
 
   await notifyAdmin(
     `New review pending approval — ${product.name}`,
-    `<p>${escapeHtml(r.authorName)} left a ${r.rating}-star review on ${escapeHtml(product.name)}.</p>`
+    `<p>${escapeHtml(r.authorName)} left a ${r.rating}-star review on ${escapeHtml(product.name)}${verified ? " (verified buyer)" : ""}.</p>`
   );
 
   return NextResponse.json(

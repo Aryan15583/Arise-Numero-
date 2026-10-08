@@ -6,6 +6,7 @@ import { adminOrderStatusSchema, formatZodError } from "@/lib/validation";
 import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
 import { notifyLowStock, orderHoldsStock, returnStock, takeStock } from "@/lib/inventory";
+import { notifyBackInStock } from "@/lib/stock-alerts";
 import { recordOrderEvent } from "@/lib/order-events";
 import { orderStatusEmail, sendEmail } from "@/lib/email";
 import type { ResolvedCartLine } from "@/lib/types";
@@ -84,6 +85,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     }
   }
   if (stock) await notifyLowStock(stock.lowStock);
+  // A cancellation can bring a sold-out product back — tell anyone waiting on it.
+  if (holdsBefore && !holdsAfter) {
+    for (const productId of new Set(items.map((i) => i.id))) await notifyBackInStock(productId);
+  }
 
   const stockNote = holdsBefore && !holdsAfter ? " (stock returned)" : !holdsBefore && holdsAfter ? " (stock taken)" : "";
   await logAudit(

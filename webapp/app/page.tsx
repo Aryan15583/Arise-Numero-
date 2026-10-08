@@ -8,6 +8,9 @@ import { ProductCard } from "@/components/ProductCard";
 import { JsonLd } from "@/components/JsonLd";
 import { DEFAULT_DESCRIPTION, SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/seo";
 import { getSocialLinks } from "@/lib/social";
+import { getStoreRating } from "@/lib/ratings";
+import { starString } from "@/lib/stars";
+import { PRODUCT_TYPES } from "@/lib/product-types";
 
 const profileLinks = getSocialLinks().filter((s) => s.label !== "WhatsApp").map((s) => s.href);
 
@@ -40,11 +43,31 @@ const siteJsonLd = {
 };
 
 export default async function HomePage() {
-  const featured = await prisma.product.findMany({
-    where: { active: true, featured: true },
-    orderBy: { sortOrder: "asc" },
-    take: 4,
-  });
+  const [featured, storeRating, testimonials, typeRows] = await Promise.all([
+    prisma.product.findMany({
+      where: { active: true, featured: true },
+      orderBy: { sortOrder: "asc" },
+      take: 4,
+    }),
+    getStoreRating(),
+    // Real, moderator-approved 4–5 star reviews — never invented quotes.
+    prisma.review.findMany({
+      where: { status: "approved", rating: { gte: 4 }, product: { active: true } },
+      orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+      take: 3,
+      include: { product: { select: { name: true } } },
+    }),
+    // One tile per product type that has products, using its first product's photo.
+    prisma.product.findMany({
+      where: { active: true },
+      orderBy: { sortOrder: "asc" },
+      select: { productType: true, imageUrl: true },
+    }),
+  ]);
+  const typeTiles = PRODUCT_TYPES.map((t) => {
+    const rows = typeRows.filter((r) => r.productType === t.slug);
+    return { ...t, count: rows.length, image: rows.find((r) => r.imageUrl)?.imageUrl || "/assets/placeholder.svg" };
+  }).filter((t) => t.count > 0);
   const products = featured.map(serializeProduct);
 
   return (
@@ -62,11 +85,11 @@ export default async function HomePage() {
               <span className="accent">Know Your Numbers.</span>
             </h1>
             <p className="hero-subtitle">
-              Handcrafted authentic crystal bracelets &amp; personalized numerology readings delivered worldwide.
+              Authentic crystals, gemstone jewellery &amp; personalised numerology readings delivered worldwide.
             </p>
             <div className="hero-cta-group">
-              <Link href="/shop" className="btn btn-primary btn-lg" aria-label="Shop crystal bracelets">
-                Shop Bracelets
+              <Link href="/shop" className="btn btn-primary btn-lg" aria-label="Shop all crystals">
+                Shop Crystals
               </Link>
               <Link href="/numerology" className="btn btn-outline btn-lg" aria-label="Try free numerology calculator">
                 Free Reading
@@ -87,28 +110,51 @@ export default async function HomePage() {
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">💳</span><span>Secure Payments</span></div>
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">🌍</span><span>Worldwide Shipping</span></div>
             <div className="trust-item"><span className="trust-icon" aria-hidden="true">↩️</span><span>14-Day Returns</span></div>
-            <div className="trust-item"><span className="trust-icon" aria-hidden="true">⭐</span><span>4.9/5 Rating</span></div>
+            {storeRating && (
+              <div className="trust-item"><span className="trust-icon" aria-hidden="true">⭐</span><span>{storeRating.rating.toFixed(1)}/5 Rating</span></div>
+            )}
           </div>
         </section>
 
-        <section className="section featured-products" aria-labelledby="featured-heading">
+        <section className="section shop-categories" aria-labelledby="categories-heading">
           <div className="container">
             <div className="section-header">
-              <h2 id="featured-heading" className="section-title">Featured Bracelets</h2>
-              <p className="section-subtitle">Each piece is handcrafted with authentic gemstones and natural variations</p>
+              <h2 id="categories-heading" className="section-title">Shop by Category</h2>
+              <p className="section-subtitle">Bracelets, pendants, rings, crystal pencils and more — all natural stones</p>
             </div>
-            <div className="product-grid" role="list" aria-label="Featured crystal bracelets">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
+            <div className="category-tiles" role="list">
+              {typeTiles.map((t) => (
+                <Link key={t.slug} href={`/shop?type=${t.slug}`} className="category-tile" role="listitem">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={t.image} alt="" loading="lazy" width={300} height={300} />
+                  <span className="category-tile-name">{t.name}</span>
+                  <span className="category-tile-count">{t.count} item{t.count === 1 ? "" : "s"}</span>
+                </Link>
               ))}
-            </div>
-            <div className="section-cta">
-              <Link href="/shop" className="btn btn-outline btn-lg" aria-label="View all crystal bracelets in the shop">
-                View All Bracelets
-              </Link>
             </div>
           </div>
         </section>
+
+        {products.length > 0 && (
+          <section className="section featured-products" aria-labelledby="featured-heading">
+            <div className="container">
+              <div className="section-header">
+                <h2 id="featured-heading" className="section-title">Featured Pieces</h2>
+                <p className="section-subtitle">Each piece is handcrafted with authentic gemstones and natural variations</p>
+              </div>
+              <div className="product-grid" role="list" aria-label="Featured products">
+                {products.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+              <div className="section-cta">
+                <Link href="/shop" className="btn btn-outline btn-lg" aria-label="View all products in the shop">
+                  View All Products
+                </Link>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="section numerology-teaser" aria-labelledby="numerology-heading">
           <div className="container numerology-teaser-inner">
@@ -140,7 +186,7 @@ export default async function HomePage() {
               <div className="feature-card" role="listitem">
                 <span className="feature-icon" aria-hidden="true">💎</span>
                 <h3>100% Authentic Crystals</h3>
-                <p>Every bracelet uses certified genuine gemstones, ethically sourced with natural colour and texture variations.</p>
+                <p>Every piece uses genuine natural gemstones, ethically sourced with natural colour and texture variations.</p>
               </div>
               <div className="feature-card" role="listitem">
                 <span className="feature-icon" aria-hidden="true">🌍</span>
@@ -161,34 +207,24 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="section testimonials" aria-labelledby="testimonials-heading">
-          <div className="container">
-            <h2 id="testimonials-heading" className="section-title text-center">What Our Customers Say</h2>
-            <div className="testimonial-grid" role="list">
-              <blockquote className="testimonial-card" role="listitem">
-                <p>&ldquo;The amethyst bracelet is absolutely stunning. The crystals have beautiful natural variations and the quality is exceptional.&rdquo;</p>
-                <footer>
-                  <cite>— Priya M., Mumbai</cite>
-                  <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-                </footer>
-              </blockquote>
-              <blockquote className="testimonial-card" role="listitem">
-                <p>&ldquo;My numerology reading was incredibly insightful. The intake process was clear and respectful of my privacy.&rdquo;</p>
-                <footer>
-                  <cite>— Sarah K., London</cite>
-                  <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-                </footer>
-              </blockquote>
-              <blockquote className="testimonial-card" role="listitem">
-                <p>&ldquo;Fast shipping to Australia, great packaging, and the crystals look exactly like the photos. Highly recommend!&rdquo;</p>
-                <footer>
-                  <cite>— James T., Sydney</cite>
-                  <div className="testimonial-stars" aria-label="5 stars">★★★★★</div>
-                </footer>
-              </blockquote>
+        {testimonials.length > 0 && (
+          <section className="section testimonials" aria-labelledby="testimonials-heading">
+            <div className="container">
+              <h2 id="testimonials-heading" className="section-title text-center">What Our Customers Say</h2>
+              <div className="testimonial-grid" role="list">
+                {testimonials.map((t) => (
+                  <blockquote className="testimonial-card" role="listitem" key={t.id}>
+                    <p>&ldquo;{t.comment}&rdquo;</p>
+                    <footer>
+                      <cite>— {t.authorName}, on {t.product.name}</cite>
+                      <div className="testimonial-stars" aria-label={`${t.rating} stars`}>{starString(t.rating)}</div>
+                    </footer>
+                  </blockquote>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
       <Footer />
     </>

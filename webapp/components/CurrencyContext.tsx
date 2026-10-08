@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, useRef, useSyncExternalStore } from "react";
 import { CurrencyCode, EXCHANGE_RATES as DEFAULT_RATES, COUNTRY_CURRENCY } from "@/lib/currency";
+import { getPublicConfig } from "@/lib/public-config";
 
 const CURRENCY_KEY = "ariseNumero_currency";
 
@@ -64,8 +65,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
   const [, forceRerender] = useState(0);
 
   useEffect(() => {
-    fetch("/api/config")
-      .then((r) => r.json())
+    getPublicConfig()
       .then((data) => {
         if (data?.exchangeRates) {
           ratesRef.current = { ...ratesRef.current, ...data.exchangeRates };

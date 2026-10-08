@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { lineLimit, useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
+import { getPublicConfig } from "@/lib/public-config";
 
 export function CartPageClient() {
   const { items, removeFromCart, updateQty, subtotalUsd } = useCart();
@@ -15,10 +16,9 @@ export function CartPageClient() {
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(50);
 
   useEffect(() => {
-    fetch("/api/config")
-      .then((r) => r.json())
-      .then((d) => setFreeShippingThreshold(d.freeShippingThresholdUsd ?? 50))
-      .catch(() => {});
+    getPublicConfig().then((d) => {
+      if (d) setFreeShippingThreshold(d.freeShippingThresholdUsd ?? 50);
+    });
   }, []);
 
   type CouponResult = { valid: boolean; discountPercent?: number; message?: string };
@@ -187,6 +187,28 @@ export function CartPageClient() {
 
       <aside className="cart-summary" aria-labelledby="summary-heading">
         <h2 id="summary-heading" className="summary-title">Order Summary</h2>
+
+        {freeShippingThreshold > 0 && (
+          <div className="free-ship-progress" aria-live="polite">
+            {afterDiscount >= freeShippingThreshold ? (
+              <p className="free-ship-text"><span aria-hidden="true">🎉</span> You&apos;ve unlocked <strong>free shipping</strong>!</p>
+            ) : (
+              <p className="free-ship-text">
+                Add <strong>{format(freeShippingThreshold - afterDiscount)}</strong> more for <strong>free shipping</strong>
+              </p>
+            )}
+            <div
+              className="free-ship-bar"
+              role="progressbar"
+              aria-label="Progress toward free shipping"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.min(100, Math.round((afterDiscount / freeShippingThreshold) * 100))}
+            >
+              <span style={{ width: `${Math.min(100, (afterDiscount / freeShippingThreshold) * 100)}%` }} />
+            </div>
+          </div>
+        )}
 
         <dl className="summary-breakdown" aria-label="Cost breakdown">
           <div className="summary-row">

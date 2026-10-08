@@ -25,6 +25,19 @@ static site and the zip are untouched, one level up, for reference.
 Some older sections below still describe earlier phases (e.g. the PIN login).
 Where they disagree with this section, **this section is right**.
 
+- **Database is now Postgres (Neon), not SQLite.** `schema.prisma` uses
+  `provider = "postgresql"` with `DATABASE_URL` (pooled) + `DIRECT_URL` (direct,
+  for migrations). The migration history was restarted for Postgres:
+  `…_init_postgres` (schema) and `…_seed_catalogue` (stones, all products,
+  coupons, inserted once with `ON CONFLICT DO NOTHING`). Old SQLite migrations
+  are in `prisma/migrations-sqlite-archive/`. Admin searches use
+  case-insensitive matching. Deploy: **DEPLOY.md** (Vercel + Neon; `render.yaml`
+  for Render). `vercel-build` runs `prisma migrate deploy && next build`;
+  `vercel.json` pins functions to Singapore (`sin1`) next to the Neon database.
+  Upload limit is 4 MB (Vercel caps request bodies at 4.5 MB). Tested end to end
+  against a local Postgres 16: fresh migrate, production build, admin login,
+  uploads, pricing + ordering, reviews, back-in-stock, search.
+
 - **Admin sign-in is now an emailed one-time code — the PIN is gone.** The login
   page emails an 8-character code to the single address in `ADMIN_LOGIN_EMAIL`
   (default `arisenumero@gmail.com`; the recipient can never come from the
@@ -422,7 +435,7 @@ Cashfree, set env vars, etc.) — this is just the short version:
 1. Sign up for Cashfree sandbox keys and test a real payment end-to-end (TODO.md §1).
 2. Set a real `JWT_SECRET` and configure email (Gmail App Password, TODO.md §3) before deploying anywhere reachable — admin login needs it.
 3. Delete this session's test records (a few orders, a booking, a message, an audit log full of test login attempts) or reseed.
-4. Real product photos, replacing the generated SVG placeholders (also matters for SEO — TODO.md §11).
+4. Real product photos, replacing the rendered product images (TODO.md §5).
 5. Set `NEXT_PUBLIC_SITE_URL` to the real domain and submit the sitemap to Google (TODO.md §11).
 6. If deploying to Vercel/serverless: swap SQLite for Postgres (TODO.md §6).
 7. Consider nonce-based CSP and a pen test before a high-stakes launch (TODO.md's Security section).

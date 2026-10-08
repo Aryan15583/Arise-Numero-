@@ -2,9 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Postgres (Neon in production). DATABASE_URL is the pooled connection the
+// app uses at runtime; DIRECT_URL is the direct (non-pooled) one that
+// `prisma migrate` needs. Locally both can be the same URL.
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Category {
@@ -25,14 +29,17 @@ model Product {
   description       String?
   priceUsd          Float    @default(0) @map("price_usd")
   originalPriceUsd  Float?   @map("original_price_usd")
-  category          String?
+  category          String? // the stone, e.g. "amethyst" (Category.slug)
+  // What kind of item it is — see lib/product-types.ts (bracelets, pendants, rings…)
+  productType       String   @default("bracelets") @map("product_type")
   beadSize          String?  @map("bead_size")
   stock             Int      @default(0)
   lowStockThreshold Int      @default(5) @map("low_stock_threshold")
   imageUrl          String?  @map("image_url")
   images            String   @default("[]") // JSON-encoded string array
   badge             String?
-  rating            Float    @default(4.9)
+  // Cached from approved reviews (lib/ratings.ts) — never edited by hand.
+  rating            Float    @default(0)
   reviewCount       Int      @default(0) @map("review_count")
   active            Boolean  @default(true)
   featured          Boolean  @default(false)
@@ -40,12 +47,32 @@ model Product {
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
-  reviews Review[]
+  reviews     Review[]
+  stockAlerts StockAlert[]
+  uploads     ProductImage[]
 
   @@index([active])
   @@index([category])
+  @@index([productType])
   @@index([featured])
   @@map("products")
+}
+
+// Product photos uploaded from Admin → Products, stored in the database so they
+// survive redeploys on any host. Served by /api/images/<id>; a product's
+// `images` list holds those URLs (max 4, first = main image). productId is null
+// between upload and the product being saved; stale unlinked rows get purged.
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String?  @map("product_id")
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mimeType  String   @map("mime_type")
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([productId])
+  @@map("product_images")
 }
 
 model Review {
@@ -58,11 +85,29 @@ model Review {
   title       String?
   comment     String
   status      String   @default("pending") // pending, approved, rejected
+  // True when authorEmail matches an order for this product that was paid /
+  // placed (decided once, at submission). Shown as a "Verified buyer" badge.
+  verified    Boolean  @default(false)
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([productId])
   @@index([status])
   @@map("reviews")
+}
+
+// "Email me when it's back" sign-ups on sold-out products. notifiedAt is set
+// once the restock email has gone out, so each sign-up is emailed only once.
+model StockAlert {
+  id         String    @id @default(cuid())
+  productId  String    @map("product_id")
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  email      String
+  createdAt  DateTime  @default(now()) @map("created_at")
+  notifiedAt DateTime? @map("notified_at")
+
+  @@unique([productId, email])
+  @@index([notifiedAt])
+  @@map("stock_alerts")
 }
 
 model Coupon {

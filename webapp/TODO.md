@@ -77,37 +77,34 @@ contact message, and review.
       "Backend Test", the Cashfree/COD test orders from earlier sessions, a
       test booking, a test review, and now also an audit log full of test
       login attempts/lockouts from security testing — or just reset with
-      `rm prisma/dev.db && npx prisma migrate dev && npm run seed`.
+      `npx prisma migrate reset` (wipes the database and reloads the catalogue — never run it against the live database).
 
 ## 5. Product content
 
-- [ ] Replace the generated SVG placeholder images (`public/assets/*.svg`)
-      with real product photography. Update each product's Image URL from
-      Admin → Products, or directly in the database.
+- [ ] **Product images are computer renders, not photos.** Every product now has
+      realistic rendered images (`public/assets/products/*.jpg`: bracelet, close-up,
+      and for some a gift-box or second-surface shot), made by
+      `scripts/render-product-images.mjs`. They show the right stone, colour, bead
+      size and bead count, but they are illustrations: swap in real photos of your
+      own bracelets when you can: Admin → Products → Edit → **Product Images** →
+      "Upload image" (up to 4 per product; the first is the main photo — use
+      "Set as main" or the arrows to reorder). Square photos look best; big phone
+      photos are shrunk to 1600px JPEG in the browser before upload (4 MB limit).
+      Uploads are stored in the database, so back up the database to keep them.
+      Customers trust real photos more.
 - [ ] Review the auto-generated category descriptions (Admin → Categories)
       and adjust to your own voice.
 - [ ] Moderate incoming reviews regularly — Admin → Reviews, they start as
-      "Pending" and won't show publicly until you approve them.
+      "Pending" and won't show publicly until you approve them. Approving,
+      rejecting or deleting a review updates that product's rating instantly.
 
-## 6. If/when you outgrow SQLite
+## 6. Database — Postgres on Neon
 
-SQLite (the current database) is genuinely fine for a small-to-medium store —
-single file, zero setup, handles concurrent reads well. It becomes a real
-constraint once you have many simultaneous writers (e.g. a traffic spike
-during a sale) or you deploy to a serverless host with no persistent disk
-(Vercel, etc. — the file would reset on every deploy there).
-
-When you hit that point:
-1. Stand up a Postgres database (free tiers: Neon, Supabase, Railway).
-2. In `prisma/schema.prisma`, change `provider = "sqlite"` to
-   `provider = "postgresql"` under `datasource db`.
-3. Point `DATABASE_URL` at your new Postgres connection string.
-4. Run `npx prisma migrate dev` once against the new database — it replays
-   all the existing migrations, so you get the identical schema.
-5. Re-run `npm run seed` if it's a fresh database.
-
-Nothing else in the app needs to change — all the query code goes through
-Prisma, which is database-agnostic.
+The app now runs on Postgres (Neon) instead of the old SQLite file, so it works
+on Vercel/serverless hosts. Setup steps are in **DEPLOY.md**. A new database gets
+all tables plus the full catalogue from `npx prisma migrate deploy` (Vercel runs
+it on every build). The old SQLite migrations are kept for reference in
+`prisma/migrations-sqlite-archive/`.
 
 ## 7. If you deploy behind multiple server instances (load balancer)
 
@@ -213,15 +210,18 @@ old `?id=` links redirect permanently); category landing pages
       verify ownership (paste the code into `GOOGLE_SITE_VERIFICATION` in `.env`),
       and submit `https://yourdomain/sitemap.xml`. Do the same in **Bing
       Webmaster Tools** (`BING_SITE_VERIFICATION`).
-- [ ] Replace the generated SVG placeholder product images with real photos
-      (JPG/PNG/WebP, ideally 1200×1200). Google shows photo results, not SVGs.
-- [ ] The seeded **star ratings / review counts** (e.g. "4.9 · 128 reviews") are
-      placeholder numbers shown on product cards. Edit them in Admin → Products
-      to match reality or set them to 0 — claiming reviews you don't have
-      can get a store penalised. (Search-result markup only ever uses real,
-      approved customer reviews, never these numbers.)
-- [ ] The homepage testimonials and the "4.9/5 rating" badge are hard-coded text —
-      swap in real ones.
+- [ ] Replace the rendered product images with real photos when you have them
+      (JPG/WebP, ideally 1200×1200) — see section 5.
+- [x] **Ratings are real now.** Product star ratings and review counts are
+      calculated automatically from *approved* customer reviews (they can't be
+      typed in by hand any more). Products with no approved reviews show "No
+      reviews yet". The homepage rating badge, the About page "Average Rating"
+      stat and the homepage testimonials also come from approved reviews, and
+      are hidden until you have some.
+- [ ] The About page still claims "50+ Countries Served" and "12k+ Happy
+      Customers" — edit `app/about/page.tsx` if those aren't accurate yet. Its
+      three team portraits are still initials placeholders: add real photos of
+      your team (or remove that section) rather than stock photos of strangers.
 - [ ] Write a unique description for each product (Admin → Products) — the first
       ~155 characters become the Google snippet.
 - [ ] Fill in the footer social links (they are placeholders) and consider a
@@ -233,20 +233,15 @@ old `?id=` links redirect permanently); category landing pages
   site (`arisenumero.co.in`) via GitHub Pages** (`.github/workflows/static.yml`).
   GitHub Pages can only serve static files — it **cannot run this Next.js app**
   (it needs a server for the database, payments, and admin).
-- So the new app lives on its own branch, `nextjs-app`, and nothing deploys from
-  it. Don't merge it into `main` unless you first change the workflow to publish
-  only the old static files — otherwise `webapp/` would be copied onto the public site.
-- To put the new app live, deploy `webapp/` to a Node host (Vercel is easiest:
-  import the repo, pick branch `nextjs-app`, set **Root Directory = `webapp`**) and
-  point your domain there. SQLite needs a persistent disk — on Vercel/serverless,
-  switch to Postgres first (section 6).
-- **Heads-up on the old live site:** the static `ADMINDBMP.html` in the repo root has
-  its default admin PIN written into the page source (line ~1238), and `main`
-  publishes it at `arisenumero.co.in/ADMINDBMP.html` — anyone can read it with
-  "View source". That old panel only edits browser-local data (no real backend),
-  so the damage is limited, but you should delete that file from `main` (or stop
-  publishing it) and never reuse that PIN anywhere. The new Next.js app has no
-  PIN at all.
+- The Pages workflow now publishes **only** the old static storefront files
+  (`*.html`, `styles.css`, `main.js`, `CNAME`, `assets/` if present). `webapp/`,
+  `src/` and the docs are no longer copied onto the public site, so `webapp/` can
+  safely live on `main`.
+- To put the new app live, follow **DEPLOY.md** (Vercel + Neon, with Root
+  Directory = `webapp`) and point your domain there.
+- **Old admin panel removed:** the static `ADMINDBMP.html` (which had its default
+  PIN in the page source and was published on the live site) has been deleted.
+  Never reuse that PIN anywhere. The new Next.js app has no PIN at all.
 
 ## 13. New store features — what to set up
 
@@ -279,4 +274,49 @@ All of these work out of the box; the items below are the bits only you can fill
       policies (14-day returns, delivery times, payment methods). Edit it if any of
       that changes.
 - [ ] **Clean out the test data** before launch (a few test orders, a booking, a
-      message, an audit log) — or reset with `rm prisma/dev.db && npx prisma migrate dev && npm run seed`.
+      message, an audit log) — or reset with `npx prisma migrate reset` (wipes the database and reloads the catalogue — never run it against the live database).
+
+## 14. Newer store features — how to use them
+
+All built and working; nothing to configure except the announcement text.
+
+- **Announcement bar:** Admin → Settings → "Announcement bar". Type a message (e.g. a
+  sale and coupon code) and an optional link (`/shop` or a full `https://` URL). It
+  shows at the top of every page; leave the text empty to hide it.
+- **Back-in-stock alerts:** sold-out product pages show "Email me when it's back".
+  Admin → Stock Levels shows how many people are waiting per product. Raising a
+  sold-out product's stock (Stock Levels, the product editor, or cancelling an order)
+  emails each of them once. Needs email set up (section 3).
+- **Verified buyer reviews:** a review whose email matches an order for that product
+  gets a "✓ Verified buyer" badge (also shown in Admin → Reviews). Product pages show
+  a star breakdown you can click to filter, sorting, and "show more".
+- **Shopping helpers:** search box in the header (inside the menu on phones), a
+  free-shipping progress bar in the cart (uses your Free Shipping Threshold setting),
+  "Recently viewed" products, related products from the same crystal type first,
+  and a real 2× hover zoom on product photos.
+- **Add to Home screen:** the site has a web app manifest and app icons, so it can be
+  installed on phones with the Arise Numero icon.
+
+## 15. Full catalogue — set prices and stock
+
+All 42 items from your catalogue list now have their own product page (pencils,
+pendants, rings, bowls & plates, anklets, Rudraksha, pyramid bracelets and the
+certificate), grouped into shop sections at `/shop?type=…` with a "Shop by
+Category" row on the home page.
+
+- [ ] **Set a price and stock for each new item** (Admin → Products, filter by
+      type). Until an item has a price it shows **"Price on request"** with an
+      *Enquire* button that opens the contact form with the item's name filled in,
+      and it can't be added to the cart or ordered. As soon as you save a price
+      and stock it becomes a normal buyable product.
+- [ ] Check the descriptions — especially **Money Magnet Bowl** (described as a
+      crystal bowl with natural Pyrite) and the **Certificate of Authenticity**
+      (described as a printed certificate added to an order) — and edit anything
+      that doesn't match what you actually sell.
+- [ ] The **Pyramid Bracelets** (Sunstone, Howlite, Persian Turquoise, Mix) are
+      their own section. If "Pyramid" and "Bracelets" were meant to be two
+      separate sections, change their Product Type in the admin.
+- [ ] Upload real photos for each item (Admin → Products → Product Images); the
+      current pictures are rendered illustrations.
+- [ ] Rings: add your available ring sizes to each ring's description, or ask
+      customers to contact you for sizing (the description already says so).

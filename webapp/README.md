@@ -9,12 +9,17 @@ functional vs. needs your own API keys, known issues, and what to do next.
 
 ## Quick start
 
+The database is Postgres (Neon in production). Put a Postgres connection string
+in `.env` as both `DATABASE_URL` and `DIRECT_URL` — a free Neon `dev` branch is
+easiest (see `.env.example`). Then:
+
 ```bash
 npm install
-npx prisma migrate dev   # first time only — creates prisma/dev.db
-npm run seed              # first time only — loads products, coupons, categories
+npx prisma migrate deploy   # creates the tables and loads the catalogue
 npm run dev
 ```
+
+**Deploying:** see [DEPLOY.md](./DEPLOY.md) (Vercel + Neon, or Render).
 
 Open [http://localhost:3000](http://localhost:3000) for the storefront and
 [http://localhost:3000/admin](http://localhost:3000/admin) for the admin panel
@@ -23,5 +28,5 @@ the code is printed in the terminal running `npm run dev`; see TODO.md to enable
 
 ## Stack
 
-Next.js 16 (App Router) · TypeScript · Prisma 6 + SQLite · `jose` for admin
+Next.js 16 (App Router) · TypeScript · Prisma 6 + Postgres (Neon) · `jose` for admin
 session JWTs · no CSS framework (styles ported from the original site).

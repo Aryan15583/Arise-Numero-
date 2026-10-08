@@ -2,6 +2,10 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { pageMetadata } from "@/lib/seo";
+import { getStoreRating } from "@/lib/ratings";
+
+// The average-rating stat comes from approved reviews in the database.
+export const revalidate = 60;
 
 export const metadata = pageMetadata({
   title: "About Us",
@@ -10,7 +14,8 @@ export const metadata = pageMetadata({
   path: "/about",
 });
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const storeRating = await getStoreRating();
   return (
     <>
       <Header />
@@ -37,7 +42,7 @@ export default function AboutPage() {
           <div className="container about-story-inner">
             <div className="about-story-img">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/about-founder.svg" alt="Arise Numero founder handcrafting a crystal bracelet" width={500} height={600} loading="lazy" />
+              <img src="/assets/products/about-workbench.jpg" alt="An amethyst and rose quartz bracelet surrounded by loose crystal beads" width={600} height={600} loading="lazy" />
             </div>
             <div className="about-story-text">
               <h2 id="story-heading" className="section-title">How Arise Numero Began</h2>
@@ -61,7 +66,9 @@ export default function AboutPage() {
                 <div className="stat-item"><span className="stat-num">50+</span><span className="stat-label">Countries Served</span></div>
                 <div className="stat-item"><span className="stat-num">12k+</span><span className="stat-label">Happy Customers</span></div>
                 <div className="stat-item"><span className="stat-num">100%</span><span className="stat-label">Authentic Crystals</span></div>
-                <div className="stat-item"><span className="stat-num">4.9★</span><span className="stat-label">Average Rating</span></div>
+                {storeRating && (
+                  <div className="stat-item"><span className="stat-num">{storeRating.rating.toFixed(1)}★</span><span className="stat-label">Average Rating</span></div>
+                )}
               </div>
             </div>
           </div>

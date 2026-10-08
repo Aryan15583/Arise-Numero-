@@ -115,6 +115,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = useCallback(
     (item: Omit<CartItem, "qty">, qty = 1) => {
+      if (!(item.priceUsd > 0)) return; // "price on request" items can't be bought online
       const current = parseCart(readRaw());
       const existing = current.find((i) => i.id === item.id);
       const limit = lineLimit(item.stock ?? existing?.stock);

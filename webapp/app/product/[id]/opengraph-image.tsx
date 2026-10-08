@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/db";
 import { SITE_NAME, truncate } from "@/lib/seo";
 
-export const alt = `${SITE_NAME} crystal bracelet`;
+export const alt = `${SITE_NAME} crystal`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,7 +15,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   });
 
   const name = product?.active ? product.name : SITE_NAME;
-  const material = product?.active ? truncate(product.material, 70) : "Authentic crystal bracelets";
+  const material = product?.active ? truncate(product.material, 70) : "Authentic crystals";
   const price = product?.active ? `$${product.priceUsd.toFixed(2)}` : "";
 
   return new ImageResponse(

@@ -6,6 +6,8 @@
 //
 // Run with: npm run seed
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -23,18 +25,16 @@ const products = [
     beadSize: "8mm",
     stock: 3,
     lowStockThreshold: 5,
-    imageUrl: "/assets/amethyst-bracelet.svg",
+    imageUrl: "/assets/products/amethyst-8mm.jpg",
     images: [
-      "/assets/amethyst-bracelet.svg",
-      "/assets/amethyst-bracelet-closeup.svg",
-      "/assets/amethyst-bracelet-worn.svg",
-      "/assets/amethyst-bracelet-box.svg",
+      "/assets/products/amethyst-8mm.jpg",
+      "/assets/products/amethyst-8mm-closeup.jpg",
+      "/assets/products/amethyst-8mm-slate.jpg",
+      "/assets/products/amethyst-8mm-box.jpg",
     ],
     badge: "Bestseller",
-    rating: 4.9,
-    reviewCount: 128,
-    active: true,
-    featured: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
+    featured: false,
   },
   {
     id: "lapis-lazuli",
@@ -48,12 +48,10 @@ const products = [
     beadSize: "8mm",
     stock: 20,
     lowStockThreshold: 5,
-    imageUrl: "/assets/lapis-bracelet.svg",
-    images: ["/assets/lapis-bracelet.svg"],
+    imageUrl: "/assets/products/lapis-lazuli.jpg",
+    images: ["/assets/products/lapis-lazuli.jpg", "/assets/products/lapis-lazuli-closeup.jpg"],
     badge: "New",
-    rating: 4.8,
-    reviewCount: 94,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -68,13 +66,11 @@ const products = [
     beadSize: "10mm",
     stock: 20,
     lowStockThreshold: 5,
-    imageUrl: "/assets/rose-quartz-bracelet.svg",
-    images: ["/assets/rose-quartz-bracelet.svg"],
+    imageUrl: "/assets/products/rose-quartz.jpg",
+    images: ["/assets/products/rose-quartz.jpg", "/assets/products/rose-quartz-closeup.jpg"],
     badge: null,
-    rating: 5.0,
-    reviewCount: 211,
-    active: true,
-    featured: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
+    featured: false,
   },
   {
     id: "black-tourmaline",
@@ -87,12 +83,10 @@ const products = [
     beadSize: "8mm",
     stock: 5,
     lowStockThreshold: 5,
-    imageUrl: "/assets/tourmaline-bracelet.svg",
-    images: ["/assets/tourmaline-bracelet.svg"],
+    imageUrl: "/assets/products/black-tourmaline.jpg",
+    images: ["/assets/products/black-tourmaline.jpg", "/assets/products/black-tourmaline-closeup.jpg"],
     badge: null,
-    rating: 4.7,
-    reviewCount: 76,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -106,13 +100,11 @@ const products = [
     beadSize: "8mm",
     stock: 20,
     lowStockThreshold: 5,
-    imageUrl: "/assets/citrine-bracelet.svg",
-    images: ["/assets/citrine-bracelet.svg"],
+    imageUrl: "/assets/products/citrine.jpg",
+    images: ["/assets/products/citrine.jpg", "/assets/products/citrine-closeup.jpg"],
     badge: "Sale",
-    rating: 4.8,
-    reviewCount: 53,
-    active: true,
-    featured: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
+    featured: false,
   },
   {
     id: "obsidian",
@@ -125,12 +117,10 @@ const products = [
     beadSize: "10mm",
     stock: 20,
     lowStockThreshold: 5,
-    imageUrl: "/assets/obsidian-bracelet.svg",
-    images: ["/assets/obsidian-bracelet.svg"],
+    imageUrl: "/assets/products/obsidian.jpg",
+    images: ["/assets/products/obsidian.jpg", "/assets/products/obsidian-closeup.jpg"],
     badge: null,
-    rating: 4.6,
-    reviewCount: 41,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -144,12 +134,10 @@ const products = [
     beadSize: "6mm",
     stock: 20,
     lowStockThreshold: 5,
-    imageUrl: "/assets/amethyst-6mm-bracelet.svg",
-    images: ["/assets/amethyst-6mm-bracelet.svg"],
+    imageUrl: "/assets/products/amethyst-6mm.jpg",
+    images: ["/assets/products/amethyst-6mm.jpg", "/assets/products/amethyst-6mm-closeup.jpg"],
     badge: null,
-    rating: 5.0,
-    reviewCount: 38,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -164,12 +152,10 @@ const products = [
     beadSize: "8mm",
     stock: 20,
     lowStockThreshold: 5,
-    imageUrl: "/assets/rose-quartz-premium.svg",
-    images: ["/assets/rose-quartz-premium.svg"],
+    imageUrl: "/assets/products/rose-quartz-premium.jpg",
+    images: ["/assets/products/rose-quartz-premium.jpg", "/assets/products/rose-quartz-premium-pair.jpg"],
     badge: "Premium",
-    rating: 5.0,
-    reviewCount: 19,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
 ];
@@ -181,6 +167,17 @@ const coupons = [
   { code: "NEWUSER", discountPercent: 12, description: "New customer discount." },
 ];
 
+// The rest of the catalogue (pendants, rings, pencils, …) and its stones come
+// from prisma/catalogue.json. A new database already gets all of this from the
+// seed_catalogue migration; this seed is for local development.
+type CatalogueProduct = {
+  id: string; name: string; productType: string; category: string | null;
+  material: string; description: string; beadSize: string | null;
+};
+const catalogue = JSON.parse(readFileSync(join(__dirname, "catalogue.json"), "utf8")) as {
+  categories: { slug: string; name: string; description: string }[];
+  products: CatalogueProduct[];
+};
 const categories = [
   { slug: "amethyst", name: "Amethyst", description: "Deep purple stone of calm and clarity." },
   { slug: "rose-quartz", name: "Rose Quartz", description: "Soft pink stone of love and gentle energy." },
@@ -202,6 +199,26 @@ async function main() {
     productsAdded++;
   }
 
+  // Catalogue items start with no price ("price on request") and no stock.
+  for (let i = 0; i < catalogue.products.length; i++) {
+    const p = catalogue.products[i];
+    const exists = await prisma.product.findUnique({ where: { id: p.id } });
+    if (exists) continue;
+    const image = `/assets/products/${p.id}.jpg`;
+    await prisma.product.create({
+      data: {
+        ...p,
+        priceUsd: 0,
+        stock: 0,
+        lowStockThreshold: 2,
+        imageUrl: image,
+        images: JSON.stringify([image]),
+        sortOrder: 100 + i,
+      },
+    });
+    productsAdded++;
+  }
+
   let couponsAdded = 0;
   for (const c of coupons) {
     const exists = await prisma.coupon.findUnique({ where: { code: c.code } });
@@ -211,8 +228,9 @@ async function main() {
   }
 
   let categoriesAdded = 0;
-  for (let i = 0; i < categories.length; i++) {
-    const c = categories[i];
+  const allCategories = [...categories, ...catalogue.categories];
+  for (let i = 0; i < allCategories.length; i++) {
+    const c = allCategories[i];
     const exists = await prisma.category.findUnique({ where: { slug: c.slug } });
     if (exists) continue;
     await prisma.category.create({ data: { ...c, sortOrder: i } });

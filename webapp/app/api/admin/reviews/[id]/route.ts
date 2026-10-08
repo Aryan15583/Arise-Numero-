@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/require-admin";
 import { adminReviewStatusSchema, formatZodError } from "@/lib/validation";
 import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
+import { refreshProductRating } from "@/lib/ratings";
 
 // ADMIN: approve/reject a review.
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -20,7 +21,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   const existing = await prisma.review.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Review not found." }, { status: 404 });
 
-  const updated = await prisma.review.update({ where: { id }, data: { status: parsed.data.status } });
+  const updated = await prisma.$transaction(async (tx) => {
+    const row = await tx.review.update({ where: { id }, data: { status: parsed.data.status } });
+    await refreshProductRating(row.productId, tx);
+    return row;
+  });
   await logAudit("review.status_change", `Review ${id}: ${existing.status} → ${updated.status}`, getClientIp(req));
   return NextResponse.json(updated);
 }
@@ -34,7 +39,10 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const existing = await prisma.review.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Review not found." }, { status: 404 });
 
-  await prisma.review.delete({ where: { id } });
+  await prisma.$transaction(async (tx) => {
+    await tx.review.delete({ where: { id } });
+    await refreshProductRating(existing.productId, tx);
+  });
   await logAudit("review.delete", `Deleted review ${id}`, getClientIp(req));
   return NextResponse.json({ deleted: true });
 }

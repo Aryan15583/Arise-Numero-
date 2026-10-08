@@ -23,9 +23,11 @@ export default function AdminStockPage() {
   const { showToast, ToastEl } = useAdminToast();
   const [products, setProducts] = useState<ProductDTO[]>([]);
   const [edits, setEdits] = useState<Record<string, string>>({});
+  const [waiting, setWaiting] = useState<Record<string, number>>({});
 
   function load() {
     fetchAllProducts().then(setProducts).catch(() => {});
+    adminFetchJson<Record<string, number>>("/api/admin/stock-alerts").then(setWaiting).catch(() => {});
   }
 
   useEffect(load, []);
@@ -42,7 +44,8 @@ export default function AdminStockPage() {
     }
     try {
       await adminFetchJson(`/api/admin/products/${p.id}/stock`, { method: "PUT", body: JSON.stringify({ stock: qty }) });
-      showToast(`Stock updated to ${qty}.`);
+      const notified = p.stock === 0 && qty > 0 ? waiting[p.id] || 0 : 0;
+      showToast(notified ? `Stock updated to ${qty}. Emailed ${notified} waiting customer${notified === 1 ? "" : "s"}.` : `Stock updated to ${qty}.`);
       load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Could not update stock.", "error");
@@ -54,7 +57,7 @@ export default function AdminStockPage() {
       <div className="page-header">
         <div>
           <div className="page-title">Stock Levels</div>
-          <div className="page-subtitle">Update inventory quantities</div>
+          <div className="page-subtitle">Update inventory quantities. Restocking a sold-out product emails everyone waiting for it.</div>
         </div>
       </div>
 
@@ -65,10 +68,10 @@ export default function AdminStockPage() {
         </div>
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Product</th><th>Current Stock</th><th>Low Stock Threshold</th><th>Status</th><th>Quick Update</th></tr></thead>
+            <thead><tr><th>Product</th><th>Current Stock</th><th>Low Stock Threshold</th><th>Status</th><th title="Customers who asked to be emailed when it is back in stock">Waiting</th><th>Quick Update</th></tr></thead>
             <tbody>
               {products.length === 0 ? (
-                <tr><td colSpan={5}><div className="empty-state"><div className="empty-icon">📦</div><div className="empty-title">No products yet</div></div></td></tr>
+                <tr><td colSpan={6}><div className="empty-state"><div className="empty-icon">📦</div><div className="empty-title">No products yet</div></div></td></tr>
               ) : (
                 products.map((p) => {
                   const pct = Math.min(100, (p.stock / Math.max(p.stock, p.lowStockThreshold * 4, 1)) * 100);
@@ -89,6 +92,7 @@ export default function AdminStockPage() {
                       </td>
                       <td>{p.lowStockThreshold}</td>
                       <td>{status}</td>
+                      <td>{waiting[p.id] ? <strong>{waiting[p.id]}</strong> : <span style={{ color: "var(--text-muted)" }}>—</span>}</td>
                       <td>
                         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                           <input

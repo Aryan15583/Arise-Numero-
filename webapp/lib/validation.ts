@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PRODUCT_TYPE_SLUGS } from "./product-types";
 
 // ── Public ────────────────────────────────────────────────────────────────
 
@@ -75,6 +76,16 @@ export const adminLoginSchema = z.object({
 
 // ── Admin products ────────────────────────────────────────────────────────
 
+// A product image is an uploaded photo (/api/images/<id>), a file in /public
+// (e.g. /assets/products/x.jpg) or a full https:// URL — nothing else.
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((v) => v === "" || (v.startsWith("/") && !v.startsWith("//")) || /^https:\/\/[^\s]+$/.test(v), {
+    message: "Image must be an uploaded image, a site path like /assets/x.jpg, or an https:// URL.",
+  });
+
 export const adminProductCreateSchema = z.object({
   id: z.string().min(1).max(80),
   name: z.string().min(1).max(200),
@@ -83,14 +94,13 @@ export const adminProductCreateSchema = z.object({
   priceUsd: z.number().min(0),
   originalPriceUsd: z.number().min(0).optional().nullable(),
   category: z.string().max(60).optional().nullable(),
+  productType: z.enum(PRODUCT_TYPE_SLUGS).optional(),
   beadSize: z.string().max(20).optional().nullable(),
   stock: z.number().int().min(0),
   lowStockThreshold: z.number().int().min(0).optional(),
-  imageUrl: z.string().max(500).optional().nullable(),
-  images: z.array(z.string().max(500)).optional(),
+  imageUrl: imageUrlSchema.optional().nullable(),
+  images: z.array(imageUrlSchema).max(4, "A product can have at most 4 images.").optional(),
   badge: z.string().max(40).optional().nullable(),
-  rating: z.number().min(0).max(5).optional(),
-  reviewCount: z.number().int().min(0).optional(),
   active: z.boolean().optional(),
   featured: z.boolean().optional(),
 });
@@ -138,6 +148,13 @@ export const trackOrderSchema = z.object({
 export const newsletterSubscribeSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(200),
   // Honeypot: real visitors never see or fill this field, bots do.
+  website: z.string().max(200).optional(),
+});
+
+export const stockAlertSchema = z.object({
+  productId: z.string().min(1).max(100),
+  email: z.string().trim().toLowerCase().email().max(200),
+  // Honeypot, same as the newsletter form.
   website: z.string().max(200).optional(),
 });
 
@@ -211,6 +228,15 @@ export const adminSiteConfigSchema = z.object({
   expressShippingUsd: z.number().min(0).optional(),
   freeShippingThresholdUsd: z.number().min(0).optional(),
   bankTransferInstructions: z.string().max(1000).optional(),
+  announcementText: z.string().trim().max(160).optional(),
+  announcementLink: z
+    .string()
+    .trim()
+    .max(300)
+    .refine((v) => v === "" || (v.startsWith("/") && !v.startsWith("//")) || /^https:\/\/[^\s]+$/.test(v), {
+      message: "Announcement link must be a site path like /shop or a full https:// URL.",
+    })
+    .optional(),
   exchangeRates: z
     .object({
       USD: z.number().positive(),

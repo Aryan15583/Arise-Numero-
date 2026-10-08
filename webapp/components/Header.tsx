@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { useWishlist } from "./WishlistContext";
 import type { CurrencyCode } from "@/lib/currency";
+import { AnnouncementBar } from "./AnnouncementBar";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -23,8 +24,21 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
   const { currency, setCurrency } = useCurrency();
   const { ids: wishlistIds } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
+
+  function submitSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchTerm.trim().slice(0, 80);
+    setSearchOpen(false);
+    setMobileOpen(false);
+    router.push(q ? `/shop?q=${encodeURIComponent(q)}` : "/shop");
+  }
 
   return (
+    <>
+    {variant !== "checkout" && <AnnouncementBar />}
     <header className={`site-header ${variant === "checkout" ? "site-header--checkout" : ""}`} role="banner">
       <div className="header-inner container">
         <Link href="/" className="logo" aria-label="Arise Numero Home">
@@ -75,6 +89,17 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
                 </select>
               </div>
 
+              <button
+                type="button"
+                className="cart-btn header-search-btn"
+                aria-label={searchOpen ? "Close search" : "Search products"}
+                aria-expanded={searchOpen}
+                aria-controls="header-search"
+                onClick={() => setSearchOpen((v) => !v)}
+              >
+                <span className="cart-icon" aria-hidden="true">{searchOpen ? "×" : "⌕"}</span>
+              </button>
+
               <Link href="/wishlist" className="cart-btn" aria-label={`Wishlist, ${wishlistIds.length} saved`}>
                 <span className="cart-icon" aria-hidden="true">♡</span>
                 {wishlistIds.length > 0 && <span className="cart-count">{wishlistIds.length}</span>}
@@ -99,8 +124,39 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
         </div>
       </div>
 
+      {variant !== "checkout" && searchOpen && (
+        <form id="header-search" className="header-search container" role="search" onSubmit={submitSearch}>
+          <label htmlFor="header-search-input" className="sr-only">Search bracelets</label>
+          <input
+            id="header-search-input"
+            type="search"
+            className="form-input"
+            placeholder="Search bracelets — amethyst, protection, 8mm…"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}
+            autoFocus
+            maxLength={80}
+          />
+          <button type="submit" className="btn btn-primary">Search</button>
+        </form>
+      )}
+
       {variant !== "checkout" && (
         <nav id="mobile-nav" className="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden={!mobileOpen}>
+          <form className="mobile-nav-search" role="search" onSubmit={submitSearch}>
+            <label htmlFor="mobile-search-input" className="sr-only">Search bracelets</label>
+            <input
+              id="mobile-search-input"
+              type="search"
+              className="form-input"
+              placeholder="Search bracelets…"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              maxLength={80}
+            />
+            <button type="submit" className="btn btn-primary btn-sm">Search</button>
+          </form>
           <ul className="mobile-nav-list" role="list">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
@@ -113,5 +169,6 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
         </nav>
       )}
     </header>
+    </>
   );
 }

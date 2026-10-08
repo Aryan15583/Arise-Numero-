@@ -16,6 +16,7 @@ export function serializeProduct(p: Product): ProductDTO {
     priceUsd: p.priceUsd,
     originalPriceUsd: p.originalPriceUsd,
     category: p.category,
+    productType: p.productType,
     beadSize: p.beadSize,
     stock: p.stock,
     lowStockThreshold: p.lowStockThreshold,

@@ -47,6 +47,9 @@ export async function POST(req: NextRequest) {
     for (const line of items) {
       const p = await prisma.product.findUnique({ where: { id: line.id } });
       if (!p || !p.active) return NextResponse.json({ error: `Product "${line.id}" is not available.` }, { status: 400 });
+      if (p.priceUsd <= 0) {
+        return NextResponse.json({ error: `"${p.name}" is price on request — please contact us to order it.` }, { status: 400 });
+      }
       const qty = Math.max(1, Math.min(10, Math.round(Number(line.qty) || 1)));
       if (p.stock < qty) {
         return NextResponse.json({ error: `Only ${p.stock} left in stock for "${p.name}".` }, { status: 409 });

@@ -50,6 +50,9 @@ export async function POST(req: NextRequest) {
     if (!product || !product.active) {
       return NextResponse.json({ error: `Product "${line.id}" is not available.` }, { status: 400 });
     }
+    if (product.priceUsd <= 0) {
+      return NextResponse.json({ error: `"${product.name}" is price on request — please contact us to order it.` }, { status: 400 });
+    }
     if (product.stock < line.qty) {
       return NextResponse.json({ error: `Only ${product.stock} left in stock for "${product.name}".` }, { status: 409 });
     }

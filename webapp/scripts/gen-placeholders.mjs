@@ -42,35 +42,13 @@ function portrait({ id, from, to, initials }) {
 </svg>`;
 }
 
-const products = [
-  { file: "amethyst-bracelet", from: "#3d2a52", to: "#7c4d99", accent: "#c49fd6", label: "Amethyst Serenity" },
-  { file: "amethyst-bracelet-closeup", from: "#4a3462", to: "#8a5aa8", accent: "#d4b3e6", label: "Amethyst — Detail" },
-  { file: "amethyst-bracelet-worn", from: "#3d2a52", to: "#6d4488", accent: "#c49fd6", label: "Amethyst — Worn" },
-  { file: "amethyst-bracelet-box", from: "#2b1f3d", to: "#5a3d75", accent: "#b8975a", label: "Gift Box" },
-  { file: "amethyst-6mm-bracelet", from: "#382550", to: "#6a4488", accent: "#c9b3e0", label: "Amethyst Clarity" },
-  { file: "lapis-bracelet", from: "#1a2a52", to: "#2d4a8a", accent: "#b8975a", label: "Lapis Lazuli Wisdom" },
-  { file: "rose-quartz-bracelet", from: "#5a2d3d", to: "#c48a9e", accent: "#f5d5df", label: "Rose Quartz Love" },
-  { file: "rose-quartz-premium", from: "#5a2d3d", to: "#d19bb0", accent: "#b8975a", label: "Rose Quartz Premium" },
-  { file: "tourmaline-bracelet", from: "#0e0b16", to: "#2d2340", accent: "#8a7a9a", label: "Black Tourmaline Shield" },
-  { file: "citrine-bracelet", from: "#5a3d10", to: "#d4a02c", accent: "#fbe6a6", label: "Citrine Abundance" },
-  { file: "obsidian-bracelet", from: "#050308", to: "#221932", accent: "#7c4d99", label: "Obsidian Grounding" },
-];
-
-for (const p of products) {
-  const svg = gradientCard({ id: p.file, from: p.from, to: p.to, accent: p.accent, label: p.label });
-  writeFileSync(join(OUT_DIR, `${p.file}.svg`), svg, "utf8");
-}
+// Product images are rendered by scripts/render-product-images.mjs (JPEGs in
+// public/assets/products/). This script only makes the fallback and team art.
 
 // Generic fallback used by onerror handlers and any product missing a custom image.
 writeFileSync(
   join(OUT_DIR, "placeholder.svg"),
   gradientCard({ id: "placeholder", from: "#1a1228", to: "#3a2d50", accent: "#b8975a", label: "Arise Numero" }),
-  "utf8"
-);
-
-writeFileSync(
-  join(OUT_DIR, "about-founder.svg"),
-  portrait({ id: "founder-wide", from: "#2b1f3d", to: "#6d4488", initials: "AN" }),
   "utf8"
 );
 

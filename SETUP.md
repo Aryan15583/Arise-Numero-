@@ -46,7 +46,6 @@ npm start
 Visit:
 - Storefront: http://localhost:3000/index.html
 - Shop (now live from the database): http://localhost:3000/shop.html
-- Admin panel: http://localhost:3000/ADMINDBMP.html (PIN = whatever you set as `ADMIN_PIN`)
 
 ## 2. What actually changed (mapped to your 5 issues)
 
@@ -114,10 +113,9 @@ a plain VPS). Render's free/starter web service is the simplest:
 
 ## 5. Rename the admin panel URL
 
-`ADMINDBMP.html` is served as a plain static file at a guessable name. Once
-you're ready to go live, rename the file (e.g. `mypage-8x2k.html`) and don't
-link to it from anywhere on the site — exactly like the comment at the top
-of that file already says.
+The old `ADMINDBMP.html` panel has been removed: it had its default PIN in the
+page source and was published on the live site. Use the Next.js admin panel in
+`webapp/` (`/admin`, emailed one-time-code login) instead.
 
 ## 6. Known limitations / good next steps
 

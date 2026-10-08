@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { ProductReviews } from "./ProductReviews";
 import { WishlistButton } from "./WishlistButton";
 import { ShareButtons } from "./ShareButtons";
+import { BackInStockForm } from "./BackInStockForm";
+import { getPublicConfig } from "@/lib/public-config";
 import { productPath } from "@/lib/seo";
 import type { ProductDTO } from "@/lib/types";
+import { reviewsLabel, starString } from "@/lib/stars";
+import { isPriced } from "@/lib/pricing";
+import { getProductType } from "@/lib/product-types";
 
 const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
 
@@ -20,8 +25,26 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<"reviews" | "shipping" | "returns" | "care">("reviews");
   const [added, setAdded] = useState(false);
+  const [freeShippingThreshold, setFreeShippingThreshold] = useState(50);
+  const [zoomOrigin, setZoomOrigin] = useState<string | null>(null);
+
+  function handleZoomMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomOrigin(`${x.toFixed(1)}% ${y.toFixed(1)}%`);
+  }
+
+  useEffect(() => {
+    getPublicConfig().then((c) => {
+      if (c) setFreeShippingThreshold(c.freeShippingThresholdUsd);
+    });
+  }, []);
 
   const images = product.images.length ? product.images : [product.imageUrl || "/assets/placeholder.svg"];
+  const priced = isPriced(product);
+  const type = getProductType(product.productType);
+  const isBracelet = product.productType === "bracelets" || product.productType === "pyramid-bracelets";
   const isOut = product.stock === 0;
   const isLow = !isOut && product.stock <= product.lowStockThreshold;
   const maxQty = Math.max(1, Math.min(10, product.stock));
@@ -37,9 +60,21 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
       <section className="product-detail container" aria-labelledby="product-heading">
         <div className="product-detail-inner">
           <div className="product-gallery">
-            <div className="gallery-main">
+            <div
+              className={`gallery-main ${zoomOrigin ? "is-zooming" : ""}`}
+              onMouseMove={handleZoomMove}
+              onMouseLeave={() => setZoomOrigin(null)}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img id="gallery-main-img" src={activeImg} alt={`${product.name} crystal bracelet`} className="gallery-main-img" width={600} height={600} />
+              <img
+                id="gallery-main-img"
+                src={activeImg}
+                alt={product.name}
+                className="gallery-main-img"
+                width={600}
+                height={600}
+                style={zoomOrigin ? { transformOrigin: zoomOrigin } : undefined}
+              />
               <div className="gallery-zoom-hint" aria-hidden="true">🔍 Zoom on hover</div>
             </div>
             {images.length > 1 && (
@@ -68,27 +103,43 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
 
             <h1 id="product-heading" className="product-detail-title">{product.name}</h1>
 
-            <div className="product-detail-rating" aria-label={`Customer rating: ${product.rating} out of 5 stars, ${product.reviewCount} reviews`}>
-              <span className="stars" aria-hidden="true">★★★★★</span>
-              <a href="#reviews" className="rating-link">{product.rating} ({product.reviewCount} reviews)</a>
-            </div>
-
-            <div className="product-detail-price" aria-label="Product pricing">
-              <span className="price-main">{format(product.priceUsd)}</span>
-              <span className="price-note">Free shipping on orders over {format(50)}</span>
-            </div>
-
-            {isOut && (
-              <div className="stock-status stock-out" role="status" aria-live="polite">
-                <span className="stock-dot" aria-hidden="true"></span> Out of stock
+            {product.reviewCount > 0 ? (
+              <div className="product-detail-rating" aria-label={`Customer rating: ${product.rating} out of 5 stars, ${reviewsLabel(product.reviewCount)}`}>
+                <span className="stars" aria-hidden="true">{starString(product.rating)}</span>
+                <a href="#reviews" className="rating-link">{product.rating.toFixed(1)} ({reviewsLabel(product.reviewCount)})</a>
+              </div>
+            ) : (
+              <div className="product-detail-rating">
+                <a href="#reviews" className="rating-link">No reviews yet — be the first to review</a>
               </div>
             )}
-            {isLow && (
+
+            {priced ? (
+              <div className="product-detail-price" aria-label="Product pricing">
+                <span className="price-main">{format(product.priceUsd)}</span>
+                {freeShippingThreshold > 0 && <span className="price-note">Free shipping on orders over {format(freeShippingThreshold)}</span>}
+              </div>
+            ) : (
+              <div className="product-detail-price" aria-label="Product pricing">
+                <span className="price-main price-main--request">Price on request</span>
+                <span className="price-note">Send us a message and we&apos;ll reply with the price and availability.</span>
+              </div>
+            )}
+
+            {priced && isOut && (
+              <>
+                <div className="stock-status stock-out" role="status" aria-live="polite">
+                  <span className="stock-dot" aria-hidden="true"></span> Out of stock
+                </div>
+                <BackInStockForm productId={product.id} productName={product.name} />
+              </>
+            )}
+            {priced && isLow && (
               <div className="stock-status stock-low" role="status" aria-live="polite">
                 <span className="stock-dot" aria-hidden="true"></span> ⚠️ Only {product.stock} left in stock — order soon
               </div>
             )}
-            {!isOut && !isLow && (
+            {priced && !isOut && !isLow && (
               <div className="stock-status stock-in" role="status" aria-live="polite">
                 <span className="stock-dot" aria-hidden="true"></span> In stock
               </div>
@@ -97,15 +148,19 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             <div className="product-specs" aria-label="Product specifications">
               <h2 className="specs-title">Specifications</h2>
               <dl className="specs-list">
+                {type && <div className="spec-row"><dt>Type</dt><dd>{type.singular}</dd></div>}
                 <div className="spec-row"><dt>Material</dt><dd>{product.material}</dd></div>
-                {product.beadSize && <div className="spec-row"><dt>Bead Size</dt><dd>{product.beadSize} diameter</dd></div>}
-                <div className="spec-row"><dt>Wrist Size</dt><dd>Adjustable — fits 15–20cm wrists</dd></div>
-                <div className="spec-row"><dt>Origin</dt><dd>Ethically sourced, certified genuine</dd></div>
-                <div className="spec-row"><dt>Packaging</dt><dd>Arise Numero gift box included</dd></div>
+                {type?.beaded && product.beadSize && <div className="spec-row"><dt>Bead Size</dt><dd>{product.beadSize} diameter</dd></div>}
+                {isBracelet && <div className="spec-row"><dt>Wrist Size</dt><dd>Adjustable — fits 15–20cm wrists</dd></div>}
+                {product.productType === "anklets" && <div className="spec-row"><dt>Fit</dt><dd>Adjustable to most ankles</dd></div>}
+                {product.productType !== "certificates" && <div className="spec-row"><dt>Origin</dt><dd>Natural stone, ethically sourced</dd></div>}
+                {isBracelet && <div className="spec-row"><dt>Packaging</dt><dd>Arise Numero gift box included</dd></div>}
               </dl>
             </div>
 
+            {priced && (
             <div className="product-options">
+              {isBracelet && (
               <fieldset className="option-group">
                 <legend className="option-label">Wrist Size</legend>
                 <div className="size-options" role="radiogroup" aria-label="Select wrist size">
@@ -117,6 +172,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                   ))}
                 </div>
               </fieldset>
+              )}
 
               <div className="quantity-group">
                 <label className="option-label" htmlFor="qty-input">Quantity</label>
@@ -137,11 +193,18 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                 <p className="qty-limit" aria-live="polite">Max {maxQty} available</p>
               </div>
             </div>
+            )}
 
             <div className="product-cta-group">
-              <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
-                {added ? "✓ Added to Cart!" : isOut ? "Out of Stock" : "🛒 Add to Cart"}
-              </button>
+              {priced ? (
+                <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
+                  {added ? "✓ Added to Cart!" : isOut ? "Out of Stock" : "🛒 Add to Cart"}
+                </button>
+              ) : (
+                <Link href={`/contact?product=${encodeURIComponent(product.id)}`} className="btn btn-primary btn-lg add-to-cart-main">
+                  ✉️ Enquire about this item
+                </Link>
+              )}
               <WishlistButton productId={product.id} productName={product.name} variant="full" />
             </div>
 
@@ -155,7 +218,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             <ShareButtons path={productPath(product.id)} title={product.name} />
 
             <div className="product-description">
-              <h2>About This Crystal</h2>
+              <h2>About This {product.productType === "certificates" ? "Certificate" : product.productType === "rudraksha" ? "Rudraksha" : "Crystal"}</h2>
               <p>{product.description}</p>
             </div>
           </div>
@@ -179,11 +242,15 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
         {activeTab === "reviews" && (
           <div className="tab-panel">
             <div className="reviews-summary">
-              <div className="rating-big" aria-label={`Overall rating: ${product.rating} out of 5`}>
-                <span className="rating-number">{product.rating}</span>
-                <span className="rating-stars" aria-hidden="true">★★★★★</span>
-                <span className="rating-total">Based on {product.reviewCount} reviews</span>
-              </div>
+              {product.reviewCount > 0 ? (
+                <div className="rating-big" aria-label={`Overall rating: ${product.rating} out of 5`}>
+                  <span className="rating-number">{product.rating.toFixed(1)}</span>
+                  <span className="rating-stars" aria-hidden="true">{starString(product.rating)}</span>
+                  <span className="rating-total">Based on {reviewsLabel(product.reviewCount)}</span>
+                </div>
+              ) : (
+                <p className="rating-total">No reviews yet. Bought this bracelet? Share your experience below.</p>
+              )}
             </div>
             <ProductReviews productId={product.id} />
           </div>

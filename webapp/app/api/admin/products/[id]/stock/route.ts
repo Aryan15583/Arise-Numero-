@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/require-admin";
 import { serializeProduct } from "@/lib/serialize";
+import { notifyBackInStock } from "@/lib/stock-alerts";
 import { adminStockUpdateSchema, formatZodError } from "@/lib/validation";
 
 // ADMIN: quick stock update (used by the Stock Levels page).
@@ -20,5 +21,6 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!existing) return NextResponse.json({ error: "Product not found." }, { status: 404 });
 
   const updated = await prisma.product.update({ where: { id }, data: { stock: parsed.data.stock } });
+  if (existing.stock <= 0 && updated.stock > 0) await notifyBackInStock(updated.id);
   return NextResponse.json(serializeProduct(updated));
 }
