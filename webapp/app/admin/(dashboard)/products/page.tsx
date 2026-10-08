@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { ProductImageManager } from "@/components/admin/ProductImageManager";
 import type { ProductDTO } from "@/lib/types";
 
 const BEAD_SIZES = ["6mm", "8mm", "10mm", "12mm"];
@@ -26,8 +27,7 @@ type FormState = {
   ratingSummary: string;
   material: string;
   description: string;
-  imageUrl: string;
-  imagesExtra: string;
+  images: string[]; // first = main image
   active: boolean;
   featured: boolean;
 };
@@ -46,8 +46,7 @@ function emptyForm(defaultCategory: string): FormState {
     ratingSummary: "No approved reviews yet",
     material: "",
     description: "",
-    imageUrl: "",
-    imagesExtra: "",
+    images: [],
     active: true,
     featured: false,
   };
@@ -114,8 +113,7 @@ export default function AdminProductsPage() {
       ratingSummary: p.reviewCount > 0 ? `${p.rating} ★ from ${p.reviewCount} approved review${p.reviewCount === 1 ? "" : "s"}` : "No approved reviews yet",
       material: p.material || "",
       description: p.description || "",
-      imageUrl: p.imageUrl || "",
-      imagesExtra: p.images.slice(1).join(", "),
+      images: (p.images.length ? p.images : p.imageUrl ? [p.imageUrl] : []).slice(0, 4),
       active: p.active,
       featured: p.featured,
     });
@@ -128,8 +126,6 @@ export default function AdminProductsPage() {
       showToast("Product name and ID are required.", "error");
       return;
     }
-    const extraImages = form.imagesExtra.split(",").map((s) => s.trim()).filter(Boolean);
-    const images = form.imageUrl ? [form.imageUrl, ...extraImages] : extraImages;
 
     const payload = {
       id,
@@ -142,8 +138,7 @@ export default function AdminProductsPage() {
       beadSize: form.beadSize,
       stock: parseInt(form.stock, 10) || 0,
       lowStockThreshold: parseInt(form.lowStockThreshold, 10) || 5,
-      imageUrl: form.imageUrl.trim(),
-      images,
+      images: form.images,
       badge: form.badge || null,
       active: form.active,
       featured: form.featured,
@@ -335,12 +330,12 @@ export default function AdminProductsPage() {
                   <textarea className="form-input" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
                 </div>
                 <div className="form-group form-full">
-                  <label className="form-label">Main Image URL *</label>
-                  <input className="form-input" value={form.imageUrl} onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))} placeholder="/assets/products/amethyst-8mm.jpg or https://…" />
-                </div>
-                <div className="form-group form-full">
-                  <label className="form-label">Additional Image URLs</label>
-                  <input className="form-input" value={form.imagesExtra} onChange={(e) => setForm((f) => ({ ...f, imagesExtra: e.target.value }))} placeholder="/assets/img2.jpg, /assets/img3.jpg (comma separated)" />
+                  <label className="form-label">Product Images</label>
+                  <ProductImageManager
+                    images={form.images}
+                    onChange={(update) => setForm((f) => ({ ...f, images: update(f.images) }))}
+                    onError={(msg) => showToast(msg, "error")}
+                  />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Active (visible on site)</label>

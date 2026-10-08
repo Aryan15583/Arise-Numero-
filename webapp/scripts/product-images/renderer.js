@@ -3,7 +3,6 @@
 // texture, diffuse + specular lighting, translucency glow, a soft window
 // reflection and a contact shadow. Deterministic: the same seed gives the same image.
 
-/* eslint-disable */
 (function () {
   // ── Seeded random + value noise ─────────────────────────────────────────
   function mulberry32(seed) {

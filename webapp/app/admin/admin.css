@@ -307,3 +307,40 @@
   .admin-scope .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .admin-scope .admin-main { padding: 16px; }
 }
+
+/* ── Product image manager ───────────────────────────────────────── */
+.img-manager-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 560px) { .img-manager-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.img-tile {
+  position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+  border: 1.5px solid var(--border); background: var(--bg);
+}
+.img-tile.is-main { border-color: var(--gold); box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 35%, transparent); }
+.img-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.img-tile-badge {
+  position: absolute; top: 6px; left: 6px; padding: 2px 8px; border-radius: 999px;
+  background: var(--gold); color: #1a1228; font-size: 0.7rem; font-weight: 700; border: 0;
+}
+.img-tile-badge--btn { background: rgba(26, 18, 40, 0.72); color: #fff; font-weight: 600; cursor: pointer; opacity: 0; transition: opacity 0.15s; }
+.img-tile:hover .img-tile-badge--btn, .img-tile-badge--btn:focus-visible { opacity: 1; }
+.img-tile-actions {
+  position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; gap: 4px;
+  padding: 6px; background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+}
+.img-tile-actions button {
+  width: 28px; height: 28px; border-radius: 6px; border: 0; cursor: pointer;
+  background: rgba(255, 255, 255, 0.92); color: #1a1228; font-size: 0.85rem; line-height: 1;
+}
+.img-tile-actions button:disabled { opacity: 0.35; cursor: default; }
+.img-tile-actions .img-tile-remove { margin-left: auto; background: #c0392b; color: #fff; }
+.img-tile--add {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  border-style: dashed; cursor: pointer; color: var(--text-muted); font: inherit; font-size: 0.8rem;
+}
+.img-tile--add:hover { border-color: var(--gold); color: var(--gold); }
+.img-tile-plus { font-size: 1.8rem; line-height: 1; }
+.img-tile--add small { font-size: 0.7rem; opacity: 0.8; }
+.img-tile--loading { display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: var(--text-muted); animation: img-pulse 1.2s ease-in-out infinite; }
+@keyframes img-pulse { 50% { opacity: 0.55; } }
+.img-manager-url { display: flex; gap: 8px; margin-top: 10px; }
+.img-manager-url .form-input { flex: 1; min-width: 0; }

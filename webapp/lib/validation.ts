@@ -75,6 +75,16 @@ export const adminLoginSchema = z.object({
 
 // ── Admin products ────────────────────────────────────────────────────────
 
+// A product image is an uploaded photo (/api/images/<id>), a file in /public
+// (e.g. /assets/products/x.jpg) or a full https:// URL — nothing else.
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((v) => v === "" || (v.startsWith("/") && !v.startsWith("//")) || /^https:\/\/[^\s]+$/.test(v), {
+    message: "Image must be an uploaded image, a site path like /assets/x.jpg, or an https:// URL.",
+  });
+
 export const adminProductCreateSchema = z.object({
   id: z.string().min(1).max(80),
   name: z.string().min(1).max(200),
@@ -86,8 +96,8 @@ export const adminProductCreateSchema = z.object({
   beadSize: z.string().max(20).optional().nullable(),
   stock: z.number().int().min(0),
   lowStockThreshold: z.number().int().min(0).optional(),
-  imageUrl: z.string().max(500).optional().nullable(),
-  images: z.array(z.string().max(500)).optional(),
+  imageUrl: imageUrlSchema.optional().nullable(),
+  images: z.array(imageUrlSchema).max(4, "A product can have at most 4 images.").optional(),
   badge: z.string().max(40).optional().nullable(),
   active: z.boolean().optional(),
   featured: z.boolean().optional(),

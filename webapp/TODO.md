@@ -86,8 +86,12 @@ contact message, and review.
       and for some a gift-box or second-surface shot), made by
       `scripts/render-product-images.mjs`. They show the right stone, colour, bead
       size and bead count, but they are illustrations: swap in real photos of your
-      own bracelets when you can (Admin → Products → Image URL), ideally square
-      JPG/WebP around 1200×1200. Customers trust real photos more.
+      own bracelets when you can: Admin → Products → Edit → **Product Images** →
+      "Upload image" (up to 4 per product; the first is the main photo — use
+      "Set as main" or the arrows to reorder). Square photos look best; big phone
+      photos are shrunk to 1600px JPEG in the browser before upload (5 MB limit).
+      Uploads are stored in the database, so back up the database to keep them.
+      Customers trust real photos more.
 - [ ] Review the auto-generated category descriptions (Admin → Categories)
       and adjust to your own voice.
 - [ ] Moderate incoming reviews regularly — Admin → Reviews, they start as

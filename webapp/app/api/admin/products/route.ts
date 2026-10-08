@@ -5,6 +5,7 @@ import { serializeProduct } from "@/lib/serialize";
 import { adminProductCreateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
+import { syncProductUploads } from "@/lib/product-images";
 import type { Prisma } from "@prisma/client";
 
 // ADMIN: list products, including hidden/inactive — paginated + searchable
@@ -64,25 +65,33 @@ export async function POST(req: NextRequest) {
 
   const maxSort = await prisma.product.aggregate({ _max: { sortOrder: true } });
 
-  const created = await prisma.product.create({
-    data: {
-      id,
-      name: p.name,
-      material: p.material || null,
-      description: p.description || null,
-      priceUsd: p.priceUsd,
-      originalPriceUsd: p.originalPriceUsd ?? null,
-      category: p.category || null,
-      beadSize: p.beadSize || null,
-      stock: p.stock,
-      lowStockThreshold: p.lowStockThreshold ?? 5,
-      imageUrl: p.imageUrl || null,
-      images: JSON.stringify(p.images || []),
-      badge: p.badge || null,
-      active: p.active !== false,
-      featured: !!p.featured,
-      sortOrder: (maxSort._max.sortOrder ?? -1) + 1,
-    },
+  // The first image is always the main one.
+  const images = (p.images || []).filter(Boolean);
+  const mainImage = images[0] || p.imageUrl || null;
+
+  const created = await prisma.$transaction(async (tx) => {
+    const row = await tx.product.create({
+      data: {
+        id,
+        name: p.name,
+        material: p.material || null,
+        description: p.description || null,
+        priceUsd: p.priceUsd,
+        originalPriceUsd: p.originalPriceUsd ?? null,
+        category: p.category || null,
+        beadSize: p.beadSize || null,
+        stock: p.stock,
+        lowStockThreshold: p.lowStockThreshold ?? 5,
+        imageUrl: mainImage,
+        images: JSON.stringify(images.length ? images : mainImage ? [mainImage] : []),
+        badge: p.badge || null,
+        active: p.active !== false,
+        featured: !!p.featured,
+        sortOrder: (maxSort._max.sortOrder ?? -1) + 1,
+      },
+    });
+    await syncProductUploads(tx, row.id, images);
+    return row;
   });
 
   await logAudit("product.create", `Created "${created.name}" (${created.id})`, getClientIp(req));

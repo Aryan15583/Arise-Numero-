@@ -43,11 +43,29 @@ model Product {
 
   reviews     Review[]
   stockAlerts StockAlert[]
+  uploads     ProductImage[]
 
   @@index([active])
   @@index([category])
   @@index([featured])
   @@map("products")
+}
+
+// Product photos uploaded from Admin → Products, stored in the database so they
+// survive redeploys on any host. Served by /api/images/<id>; a product's
+// `images` list holds those URLs (max 4, first = main image). productId is null
+// between upload and the product being saved; stale unlinked rows get purged.
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String?  @map("product_id")
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mimeType  String   @map("mime_type")
+  size      Int
+  data      Bytes
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([productId])
+  @@map("product_images")
 }
 
 model Review {
