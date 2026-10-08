@@ -25,7 +25,9 @@ model Product {
   description       String?
   priceUsd          Float    @default(0) @map("price_usd")
   originalPriceUsd  Float?   @map("original_price_usd")
-  category          String?
+  category          String? // the stone, e.g. "amethyst" (Category.slug)
+  // What kind of item it is — see lib/product-types.ts (bracelets, pendants, rings…)
+  productType       String   @default("bracelets") @map("product_type")
   beadSize          String?  @map("bead_size")
   stock             Int      @default(0)
   lowStockThreshold Int      @default(5) @map("low_stock_threshold")
@@ -47,6 +49,7 @@ model Product {
 
   @@index([active])
   @@index([category])
+  @@index([productType])
   @@index([featured])
   @@map("products")
 }

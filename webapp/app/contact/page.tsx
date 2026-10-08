@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ContactFormClient } from "@/components/ContactFormClient";
+import { prisma } from "@/lib/db";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
@@ -38,7 +39,12 @@ const FAQS = [
   },
 ];
 
-export default function ContactPage() {
+export default async function ContactPage({ searchParams }: { searchParams: Promise<{ product?: string }> }) {
+  // "Enquire" buttons on price-on-request items link here with ?product=<id>.
+  const { product: productId } = await searchParams;
+  const enquiry = productId
+    ? await prisma.product.findFirst({ where: { id: productId.slice(0, 100), active: true }, select: { name: true } })
+    : null;
   return (
     <>
       <Header />
@@ -58,7 +64,7 @@ export default function ContactPage() {
         <div className="container contact-layout">
           <section className="contact-form-wrap" aria-labelledby="contact-form-heading">
             <h2 id="contact-form-heading" className="section-title">Send Us a Message</h2>
-            <ContactFormClient />
+            <ContactFormClient productName={enquiry?.name} />
           </section>
 
           <aside className="contact-sidebar" aria-label="Contact information and FAQ">

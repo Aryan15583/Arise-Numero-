@@ -30,7 +30,7 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
             <span className="logo-symbol" aria-hidden="true">✦</span>
             <span className="logo-text">Arise Numero</span>
           </Link>
-          <p>Authentic crystal bracelets &amp; numerology readings delivered worldwide.</p>
+          <p>Authentic crystals, jewellery &amp; numerology readings delivered worldwide.</p>
           {socials.length > 0 && (
             <div className="footer-socials" aria-label="Social media links">
               {socials.map((s) => (
@@ -45,10 +45,12 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
         <nav className="footer-nav" aria-label="Shop navigation">
           <h4>Shop</h4>
           <ul role="list">
-            <li><Link href="/shop">All Bracelets</Link></li>
-            <li><Link href="/shop?cat=amethyst">Amethyst</Link></li>
-            <li><Link href="/shop?cat=rose-quartz">Rose Quartz</Link></li>
-            <li><Link href="/shop?cat=lapis-lazuli">Lapis Lazuli</Link></li>
+            <li><Link href="/shop">All Products</Link></li>
+            <li><Link href="/shop?type=bracelets">Bracelets</Link></li>
+            <li><Link href="/shop?type=pendants">Pendants</Link></li>
+            <li><Link href="/shop?type=rings">Rings</Link></li>
+            <li><Link href="/shop?type=pencils">3 Inch Pencils</Link></li>
+            <li><Link href="/shop?type=rudraksha">Rudraksha</Link></li>
             <li><Link href="/wishlist">Wishlist</Link></li>
             <li><Link href="/cart">Cart</Link></li>
           </ul>

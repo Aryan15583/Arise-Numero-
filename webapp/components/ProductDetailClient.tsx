@@ -12,6 +12,8 @@ import { getPublicConfig } from "@/lib/public-config";
 import { productPath } from "@/lib/seo";
 import type { ProductDTO } from "@/lib/types";
 import { reviewsLabel, starString } from "@/lib/stars";
+import { isPriced } from "@/lib/pricing";
+import { getProductType } from "@/lib/product-types";
 
 const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
 
@@ -40,6 +42,9 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
   }, []);
 
   const images = product.images.length ? product.images : [product.imageUrl || "/assets/placeholder.svg"];
+  const priced = isPriced(product);
+  const type = getProductType(product.productType);
+  const isBracelet = product.productType === "bracelets" || product.productType === "pyramid-bracelets";
   const isOut = product.stock === 0;
   const isLow = !isOut && product.stock <= product.lowStockThreshold;
   const maxQty = Math.max(1, Math.min(10, product.stock));
@@ -64,7 +69,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
               <img
                 id="gallery-main-img"
                 src={activeImg}
-                alt={`${product.name} crystal bracelet`}
+                alt={product.name}
                 className="gallery-main-img"
                 width={600}
                 height={600}
@@ -109,12 +114,19 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
               </div>
             )}
 
-            <div className="product-detail-price" aria-label="Product pricing">
-              <span className="price-main">{format(product.priceUsd)}</span>
-              {freeShippingThreshold > 0 && <span className="price-note">Free shipping on orders over {format(freeShippingThreshold)}</span>}
-            </div>
+            {priced ? (
+              <div className="product-detail-price" aria-label="Product pricing">
+                <span className="price-main">{format(product.priceUsd)}</span>
+                {freeShippingThreshold > 0 && <span className="price-note">Free shipping on orders over {format(freeShippingThreshold)}</span>}
+              </div>
+            ) : (
+              <div className="product-detail-price" aria-label="Product pricing">
+                <span className="price-main price-main--request">Price on request</span>
+                <span className="price-note">Send us a message and we&apos;ll reply with the price and availability.</span>
+              </div>
+            )}
 
-            {isOut && (
+            {priced && isOut && (
               <>
                 <div className="stock-status stock-out" role="status" aria-live="polite">
                   <span className="stock-dot" aria-hidden="true"></span> Out of stock
@@ -122,12 +134,12 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                 <BackInStockForm productId={product.id} productName={product.name} />
               </>
             )}
-            {isLow && (
+            {priced && isLow && (
               <div className="stock-status stock-low" role="status" aria-live="polite">
                 <span className="stock-dot" aria-hidden="true"></span> ⚠️ Only {product.stock} left in stock — order soon
               </div>
             )}
-            {!isOut && !isLow && (
+            {priced && !isOut && !isLow && (
               <div className="stock-status stock-in" role="status" aria-live="polite">
                 <span className="stock-dot" aria-hidden="true"></span> In stock
               </div>
@@ -136,15 +148,19 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             <div className="product-specs" aria-label="Product specifications">
               <h2 className="specs-title">Specifications</h2>
               <dl className="specs-list">
+                {type && <div className="spec-row"><dt>Type</dt><dd>{type.singular}</dd></div>}
                 <div className="spec-row"><dt>Material</dt><dd>{product.material}</dd></div>
-                {product.beadSize && <div className="spec-row"><dt>Bead Size</dt><dd>{product.beadSize} diameter</dd></div>}
-                <div className="spec-row"><dt>Wrist Size</dt><dd>Adjustable — fits 15–20cm wrists</dd></div>
-                <div className="spec-row"><dt>Origin</dt><dd>Ethically sourced, certified genuine</dd></div>
-                <div className="spec-row"><dt>Packaging</dt><dd>Arise Numero gift box included</dd></div>
+                {type?.beaded && product.beadSize && <div className="spec-row"><dt>Bead Size</dt><dd>{product.beadSize} diameter</dd></div>}
+                {isBracelet && <div className="spec-row"><dt>Wrist Size</dt><dd>Adjustable — fits 15–20cm wrists</dd></div>}
+                {product.productType === "anklets" && <div className="spec-row"><dt>Fit</dt><dd>Adjustable to most ankles</dd></div>}
+                {product.productType !== "certificates" && <div className="spec-row"><dt>Origin</dt><dd>Natural stone, ethically sourced</dd></div>}
+                {isBracelet && <div className="spec-row"><dt>Packaging</dt><dd>Arise Numero gift box included</dd></div>}
               </dl>
             </div>
 
+            {priced && (
             <div className="product-options">
+              {isBracelet && (
               <fieldset className="option-group">
                 <legend className="option-label">Wrist Size</legend>
                 <div className="size-options" role="radiogroup" aria-label="Select wrist size">
@@ -156,6 +172,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                   ))}
                 </div>
               </fieldset>
+              )}
 
               <div className="quantity-group">
                 <label className="option-label" htmlFor="qty-input">Quantity</label>
@@ -176,11 +193,18 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                 <p className="qty-limit" aria-live="polite">Max {maxQty} available</p>
               </div>
             </div>
+            )}
 
             <div className="product-cta-group">
-              <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
-                {added ? "✓ Added to Cart!" : isOut ? "Out of Stock" : "🛒 Add to Cart"}
-              </button>
+              {priced ? (
+                <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
+                  {added ? "✓ Added to Cart!" : isOut ? "Out of Stock" : "🛒 Add to Cart"}
+                </button>
+              ) : (
+                <Link href={`/contact?product=${encodeURIComponent(product.id)}`} className="btn btn-primary btn-lg add-to-cart-main">
+                  ✉️ Enquire about this item
+                </Link>
+              )}
               <WishlistButton productId={product.id} productName={product.name} variant="full" />
             </div>
 
@@ -194,7 +218,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             <ShareButtons path={productPath(product.id)} title={product.name} />
 
             <div className="product-description">
-              <h2>About This Crystal</h2>
+              <h2>About This {product.productType === "certificates" ? "Certificate" : product.productType === "rudraksha" ? "Rudraksha" : "Crystal"}</h2>
               <p>{product.description}</p>
             </div>
           </div>

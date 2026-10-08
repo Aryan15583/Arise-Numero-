@@ -6,6 +6,7 @@ export type ProductDTO = {
   priceUsd: number;
   originalPriceUsd: number | null;
   category: string | null;
+  productType: string;
   beadSize: string | null;
   stock: number;
   lowStockThreshold: number;

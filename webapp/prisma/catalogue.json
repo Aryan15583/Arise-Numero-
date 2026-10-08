@@ -1,0 +1,459 @@
+{
+  "categories": [
+    {
+      "slug": "clear-quartz",
+      "name": "Clear Quartz",
+      "description": "Crystal-clear quartz associated with focus and clarity."
+    },
+    {
+      "slug": "moonstone",
+      "name": "Moonstone",
+      "description": "Glowing stone associated with intuition and new beginnings."
+    },
+    {
+      "slug": "red-jasper",
+      "name": "Red Jasper",
+      "description": "Earthy red stone of strength and grounding."
+    },
+    {
+      "slug": "green-aventurine",
+      "name": "Green Aventurine",
+      "description": "Shimmering green stone of luck and optimism."
+    },
+    {
+      "slug": "green-jade",
+      "name": "Green Jade",
+      "description": "Treasured green stone of harmony and good fortune."
+    },
+    {
+      "slug": "pyrite",
+      "name": "Pyrite",
+      "description": "Metallic 'fool's gold' associated with prosperity."
+    },
+    {
+      "slug": "tiger-eye",
+      "name": "Tiger Eye",
+      "description": "Golden-brown banded stone of courage and focus."
+    },
+    {
+      "slug": "black-sulimani",
+      "name": "Black Sulimani",
+      "description": "Banded black agate traditionally worn for protection."
+    },
+    {
+      "slug": "black-agate",
+      "name": "Black Agate",
+      "description": "Smooth dark agate of balance and protection."
+    },
+    {
+      "slug": "turquoise",
+      "name": "Turquoise",
+      "description": "Sky-blue stone of protection and good luck."
+    },
+    {
+      "slug": "persian-turquoise",
+      "name": "Persian Turquoise",
+      "description": "Rich sky-blue turquoise associated with serenity."
+    },
+    {
+      "slug": "sunstone",
+      "name": "Sunstone",
+      "description": "Sparkling orange stone of joy and vitality."
+    },
+    {
+      "slug": "howlite",
+      "name": "Howlite",
+      "description": "White, grey-veined stone of patience and calm."
+    },
+    {
+      "slug": "selenite",
+      "name": "Selenite",
+      "description": "Luminous white mineral used to cleanse other crystals."
+    },
+    {
+      "slug": "rudraksha",
+      "name": "Rudraksha",
+      "description": "Sacred Rudraksha seeds used for prayer and meditation."
+    }
+  ],
+  "products": [
+    {
+      "id": "amethyst-pencil",
+      "name": "Amethyst Pencil (3 inch)",
+      "productType": "pencils",
+      "category": "amethyst",
+      "material": "Natural Amethyst, polished six-sided point, approx. 3 inches",
+      "description": "A polished six-sided Amethyst point, about 3 inches tall, that stands upright on a desk, shelf or altar. Amethyst is a violet quartz traditionally associated with calm, clarity and restful sleep. Each piece is natural, so colour, clarity and markings vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "clear-quartz-pencil",
+      "name": "Clear Quartz Pencil (3 inch)",
+      "productType": "pencils",
+      "category": "clear-quartz",
+      "material": "Natural Clear Quartz, polished six-sided point, approx. 3 inches",
+      "description": "A polished six-sided Clear Quartz point, about 3 inches tall, that stands upright on a desk, shelf or altar. Clear Quartz is known as the 'master healer' in crystal traditions and is associated with focus and clarity. Each piece is natural, so colour, clarity and markings vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "rose-quartz-pencil",
+      "name": "Rose Quartz Pencil (3 inch)",
+      "productType": "pencils",
+      "category": "rose-quartz",
+      "material": "Natural Rose Quartz, polished six-sided point, approx. 3 inches",
+      "description": "A polished six-sided Rose Quartz point, about 3 inches tall, that stands upright on a desk, shelf or altar. Rose Quartz is a soft pink quartz traditionally associated with love, compassion and self-care. Each piece is natural, so colour, clarity and markings vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "black-obsidian-pencil",
+      "name": "Black Obsidian Pencil (3 inch)",
+      "productType": "pencils",
+      "category": "obsidian",
+      "material": "Natural Black Obsidian, polished six-sided point, approx. 3 inches",
+      "description": "A polished six-sided Black Obsidian point, about 3 inches tall, that stands upright on a desk, shelf or altar. Black Obsidian is a glossy volcanic glass traditionally associated with grounding and protection. Each piece is natural, so colour, clarity and markings vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "moonstone-pencil",
+      "name": "Moonstone Pencil (3 inch)",
+      "productType": "pencils",
+      "category": "moonstone",
+      "material": "Natural Moonstone, polished six-sided point, approx. 3 inches",
+      "description": "A polished six-sided Moonstone point, about 3 inches tall, that stands upright on a desk, shelf or altar. Moonstone shows a gentle, glowing sheen and is traditionally associated with intuition and new beginnings. Each piece is natural, so colour, clarity and markings vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "lapis-pendant",
+      "name": "Lapis Lazuli Pendant",
+      "productType": "pendants",
+      "category": "lapis-lazuli",
+      "material": "Natural Lapis Lazuli pendant with metal bail",
+      "description": "A polished Lapis Lazuli pendant to wear on a chain or cord, close to the heart. Lapis Lazuli is a deep blue stone flecked with golden pyrite, associated with wisdom and truth. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "amethyst-pendant",
+      "name": "Amethyst Pendant",
+      "productType": "pendants",
+      "category": "amethyst",
+      "material": "Natural Amethyst pendant with metal bail",
+      "description": "A polished Amethyst pendant to wear on a chain or cord, close to the heart. Amethyst is a violet quartz traditionally associated with calm, clarity and restful sleep. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "moonstone-pendant",
+      "name": "Moonstone Pendant",
+      "productType": "pendants",
+      "category": "moonstone",
+      "material": "Natural Moonstone pendant with metal bail",
+      "description": "A polished Moonstone pendant to wear on a chain or cord, close to the heart. Moonstone shows a gentle, glowing sheen and is traditionally associated with intuition and new beginnings. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "red-jasper-pendant",
+      "name": "Red Jasper Pendant",
+      "productType": "pendants",
+      "category": "red-jasper",
+      "material": "Natural Red Jasper pendant with metal bail",
+      "description": "A polished Red Jasper pendant to wear on a chain or cord, close to the heart. Red Jasper is an earthy red stone traditionally associated with strength, stamina and grounding. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "black-obsidian-pendant",
+      "name": "Black Obsidian Pendant",
+      "productType": "pendants",
+      "category": "obsidian",
+      "material": "Natural Black Obsidian pendant with metal bail",
+      "description": "A polished Black Obsidian pendant to wear on a chain or cord, close to the heart. Black Obsidian is a glossy volcanic glass traditionally associated with grounding and protection. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "green-aventurine-pendant",
+      "name": "Green Aventurine Pendant",
+      "productType": "pendants",
+      "category": "green-aventurine",
+      "material": "Natural Green Aventurine pendant with metal bail",
+      "description": "A polished Green Aventurine pendant to wear on a chain or cord, close to the heart. Green Aventurine has a soft green shimmer and is traditionally known as a stone of luck and optimism. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "green-jade-pendant",
+      "name": "Green Jade Pendant",
+      "productType": "pendants",
+      "category": "green-jade",
+      "material": "Natural Green Jade pendant with metal bail",
+      "description": "A polished Green Jade pendant to wear on a chain or cord, close to the heart. Green Jade has been treasured for centuries and is traditionally associated with harmony and good fortune. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "rose-quartz-pendant",
+      "name": "Rose Quartz Pendant",
+      "productType": "pendants",
+      "category": "rose-quartz",
+      "material": "Natural Rose Quartz pendant with metal bail",
+      "description": "A polished Rose Quartz pendant to wear on a chain or cord, close to the heart. Rose Quartz is a soft pink quartz traditionally associated with love, compassion and self-care. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "clear-quartz-pendant",
+      "name": "Clear Quartz Pendant",
+      "productType": "pendants",
+      "category": "clear-quartz",
+      "material": "Natural Clear Quartz pendant with metal bail",
+      "description": "A polished Clear Quartz pendant to wear on a chain or cord, close to the heart. Clear Quartz is known as the 'master healer' in crystal traditions and is associated with focus and clarity. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "citrine-pendant",
+      "name": "Citrine Pendant",
+      "productType": "pendants",
+      "category": "citrine",
+      "material": "Natural Citrine pendant with metal bail",
+      "description": "A polished Citrine pendant to wear on a chain or cord, close to the heart. Citrine is a warm golden quartz traditionally associated with abundance, positivity and confidence. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "pyrite-pendant",
+      "name": "Pyrite Pendant",
+      "productType": "pendants",
+      "category": "pyrite",
+      "material": "Natural Pyrite pendant with metal bail",
+      "description": "A polished Pyrite pendant to wear on a chain or cord, close to the heart. Pyrite, often called 'fool's gold', has a metallic sheen and is traditionally associated with prosperity and willpower. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "tiger-eye-pendant",
+      "name": "Tiger Eye Pendant",
+      "productType": "pendants",
+      "category": "tiger-eye",
+      "material": "Natural Tiger Eye pendant with metal bail",
+      "description": "A polished Tiger Eye pendant to wear on a chain or cord, close to the heart. Tiger Eye shows shifting golden-brown bands of light and is traditionally associated with courage and focus. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "black-sulimani-pendant",
+      "name": "Black Sulimani Pendant",
+      "productType": "pendants",
+      "category": "black-sulimani",
+      "material": "Natural Black Sulimani pendant with metal bail",
+      "description": "A polished Black Sulimani pendant to wear on a chain or cord, close to the heart. Black Sulimani (Sulemani Hakik) is a black agate with white bands, traditionally worn for protection. Each stone is natural and unique, so colour and pattern vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "clear-quartz-ring",
+      "name": "Clear Quartz Ring",
+      "productType": "rings",
+      "category": "clear-quartz",
+      "material": "Natural Clear Quartz ring",
+      "description": "A natural Clear Quartz ring for everyday wear. Clear Quartz is known as the 'master healer' in crystal traditions and is associated with focus and clarity. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "rose-quartz-ring",
+      "name": "Rose Quartz Ring",
+      "productType": "rings",
+      "category": "rose-quartz",
+      "material": "Natural Rose Quartz ring",
+      "description": "A natural Rose Quartz ring for everyday wear. Rose Quartz is a soft pink quartz traditionally associated with love, compassion and self-care. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "lapis-ring",
+      "name": "Lapis Lazuli Ring",
+      "productType": "rings",
+      "category": "lapis-lazuli",
+      "material": "Natural Lapis Lazuli ring",
+      "description": "A natural Lapis Lazuli ring for everyday wear. Lapis Lazuli is a deep blue stone flecked with golden pyrite, associated with wisdom and truth. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "red-jasper-ring",
+      "name": "Red Jasper Ring",
+      "productType": "rings",
+      "category": "red-jasper",
+      "material": "Natural Red Jasper ring",
+      "description": "A natural Red Jasper ring for everyday wear. Red Jasper is an earthy red stone traditionally associated with strength, stamina and grounding. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "black-agate-ring",
+      "name": "Black Agate Ring",
+      "productType": "rings",
+      "category": "black-agate",
+      "material": "Natural Black Agate ring",
+      "description": "A natural Black Agate ring for everyday wear. Black Agate is a smooth, dark banded stone traditionally associated with balance and protection. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "turquoise-ring",
+      "name": "Turquoise Ring",
+      "productType": "rings",
+      "category": "turquoise",
+      "material": "Natural Turquoise ring",
+      "description": "A natural Turquoise ring for everyday wear. Turquoise is a sky-blue stone treasured across cultures and traditionally associated with protection and good luck. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "green-aventurine-ring",
+      "name": "Green Aventurine Ring",
+      "productType": "rings",
+      "category": "green-aventurine",
+      "material": "Natural Green Aventurine ring",
+      "description": "A natural Green Aventurine ring for everyday wear. Green Aventurine has a soft green shimmer and is traditionally known as a stone of luck and optimism. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "amethyst-ring",
+      "name": "Amethyst Ring",
+      "productType": "rings",
+      "category": "amethyst",
+      "material": "Natural Amethyst ring",
+      "description": "A natural Amethyst ring for everyday wear. Amethyst is a violet quartz traditionally associated with calm, clarity and restful sleep. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "green-jade-ring",
+      "name": "Green Jade Ring",
+      "productType": "rings",
+      "category": "green-jade",
+      "material": "Natural Green Jade ring",
+      "description": "A natural Green Jade ring for everyday wear. Green Jade has been treasured for centuries and is traditionally associated with harmony and good fortune. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "tiger-eye-ring",
+      "name": "Tiger Eye Ring",
+      "productType": "rings",
+      "category": "tiger-eye",
+      "material": "Natural Tiger Eye ring",
+      "description": "A natural Tiger Eye ring for everyday wear. Tiger Eye shows shifting golden-brown bands of light and is traditionally associated with courage and focus. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "black-obsidian-ring",
+      "name": "Black Obsidian Ring",
+      "productType": "rings",
+      "category": "obsidian",
+      "material": "Natural Black Obsidian ring",
+      "description": "A natural Black Obsidian ring for everyday wear. Black Obsidian is a glossy volcanic glass traditionally associated with grounding and protection. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "citrine-ring",
+      "name": "Citrine Ring",
+      "productType": "rings",
+      "category": "citrine",
+      "material": "Natural Citrine ring",
+      "description": "A natural Citrine ring for everyday wear. Citrine is a warm golden quartz traditionally associated with abundance, positivity and confidence. Contact us for sizing help before you order. Natural stones vary slightly in colour and pattern.",
+      "beadSize": null
+    },
+    {
+      "id": "money-magnet-bowl",
+      "name": "Money Magnet Bowl",
+      "productType": "bowls-plates",
+      "category": "pyrite",
+      "material": "Crystal bowl with natural Pyrite",
+      "description": "A decorative crystal bowl for your home or workspace, traditionally placed to invite abundance — a popular gift for new homes and businesses. Pyrite, often called 'fool's gold', is traditionally associated with prosperity and willpower. Contents and finish may vary slightly from the photos.",
+      "beadSize": null
+    },
+    {
+      "id": "selenite-plate",
+      "name": "Selenite Plate",
+      "productType": "bowls-plates",
+      "category": "selenite",
+      "material": "Natural Selenite charging plate",
+      "description": "A round natural Selenite plate. Rest your bracelets, rings and tumbled stones on it to cleanse and recharge them — Selenite is traditionally used to clear other crystals. Selenite is soft and dissolves in water: keep it dry and wipe it clean with a soft cloth.",
+      "beadSize": null
+    },
+    {
+      "id": "pyrite-anklet",
+      "name": "Pyrite Anklet",
+      "productType": "anklets",
+      "category": "pyrite",
+      "material": "Natural Pyrite beads, adjustable cord",
+      "description": "A delicate anklet strung with small natural Pyrite beads. Pyrite, often called 'fool's gold', has a metallic sheen and is traditionally associated with prosperity and willpower. Remove before swimming or bathing to keep the cord in good condition.",
+      "beadSize": "4mm"
+    },
+    {
+      "id": "black-obsidian-anklet",
+      "name": "Black Obsidian Anklet",
+      "productType": "anklets",
+      "category": "obsidian",
+      "material": "Natural Black Obsidian beads, adjustable cord",
+      "description": "A delicate anklet strung with small natural Black Obsidian beads. Black Obsidian is a glossy volcanic glass traditionally associated with grounding and protection. Remove before swimming or bathing to keep the cord in good condition.",
+      "beadSize": "4mm"
+    },
+    {
+      "id": "red-jasper-anklet",
+      "name": "Red Jasper Anklet",
+      "productType": "anklets",
+      "category": "red-jasper",
+      "material": "Natural Red Jasper beads, adjustable cord",
+      "description": "A delicate anklet strung with small natural Red Jasper beads. Red Jasper is an earthy red stone traditionally associated with strength, stamina and grounding. Remove before swimming or bathing to keep the cord in good condition.",
+      "beadSize": "4mm"
+    },
+    {
+      "id": "4-mukhi-rudraksha",
+      "name": "4 Mukhi Rudraksha",
+      "productType": "rudraksha",
+      "category": null,
+      "material": "Natural 4 Mukhi (four-faced) Rudraksha bead",
+      "description": "A natural 4 Mukhi Rudraksha bead with four natural lines (faces) on its surface. In tradition it is associated with Lord Brahma and with knowledge, learning and clear communication. Can be worn on a thread or chain, or kept in your prayer space. Each bead is natural and unique in size and texture.",
+      "beadSize": null
+    },
+    {
+      "id": "5-mukhi-rudraksha",
+      "name": "5 Mukhi Rudraksha",
+      "productType": "rudraksha",
+      "category": null,
+      "material": "Natural 5 Mukhi (five-faced) Rudraksha bead",
+      "description": "A natural 5 Mukhi Rudraksha bead — the most widely worn Rudraksha, with five natural lines (faces). In tradition it is associated with Lord Shiva (Kalagni Rudra) and with peace of mind and meditation. Can be worn on a thread or chain, or used in a mala. Each bead is natural and unique in size and texture.",
+      "beadSize": null
+    },
+    {
+      "id": "sunstone-pyramid-bracelet",
+      "name": "Sunstone Pyramid Bracelet",
+      "productType": "pyramid-bracelets",
+      "category": "sunstone",
+      "material": "Natural Sunstone beads, pyramid charm, elastic cord",
+      "description": "A stretch bracelet of natural Sunstone beads finished with a pyramid charm. Sunstone glitters with warm orange flashes and is traditionally associated with joy and vitality. Fits most wrists; natural stones vary slightly in colour and pattern.",
+      "beadSize": "8mm"
+    },
+    {
+      "id": "howlite-pyramid-bracelet",
+      "name": "Howlite Pyramid Bracelet",
+      "productType": "pyramid-bracelets",
+      "category": "howlite",
+      "material": "Natural Howlite beads, pyramid charm, elastic cord",
+      "description": "A stretch bracelet of natural Howlite beads finished with a pyramid charm. Howlite is a white stone with fine grey veins, traditionally associated with patience and calm. Fits most wrists; natural stones vary slightly in colour and pattern.",
+      "beadSize": "8mm"
+    },
+    {
+      "id": "persian-turquoise-pyramid-bracelet",
+      "name": "Persian Turquoise Pyramid Bracelet",
+      "productType": "pyramid-bracelets",
+      "category": "persian-turquoise",
+      "material": "Natural Persian Turquoise beads, pyramid charm, elastic cord",
+      "description": "A stretch bracelet of natural Persian Turquoise beads finished with a pyramid charm. Persian Turquoise is prized for its rich sky-blue colour and is traditionally associated with protection and serenity. Fits most wrists; natural stones vary slightly in colour and pattern.",
+      "beadSize": "8mm"
+    },
+    {
+      "id": "mix-pyramid-bracelet",
+      "name": "Mixed Crystal Pyramid Bracelet",
+      "productType": "pyramid-bracelets",
+      "category": null,
+      "material": "Natural Mixed Crystal beads, pyramid charm, elastic cord",
+      "description": "A stretch bracelet of natural mixed crystal beads finished with a pyramid charm. A mix of gemstones combined in one piece, each with its own colour and character. Fits most wrists; natural stones vary slightly in colour and pattern.",
+      "beadSize": "8mm"
+    },
+    {
+      "id": "authenticity-certificate",
+      "name": "Certificate of Authenticity",
+      "productType": "certificates",
+      "category": null,
+      "material": "Printed certificate of authenticity",
+      "description": "A printed certificate confirming the natural stone of your Arise Numero purchase — useful for gifting or for your own records. Add it to your order alongside the crystal it is for, and mention that item in the order notes or contact us after ordering.",
+      "beadSize": null
+    }
+  ]
+}

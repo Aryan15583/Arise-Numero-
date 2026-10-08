@@ -3,12 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 
-export function ContactFormClient() {
+export function ContactFormClient({ productName }: { productName?: string } = {}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [subject, setSubject] = useState("");
+  const [subject, setSubject] = useState(productName ? "product" : "");
   const [orderNumber, setOrderNumber] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(
+    productName ? `Hello, I'd like to know the price and availability of the ${productName}.` : ""
+  );
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);

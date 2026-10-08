@@ -31,6 +31,36 @@ export const IMAGES = {
   "about-workbench": { scene: "workbench", seed: 91 },
 };
 
+// The rest of the catalogue (prisma/catalogue.json): one image per product,
+// scene chosen by product type, stone taken from the product id.
+const STONE_KEYS = {
+  amethyst: "amethyst", "clear-quartz": "clearQuartz", "rose-quartz": "roseQuartz", "black-obsidian": "obsidian",
+  moonstone: "moonstone", lapis: "lapis", "red-jasper": "redJasper", "green-aventurine": "greenAventurine",
+  "green-jade": "greenJade", citrine: "citrine", pyrite: "pyrite", "tiger-eye": "tigerEye",
+  "black-sulimani": "blackSulimani", "black-agate": "blackAgate", turquoise: "turquoise", sunstone: "sunstone",
+  howlite: "howlite", "persian-turquoise": "persianTurquoise", mix: "amethyst",
+};
+const SCENES = { pencils: "pencil", pendants: "pendant", rings: "ring", anklets: "anklet", "pyramid-bracelets": "pyramidBracelet" };
+const catalogue = JSON.parse(readFileSync(new URL("../prisma/catalogue.json", import.meta.url), "utf8"));
+catalogue.products.forEach((p, i) => {
+  const seed = 200 + i * 7;
+  if (p.id === "money-magnet-bowl") IMAGES[p.id] = { scene: "bowl", seed };
+  else if (p.id === "selenite-plate") IMAGES[p.id] = { scene: "plate", seed };
+  else if (p.productType === "rudraksha") IMAGES[p.id] = { scene: "rudraksha", stone: p.id.startsWith("4") ? "rudraksha4" : "rudraksha5", seed };
+  else if (p.productType === "certificates") IMAGES[p.id] = { scene: "certificate", seed };
+  else {
+    const stoneId = Object.keys(STONE_KEYS).sort((a, b) => b.length - a.length).find((k) => p.id.startsWith(`${k}-`));
+    const scene = SCENES[p.productType];
+    if (!stoneId || !scene) throw new Error(`No image recipe for ${p.id}`);
+    IMAGES[p.id] = {
+      scene, stone: STONE_KEYS[stoneId], seed, beadMm: 8,
+      ...(stoneId === "mix" ? { pattern: "mix" } : {}),
+      ...(p.productType === "anklets" ? { pattern: "goldEvery10" } : {}),
+      ...(["black-obsidian", "black-sulimani", "black-agate"].includes(stoneId) && scene !== "ring" ? { surface: "marble" } : {}),
+    };
+  }
+});
+
 const only = process.argv.slice(2);
 const names = only.length ? only : Object.keys(IMAGES);
 mkdirSync(OUT, { recursive: true });

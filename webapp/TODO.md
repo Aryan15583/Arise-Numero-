@@ -310,3 +310,27 @@ All built and working; nothing to configure except the announcement text.
   and a real 2× hover zoom on product photos.
 - **Add to Home screen:** the site has a web app manifest and app icons, so it can be
   installed on phones with the Arise Numero icon.
+
+## 15. Full catalogue — set prices and stock
+
+All 42 items from your catalogue list now have their own product page (pencils,
+pendants, rings, bowls & plates, anklets, Rudraksha, pyramid bracelets and the
+certificate), grouped into shop sections at `/shop?type=…` with a "Shop by
+Category" row on the home page.
+
+- [ ] **Set a price and stock for each new item** (Admin → Products, filter by
+      type). Until an item has a price it shows **"Price on request"** with an
+      *Enquire* button that opens the contact form with the item's name filled in,
+      and it can't be added to the cart or ordered. As soon as you save a price
+      and stock it becomes a normal buyable product.
+- [ ] Check the descriptions — especially **Money Magnet Bowl** (described as a
+      crystal bowl with natural Pyrite) and the **Certificate of Authenticity**
+      (described as a printed certificate added to an order) — and edit anything
+      that doesn't match what you actually sell.
+- [ ] The **Pyramid Bracelets** (Sunstone, Howlite, Persian Turquoise, Mix) are
+      their own section. If "Pyramid" and "Bracelets" were meant to be two
+      separate sections, change their Product Type in the admin.
+- [ ] Upload real photos for each item (Admin → Products → Product Images); the
+      current pictures are rendered illustrations.
+- [ ] Rings: add your available ring sizes to each ring's description, or ask
+      customers to contact you for sizing (the description already says so).

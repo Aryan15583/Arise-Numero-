@@ -22,6 +22,8 @@ export async function GET(req: NextRequest) {
 
   const where: Prisma.ProductWhereInput = {};
   if (category) where.category = category;
+  const productType = searchParams.get("productType")?.trim();
+  if (productType) where.productType = productType;
   if (search) {
     where.OR = [
       { name: { contains: search } },
@@ -79,6 +81,7 @@ export async function POST(req: NextRequest) {
         priceUsd: p.priceUsd,
         originalPriceUsd: p.originalPriceUsd ?? null,
         category: p.category || null,
+        productType: p.productType || "bracelets",
         beadSize: p.beadSize || null,
         stock: p.stock,
         lowStockThreshold: p.lowStockThreshold ?? 5,

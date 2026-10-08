@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PRODUCT_TYPE_SLUGS } from "./product-types";
 
 // ── Public ────────────────────────────────────────────────────────────────
 
@@ -93,6 +94,7 @@ export const adminProductCreateSchema = z.object({
   priceUsd: z.number().min(0),
   originalPriceUsd: z.number().min(0).optional().nullable(),
   category: z.string().max(60).optional().nullable(),
+  productType: z.enum(PRODUCT_TYPE_SLUGS).optional(),
   beadSize: z.string().max(20).optional().nullable(),
   stock: z.number().int().min(0),
   lowStockThreshold: z.number().int().min(0).optional(),

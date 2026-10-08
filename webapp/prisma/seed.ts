@@ -165,6 +165,9 @@ const coupons = [
   { code: "NEWUSER", discountPercent: 12, description: "New customer discount." },
 ];
 
+// The rest of the catalogue (pendants, rings, pencils, …) and its stones are
+// inserted by the add_product_types_and_catalogue migration from
+// prisma/catalogue.json, so they exist even without running the seed.
 const categories = [
   { slug: "amethyst", name: "Amethyst", description: "Deep purple stone of calm and clarity." },
   { slug: "rose-quartz", name: "Rose Quartz", description: "Soft pink stone of love and gentle energy." },

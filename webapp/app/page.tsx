@@ -10,6 +10,7 @@ import { DEFAULT_DESCRIPTION, SITE_NAME, absoluteUrl, getSiteUrl } from "@/lib/s
 import { getSocialLinks } from "@/lib/social";
 import { getStoreRating } from "@/lib/ratings";
 import { starString } from "@/lib/stars";
+import { PRODUCT_TYPES } from "@/lib/product-types";
 
 const profileLinks = getSocialLinks().filter((s) => s.label !== "WhatsApp").map((s) => s.href);
 
@@ -42,7 +43,7 @@ const siteJsonLd = {
 };
 
 export default async function HomePage() {
-  const [featured, storeRating, testimonials] = await Promise.all([
+  const [featured, storeRating, testimonials, typeRows] = await Promise.all([
     prisma.product.findMany({
       where: { active: true, featured: true },
       orderBy: { sortOrder: "asc" },
@@ -56,7 +57,17 @@ export default async function HomePage() {
       take: 3,
       include: { product: { select: { name: true } } },
     }),
+    // One tile per product type that has products, using its first product's photo.
+    prisma.product.findMany({
+      where: { active: true },
+      orderBy: { sortOrder: "asc" },
+      select: { productType: true, imageUrl: true },
+    }),
   ]);
+  const typeTiles = PRODUCT_TYPES.map((t) => {
+    const rows = typeRows.filter((r) => r.productType === t.slug);
+    return { ...t, count: rows.length, image: rows.find((r) => r.imageUrl)?.imageUrl || "/assets/placeholder.svg" };
+  }).filter((t) => t.count > 0);
   const products = featured.map(serializeProduct);
 
   return (
@@ -74,11 +85,11 @@ export default async function HomePage() {
               <span className="accent">Know Your Numbers.</span>
             </h1>
             <p className="hero-subtitle">
-              Handcrafted authentic crystal bracelets &amp; personalized numerology readings delivered worldwide.
+              Authentic crystals, gemstone jewellery &amp; personalised numerology readings delivered worldwide.
             </p>
             <div className="hero-cta-group">
-              <Link href="/shop" className="btn btn-primary btn-lg" aria-label="Shop crystal bracelets">
-                Shop Bracelets
+              <Link href="/shop" className="btn btn-primary btn-lg" aria-label="Shop all crystals">
+                Shop Crystals
               </Link>
               <Link href="/numerology" className="btn btn-outline btn-lg" aria-label="Try free numerology calculator">
                 Free Reading
@@ -105,20 +116,39 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <section className="section shop-categories" aria-labelledby="categories-heading">
+          <div className="container">
+            <div className="section-header">
+              <h2 id="categories-heading" className="section-title">Shop by Category</h2>
+              <p className="section-subtitle">Bracelets, pendants, rings, crystal pencils and more — all natural stones</p>
+            </div>
+            <div className="category-tiles" role="list">
+              {typeTiles.map((t) => (
+                <Link key={t.slug} href={`/shop?type=${t.slug}`} className="category-tile" role="listitem">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={t.image} alt="" loading="lazy" width={300} height={300} />
+                  <span className="category-tile-name">{t.name}</span>
+                  <span className="category-tile-count">{t.count} item{t.count === 1 ? "" : "s"}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="section featured-products" aria-labelledby="featured-heading">
           <div className="container">
             <div className="section-header">
-              <h2 id="featured-heading" className="section-title">Featured Bracelets</h2>
+              <h2 id="featured-heading" className="section-title">Featured Pieces</h2>
               <p className="section-subtitle">Each piece is handcrafted with authentic gemstones and natural variations</p>
             </div>
-            <div className="product-grid" role="list" aria-label="Featured crystal bracelets">
+            <div className="product-grid" role="list" aria-label="Featured products">
               {products.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}
             </div>
             <div className="section-cta">
-              <Link href="/shop" className="btn btn-outline btn-lg" aria-label="View all crystal bracelets in the shop">
-                View All Bracelets
+              <Link href="/shop" className="btn btn-outline btn-lg" aria-label="View all products in the shop">
+                View All Products
               </Link>
             </div>
           </div>
@@ -154,7 +184,7 @@ export default async function HomePage() {
               <div className="feature-card" role="listitem">
                 <span className="feature-icon" aria-hidden="true">💎</span>
                 <h3>100% Authentic Crystals</h3>
-                <p>Every bracelet uses certified genuine gemstones, ethically sourced with natural colour and texture variations.</p>
+                <p>Every piece uses genuine natural gemstones, ethically sourced with natural colour and texture variations.</p>
               </div>
               <div className="feature-card" role="listitem">
                 <span className="feature-icon" aria-hidden="true">🌍</span>

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const SITE_NAME = "Arise Numero";
-export const SITE_TAGLINE = "Authentic Crystal Bracelets & Numerology Readings";
+export const SITE_TAGLINE = "Authentic Crystals & Numerology Readings";
 export const DEFAULT_DESCRIPTION =
-  "Handcrafted crystal bracelets made with real gemstones — amethyst, rose quartz, lapis lazuli and more — plus personalised numerology readings. Ships worldwide.";
+  "Natural crystals and gemstone jewellery — bracelets, pendants, rings, crystal pencils, Rudraksha and more — plus personalised numerology readings. Ships worldwide.";
 
 /** Canonical origin of the site, no trailing slash. Set NEXT_PUBLIC_SITE_URL in production. */
 export function getSiteUrl(): string {

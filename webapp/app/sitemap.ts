@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/db";
 import { absoluteUrl, productPath } from "@/lib/seo";
+import { PRODUCT_TYPES } from "@/lib/product-types";
 
 // Built from the live catalogue on each request (not at build time), so a
 // product added or hidden in the admin panel shows up without a redeploy.
@@ -21,15 +22,22 @@ const STATIC_PAGES: { path: string; priority: number; changeFrequency: MetadataR
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, categories] = await Promise.all([
-    prisma.product.findMany({ where: { active: true }, select: { id: true, updatedAt: true }, orderBy: { sortOrder: "asc" } }),
+    prisma.product.findMany({ where: { active: true }, select: { id: true, updatedAt: true, productType: true }, orderBy: { sortOrder: "asc" } }),
     prisma.category.findMany({ where: { active: true }, select: { slug: true }, orderBy: { sortOrder: "asc" } }),
   ]);
+
+  const types = new Set(products.map((p) => p.productType));
 
   return [
     ...STATIC_PAGES.map((p) => ({
       url: absoluteUrl(p.path),
       changeFrequency: p.changeFrequency,
       priority: p.priority,
+    })),
+    ...PRODUCT_TYPES.filter((t) => types.has(t.slug)).map((t) => ({
+      url: absoluteUrl(`/shop?type=${t.slug}`),
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
     })),
     ...categories.map((c) => ({
       url: absoluteUrl(`/shop?cat=${encodeURIComponent(c.slug)}`),

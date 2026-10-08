@@ -9,6 +9,7 @@ import { Footer } from "@/components/Footer";
 import { JsonLd } from "@/components/JsonLd";
 import { ProductDetailClient } from "@/components/ProductDetailClient";
 import { ProductCard } from "@/components/ProductCard";
+import { getProductType } from "@/lib/product-types";
 import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { SITE_NAME, absoluteUrl, breadcrumbJsonLd, pageMetadata, productPath, truncate } from "@/lib/seo";
 
@@ -20,8 +21,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const row = await getProduct(id);
   if (!row || !row.active) return { title: "Product not found", robots: { index: false, follow: false } };
 
-  const title = /bracelet/i.test(row.name) ? row.name : `${row.name} Crystal Bracelet`;
-  const description = truncate(row.description) || `${row.name} — ${row.material || "handcrafted crystal bracelet"}. Ships worldwide.`;
+  const type = getProductType(row.productType);
+  const title = !type || row.name.toLowerCase().includes(type.singular.toLowerCase()) ? row.name : `${row.name} ${type.singular}`;
+  const description = truncate(row.description) || `${row.name} — ${row.material || "natural crystal"}. Ships worldwide.`;
   return pageMetadata({
     title,
     description,
@@ -36,6 +38,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   // Hidden (inactive) products must not be reachable by URL.
   if (!row || !row.active) notFound();
   const product = serializeProduct(row);
+  const productType = getProductType(product.productType);
 
   const [relatedRows, categoryRow, reviewStats] = await Promise.all([
     // Same crystal type first, then fill up with other bestsellers/featured pieces.
@@ -51,10 +54,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       _count: { rating: true },
     }),
   ]);
-  const related = [
-    ...relatedRows.filter((p) => p.category && p.category === product.category),
-    ...relatedRows.filter((p) => !p.category || p.category !== product.category),
-  ]
+  // Same type and stone first, then same type, then same stone, then the rest.
+  const score = (p: (typeof relatedRows)[number]) =>
+    (p.productType === product.productType ? 2 : 0) + (p.category && p.category === product.category ? 1 : 0);
+  const related = [...relatedRows]
+    .sort((a, b) => score(b) - score(a))
     .slice(0, 3)
     .map(serializeProduct);
 
@@ -74,15 +78,20 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     material: product.material || undefined,
     category: categoryRow?.name || undefined,
     brand: { "@type": "Brand", name: SITE_NAME },
-    offers: {
-      "@type": "Offer",
-      url,
-      priceCurrency: "USD",
-      price: product.priceUsd.toFixed(2),
-      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      itemCondition: "https://schema.org/NewCondition",
-      seller: { "@type": "Organization", name: SITE_NAME },
-    },
+    // Price-on-request items have no Offer (Google rejects a price of 0).
+    ...(product.priceUsd > 0
+      ? {
+          offers: {
+            "@type": "Offer",
+            url,
+            priceCurrency: "USD",
+            price: product.priceUsd.toFixed(2),
+            availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+            itemCondition: "https://schema.org/NewCondition",
+            seller: { "@type": "Organization", name: SITE_NAME },
+          },
+        }
+      : {}),
     ...(reviewCount > 0 && reviewStats._avg.rating
       ? {
           aggregateRating: {
@@ -103,6 +112,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
           { name: "Shop", path: "/shop" },
+          ...(productType ? [{ name: productType.name, path: `/shop?type=${productType.slug}` }] : []),
           { name: product.name, path: productPath(product.id) },
         ])}
       />
@@ -112,6 +122,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           <ol role="list">
             <li><Link href="/">Home</Link></li>
             <li><Link href="/shop">Shop</Link></li>
+            {productType && <li><Link href={`/shop?type=${productType.slug}`}>{productType.name}</Link></li>}
             <li aria-current="page">{product.name}</li>
           </ol>
         </nav>
@@ -121,7 +132,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         <section className="section related-products" aria-labelledby="related-heading">
           <div className="container">
             <h2 id="related-heading" className="section-title">You May Also Like</h2>
-            <div className="product-grid" role="list" aria-label="Related crystal bracelets">
+            <div className="product-grid" role="list" aria-label="Related products">
               {related.map((p) => (
                 <ProductCard key={p.id} product={p} />
               ))}

@@ -38,6 +38,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         priceUsd: p.priceUsd !== undefined ? p.priceUsd : existing.priceUsd,
         originalPriceUsd: p.originalPriceUsd !== undefined ? p.originalPriceUsd : existing.originalPriceUsd,
         category: p.category !== undefined ? p.category : existing.category,
+        productType: p.productType ?? existing.productType,
         beadSize: p.beadSize !== undefined ? p.beadSize : existing.beadSize,
         stock: p.stock !== undefined ? p.stock : existing.stock,
         lowStockThreshold: p.lowStockThreshold !== undefined ? p.lowStockThreshold : existing.lowStockThreshold,

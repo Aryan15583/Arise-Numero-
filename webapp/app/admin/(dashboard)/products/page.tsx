@@ -5,9 +5,10 @@ import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ProductImageManager } from "@/components/admin/ProductImageManager";
+import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
 import type { ProductDTO } from "@/lib/types";
 
-const BEAD_SIZES = ["6mm", "8mm", "10mm", "12mm"];
+const BEAD_SIZES = ["", "4mm", "6mm", "8mm", "10mm", "12mm"];
 const BADGES = ["", "Bestseller", "New", "Sale", "Premium"];
 const PAGE_SIZE = 20;
 
@@ -17,6 +18,7 @@ type FormState = {
   id: string;
   name: string;
   category: string;
+  productType: string;
   beadSize: string;
   priceUsd: string;
   originalPriceUsd: string;
@@ -37,6 +39,7 @@ function emptyForm(defaultCategory: string): FormState {
     id: "",
     name: "",
     category: defaultCategory,
+    productType: "bracelets",
     beadSize: "8mm",
     priceUsd: "",
     originalPriceUsd: "",
@@ -61,6 +64,7 @@ export default function AdminProductsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm(""));
@@ -70,6 +74,7 @@ export default function AdminProductsPage() {
     const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
     if (search) params.set("search", search);
     if (categoryFilter) params.set("category", categoryFilter);
+    if (typeFilter) params.set("productType", typeFilter);
     adminFetchJson<{ items: ProductDTO[]; total: number }>(`/api/admin/products?${params}`)
       .then((d) => {
         setProducts(d.items);
@@ -78,7 +83,7 @@ export default function AdminProductsPage() {
       .catch(() => {});
   }
 
-  useEffect(load, [page, search, categoryFilter]);
+  useEffect(load, [page, search, categoryFilter, typeFilter]);
   useEffect(() => {
     adminFetchJson<Category[]>("/api/admin/categories").then(setCategories).catch(() => {});
   }, []);
@@ -104,7 +109,8 @@ export default function AdminProductsPage() {
       id: p.id,
       name: p.name,
       category: p.category || categories[0]?.slug || "",
-      beadSize: p.beadSize || "8mm",
+      productType: p.productType || "bracelets",
+      beadSize: p.beadSize || "",
       priceUsd: String(p.priceUsd),
       originalPriceUsd: p.originalPriceUsd !== null ? String(p.originalPriceUsd) : "",
       stock: String(p.stock),
@@ -134,8 +140,9 @@ export default function AdminProductsPage() {
       description: form.description.trim(),
       priceUsd: parseFloat(form.priceUsd) || 0,
       originalPriceUsd: form.originalPriceUsd ? parseFloat(form.originalPriceUsd) : null,
-      category: form.category,
-      beadSize: form.beadSize,
+      category: form.category || null,
+      productType: form.productType,
+      beadSize: form.beadSize || null,
       stock: parseInt(form.stock, 10) || 0,
       lowStockThreshold: parseInt(form.lowStockThreshold, 10) || 5,
       images: form.images,
@@ -214,15 +221,28 @@ export default function AdminProductsPage() {
                 setPage(1);
               }}
             >
-              <option value="">All Categories</option>
+              <option value="">All Stones</option>
               {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+            </select>
+            <select
+              className="form-input"
+              style={{ width: "auto", padding: "8px 12px" }}
+              value={typeFilter}
+              onChange={(e) => {
+                setTypeFilter(e.target.value);
+                setPage(1);
+              }}
+              aria-label="Filter by product type"
+            >
+              <option value="">All Types</option>
+              {PRODUCT_TYPES.map((t) => <option key={t.slug} value={t.slug}>{t.name}</option>)}
             </select>
           </div>
         </div>
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Image</th><th>Name</th><th>Category</th><th>Price (USD)</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
+              <tr><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price (USD)</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
@@ -239,9 +259,9 @@ export default function AdminProductsPage() {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <td><img src={p.imageUrl || "/assets/placeholder.svg"} className="product-thumb" alt={p.name} /></td>
                       <td><strong>{p.name}</strong><br /><small style={{ color: "var(--text-muted)" }}>{p.id}</small></td>
-                      <td>{p.category || "—"}</td>
+                      <td>{getProductType(p.productType)?.name || p.productType}<br /><small style={{ color: "var(--text-muted)" }}>{categories.find((c) => c.slug === p.category)?.name || "—"}</small></td>
                       <td>
-                        ${p.priceUsd.toFixed(2)}
+                        {p.priceUsd > 0 ? `$${p.priceUsd.toFixed(2)}` : <span className="badge badge-gold" title="No price yet — shown as Price on request and can't be ordered">On request</span>}
                         {p.originalPriceUsd && <><br /><small style={{ textDecoration: "line-through", color: "var(--text-muted)" }}>${p.originalPriceUsd.toFixed(2)}</small></>}
                       </td>
                       <td>{stockBadge}</td>
@@ -283,16 +303,24 @@ export default function AdminProductsPage() {
                   <span className="form-hint">Lowercase, hyphens only. Used in cart.</span>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Category *</label>
+                  <label className="form-label">Product Type *</label>
+                  <select className="form-input" value={form.productType} onChange={(e) => setForm((f) => ({ ...f, productType: e.target.value }))}>
+                    {PRODUCT_TYPES.map((t) => <option key={t.slug} value={t.slug}>{t.name}</option>)}
+                  </select>
+                  <span className="form-hint">Decides which shop section it appears in.</span>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Stone</label>
                   <select className="form-input" value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
+                    <option value="">— None —</option>
                     {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
                   </select>
-                  <span className="form-hint">Manage the list under Admin → Categories.</span>
+                  <span className="form-hint">Manage stones under Admin → Categories.</span>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Bead Size</label>
                   <select className="form-input" value={form.beadSize} onChange={(e) => setForm((f) => ({ ...f, beadSize: e.target.value }))}>
-                    {BEAD_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    {BEAD_SIZES.map((s) => <option key={s} value={s}>{s || "— Not beaded —"}</option>)}
                   </select>
                 </div>
                 <div className="form-group">

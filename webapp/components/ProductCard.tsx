@@ -7,14 +7,16 @@ import { useCurrency } from "./CurrencyContext";
 import { WishlistButton } from "./WishlistButton";
 import type { ProductDTO } from "@/lib/types";
 import { reviewsLabel, starString } from "@/lib/stars";
+import { isPriced } from "@/lib/pricing";
 
 export function ProductCard({ product }: { product: ProductDTO }) {
   const { addToCart } = useCart();
   const { format } = useCurrency();
   const [added, setAdded] = useState(false);
 
-  const isOut = product.stock === 0;
-  const isLow = !isOut && product.stock <= product.lowStockThreshold;
+  const priced = isPriced(product);
+  const isOut = priced && product.stock === 0;
+  const isLow = priced && !isOut && product.stock <= product.lowStockThreshold;
 
   function handleAdd() {
     addToCart({ id: product.id, name: product.name, priceUsd: product.priceUsd, imageUrl: product.imageUrl, stock: product.stock });
@@ -29,7 +31,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={product.imageUrl || "/assets/placeholder.svg"}
-            alt={`Handcrafted ${product.name} crystal bracelet`}
+            alt={product.name}
             className="product-img"
             loading="lazy"
             width={400}
@@ -72,6 +74,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
           <div className="product-rating product-rating-empty">No reviews yet</div>
         )}
         <div className="product-price-row">
+          {priced ? (
           <span>
             <span className="product-price">{format(product.priceUsd)}</span>
             {product.originalPriceUsd && (
@@ -81,14 +84,27 @@ export function ProductCard({ product }: { product: ProductDTO }) {
               </>
             )}
           </span>
-          <button
-            className="btn btn-primary btn-sm add-to-cart"
-            onClick={handleAdd}
-            disabled={isOut}
-            aria-label={`Add ${product.name} to cart`}
-          >
-            {added ? "✓ Added!" : isOut ? "Out of Stock" : "Add to Cart"}
-          </button>
+          ) : (
+            <span className="product-price product-price--request">Price on request</span>
+          )}
+          {priced ? (
+            <button
+              className="btn btn-primary btn-sm add-to-cart"
+              onClick={handleAdd}
+              disabled={isOut}
+              aria-label={`Add ${product.name} to cart`}
+            >
+              {added ? "✓ Added!" : isOut ? "Out of Stock" : "Add to Cart"}
+            </button>
+          ) : (
+            <Link
+              href={`/contact?product=${encodeURIComponent(product.id)}`}
+              className="btn btn-outline btn-sm add-to-cart"
+              aria-label={`Ask for the price of ${product.name}`}
+            >
+              Enquire
+            </Link>
+          )}
         </div>
       </div>
     </article>
