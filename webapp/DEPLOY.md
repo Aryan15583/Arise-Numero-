@@ -23,6 +23,11 @@ Everything below is done in your browser; nothing to install. Total time ≈ 30 
    - Turn **Connection pooling OFF** → copy it → this is your **`DIRECT_URL`**.
    Both start with `postgresql://` and end with `?sslmode=require`. Keep them private.
 
+> **Neon's names vs. ours.** Neon's `.env` view may list `DATABASE_URL_POOLED`
+> (contains `-pooler`) and `DATABASE_URL` (no `-pooler`). In Vercel, the
+> *pooled* one goes in **`DATABASE_URL`** and Neon's plain `DATABASE_URL` goes in
+> **`DIRECT_URL`**. Paste only the part inside the quotes.
+
 You don't create any tables yourself: the first deploy builds the database and
 loads the whole catalogue (21 stones, all products, coupons) automatically.
 
@@ -51,7 +56,12 @@ loads the whole catalogue (21 stones, all products, coupons) automatically.
    `NEXT_PUBLIC_INSTAGRAM_URL`, `NEXT_PUBLIC_FACEBOOK_URL`, `NEXT_PUBLIC_PINTEREST_URL`,
    `NEXT_PUBLIC_WHATSAPP_NUMBER`, `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`
    (descriptions in `.env.example`).
-5. Click **Deploy**. The build runs `prisma migrate deploy` (creates the tables and loads the
+   Vercel may suggest **Prisma Postgres** and **Resend** integrations — skip both
+   (you already use Neon and Gmail; Prisma Postgres would replace `DATABASE_URL`).
+   With a Gmail App Password in `SMTP_PASS`, the other `SMTP_*` / `ADMIN_*` email
+   settings are optional — they default to Gmail and arisenumero@gmail.com.
+5. Click **Deploy**. (If the project was created without deploying, use
+   Deployments → **Create Deployment** → branch `main`, or push any commit to `main`.) The build runs `prisma migrate deploy` (creates the tables and loads the
    catalogue on the first run) and then builds the site. ~2–3 minutes.
 6. Open the `.vercel.app` link: the shop should show all products. Check
    `https://<your-project>.vercel.app/api/health` → `{"ok":true,"db":"up",…}`.
