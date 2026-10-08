@@ -2,7 +2,8 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "./db";
 
 export const MAX_PRODUCT_IMAGES = 4;
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+// Vercel rejects request bodies over 4.5 MB, so stay safely under it.
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 
 const UPLOAD_URL = /^\/api\/images\/([a-z0-9]{20,40})$/;
 

@@ -77,7 +77,7 @@ contact message, and review.
       "Backend Test", the Cashfree/COD test orders from earlier sessions, a
       test booking, a test review, and now also an audit log full of test
       login attempts/lockouts from security testing — or just reset with
-      `rm prisma/dev.db && npx prisma migrate dev && npm run seed`.
+      `npx prisma migrate reset` (wipes the database and reloads the catalogue — never run it against the live database).
 
 ## 5. Product content
 
@@ -89,7 +89,7 @@ contact message, and review.
       own bracelets when you can: Admin → Products → Edit → **Product Images** →
       "Upload image" (up to 4 per product; the first is the main photo — use
       "Set as main" or the arrows to reorder). Square photos look best; big phone
-      photos are shrunk to 1600px JPEG in the browser before upload (5 MB limit).
+      photos are shrunk to 1600px JPEG in the browser before upload (4 MB limit).
       Uploads are stored in the database, so back up the database to keep them.
       Customers trust real photos more.
 - [ ] Review the auto-generated category descriptions (Admin → Categories)
@@ -98,25 +98,13 @@ contact message, and review.
       "Pending" and won't show publicly until you approve them. Approving,
       rejecting or deleting a review updates that product's rating instantly.
 
-## 6. If/when you outgrow SQLite
+## 6. Database — Postgres on Neon
 
-SQLite (the current database) is genuinely fine for a small-to-medium store —
-single file, zero setup, handles concurrent reads well. It becomes a real
-constraint once you have many simultaneous writers (e.g. a traffic spike
-during a sale) or you deploy to a serverless host with no persistent disk
-(Vercel, etc. — the file would reset on every deploy there).
-
-When you hit that point:
-1. Stand up a Postgres database (free tiers: Neon, Supabase, Railway).
-2. In `prisma/schema.prisma`, change `provider = "sqlite"` to
-   `provider = "postgresql"` under `datasource db`.
-3. Point `DATABASE_URL` at your new Postgres connection string.
-4. Run `npx prisma migrate dev` once against the new database — it replays
-   all the existing migrations, so you get the identical schema.
-5. Re-run `npm run seed` if it's a fresh database.
-
-Nothing else in the app needs to change — all the query code goes through
-Prisma, which is database-agnostic.
+The app now runs on Postgres (Neon) instead of the old SQLite file, so it works
+on Vercel/serverless hosts. Setup steps are in **DEPLOY.md**. A new database gets
+all tables plus the full catalogue from `npx prisma migrate deploy` (Vercel runs
+it on every build). The old SQLite migrations are kept for reference in
+`prisma/migrations-sqlite-archive/`.
 
 ## 7. If you deploy behind multiple server instances (load balancer)
 
@@ -249,10 +237,8 @@ old `?id=` links redirect permanently); category landing pages
   (`*.html`, `styles.css`, `main.js`, `CNAME`, `assets/` if present). `webapp/`,
   `src/` and the docs are no longer copied onto the public site, so `webapp/` can
   safely live on `main`.
-- To put the new app live, deploy `webapp/` to a Node host (Vercel is easiest:
-  import the repo, pick branch `main`, set **Root Directory = `webapp`**) and
-  point your domain there. SQLite needs a persistent disk — on Vercel/serverless,
-  switch to Postgres first (section 6).
+- To put the new app live, follow **DEPLOY.md** (Vercel + Neon, with Root
+  Directory = `webapp`) and point your domain there.
 - **Old admin panel removed:** the static `ADMINDBMP.html` (which had its default
   PIN in the page source and was published on the live site) has been deleted.
   Never reuse that PIN anywhere. The new Next.js app has no PIN at all.
@@ -288,7 +274,7 @@ All of these work out of the box; the items below are the bits only you can fill
       policies (14-day returns, delivery times, payment methods). Edit it if any of
       that changes.
 - [ ] **Clean out the test data** before launch (a few test orders, a booking, a
-      message, an audit log) — or reset with `rm prisma/dev.db && npx prisma migrate dev && npm run seed`.
+      message, an audit log) — or reset with `npx prisma migrate reset` (wipes the database and reloads the catalogue — never run it against the live database).
 
 ## 14. Newer store features — how to use them
 

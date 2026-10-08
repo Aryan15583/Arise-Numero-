@@ -5,7 +5,7 @@ import { getClientIp } from "@/lib/rate-limit";
 import { logAudit } from "@/lib/audit";
 import { MAX_UPLOAD_BYTES, purgeStaleUploads, sniffImageType, uploadUrl } from "@/lib/product-images";
 
-// ADMIN: upload one product photo (multipart field "file"). Stored in the
+// ADMIN: upload one product photo (multipart field "file", max 4 MB). Stored in the
 // database and served from /api/images/<id>. It's linked to a product when
 // that product is saved with this URL in its image list.
 export async function POST(req: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   }
   if (file.size === 0) return NextResponse.json({ error: "That file is empty." }, { status: 400 });
   if (file.size > MAX_UPLOAD_BYTES) {
-    return NextResponse.json({ error: "Image is too large — the limit is 5 MB." }, { status: 413 });
+    return NextResponse.json({ error: "Image is too large — the limit is 4 MB." }, { status: 413 });
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());

@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
@@ -47,7 +48,14 @@ const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
 ];
 
+// The repo root has its own package-lock.json (the old static site), which made
+// Next.js guess the wrong project root. Pin it to this folder so builds — and
+// Vercel's file tracing — only see the app.
+const appRoot = path.resolve(__dirname);
+
 const nextConfig: NextConfig = {
+  turbopack: { root: appRoot },
+  outputFileTracingRoot: appRoot,
   poweredByHeader: false, // don't advertise "X-Powered-By: Next.js" to every visitor
   async headers() {
     return [

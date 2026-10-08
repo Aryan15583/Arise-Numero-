@@ -10,7 +10,10 @@
     "seed": "tsx prisma/seed.ts",
     "gen-placeholders": "node scripts/gen-placeholders.mjs",
     "render-images": "node scripts/render-product-images.mjs",
-    "test-email": "tsx scripts/test-email.ts"
+    "test-email": "tsx scripts/test-email.ts",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma migrate deploy && next build",
+    "db:migrate": "prisma migrate deploy"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

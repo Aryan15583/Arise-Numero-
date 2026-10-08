@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 
 const MAX_IMAGES = 4;
 const MAX_EDGE = 1600; // px — plenty for a 2× zoom on the product page
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 4 * 1024 * 1024; // after resizing; matches the server limit
 
 // Shrinks big phone photos before upload so pages stay fast. Falls back to the
 // original file if the browser can't decode it (the server still validates it).
@@ -35,6 +35,7 @@ async function prepareImage(file: File): Promise<Blob> {
 async function uploadOne(file: File): Promise<string> {
   const body = new FormData();
   const prepared = await prepareImage(file);
+  if (prepared.size > MAX_BYTES) throw new Error(`"${file.name}" is still over 4 MB after resizing — try a smaller photo.`);
   body.append("file", prepared, prepared === file ? file.name : file.name.replace(/\.\w+$/, "") + ".jpg");
   const res = await fetch("/api/admin/uploads", { method: "POST", body });
   if (res.status === 401) {

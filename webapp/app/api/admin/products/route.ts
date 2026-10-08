@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
   if (productType) where.productType = productType;
   if (search) {
     where.OR = [
-      { name: { contains: search } },
-      { id: { contains: search } },
+      { name: { contains: search, mode: "insensitive" } },
+      { id: { contains: search, mode: "insensitive" } },
     ];
   }
 

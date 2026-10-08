@@ -6,6 +6,8 @@
 //
 // Run with: npm run seed
 
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -165,9 +167,17 @@ const coupons = [
   { code: "NEWUSER", discountPercent: 12, description: "New customer discount." },
 ];
 
-// The rest of the catalogue (pendants, rings, pencils, …) and its stones are
-// inserted by the add_product_types_and_catalogue migration from
-// prisma/catalogue.json, so they exist even without running the seed.
+// The rest of the catalogue (pendants, rings, pencils, …) and its stones come
+// from prisma/catalogue.json. A new database already gets all of this from the
+// seed_catalogue migration; this seed is for local development.
+type CatalogueProduct = {
+  id: string; name: string; productType: string; category: string | null;
+  material: string; description: string; beadSize: string | null;
+};
+const catalogue = JSON.parse(readFileSync(join(__dirname, "catalogue.json"), "utf8")) as {
+  categories: { slug: string; name: string; description: string }[];
+  products: CatalogueProduct[];
+};
 const categories = [
   { slug: "amethyst", name: "Amethyst", description: "Deep purple stone of calm and clarity." },
   { slug: "rose-quartz", name: "Rose Quartz", description: "Soft pink stone of love and gentle energy." },
@@ -189,6 +199,26 @@ async function main() {
     productsAdded++;
   }
 
+  // Catalogue items start with no price ("price on request") and no stock.
+  for (let i = 0; i < catalogue.products.length; i++) {
+    const p = catalogue.products[i];
+    const exists = await prisma.product.findUnique({ where: { id: p.id } });
+    if (exists) continue;
+    const image = `/assets/products/${p.id}.jpg`;
+    await prisma.product.create({
+      data: {
+        ...p,
+        priceUsd: 0,
+        stock: 0,
+        lowStockThreshold: 2,
+        imageUrl: image,
+        images: JSON.stringify([image]),
+        sortOrder: 100 + i,
+      },
+    });
+    productsAdded++;
+  }
+
   let couponsAdded = 0;
   for (const c of coupons) {
     const exists = await prisma.coupon.findUnique({ where: { code: c.code } });
@@ -198,8 +228,9 @@ async function main() {
   }
 
   let categoriesAdded = 0;
-  for (let i = 0; i < categories.length; i++) {
-    const c = categories[i];
+  const allCategories = [...categories, ...catalogue.categories];
+  for (let i = 0; i < allCategories.length; i++) {
+    const c = allCategories[i];
     const exists = await prisma.category.findUnique({ where: { slug: c.slug } });
     if (exists) continue;
     await prisma.category.create({ data: { ...c, sortOrder: i } });

@@ -25,6 +25,19 @@ static site and the zip are untouched, one level up, for reference.
 Some older sections below still describe earlier phases (e.g. the PIN login).
 Where they disagree with this section, **this section is right**.
 
+- **Database is now Postgres (Neon), not SQLite.** `schema.prisma` uses
+  `provider = "postgresql"` with `DATABASE_URL` (pooled) + `DIRECT_URL` (direct,
+  for migrations). The migration history was restarted for Postgres:
+  `…_init_postgres` (schema) and `…_seed_catalogue` (stones, all products,
+  coupons, inserted once with `ON CONFLICT DO NOTHING`). Old SQLite migrations
+  are in `prisma/migrations-sqlite-archive/`. Admin searches use
+  case-insensitive matching. Deploy: **DEPLOY.md** (Vercel + Neon; `render.yaml`
+  for Render). `vercel-build` runs `prisma migrate deploy && next build`;
+  `vercel.json` pins functions to Singapore (`sin1`) next to the Neon database.
+  Upload limit is 4 MB (Vercel caps request bodies at 4.5 MB). Tested end to end
+  against a local Postgres 16: fresh migrate, production build, admin login,
+  uploads, pricing + ordering, reviews, back-in-stock, search.
+
 - **Admin sign-in is now an emailed one-time code — the PIN is gone.** The login
   page emails an 8-character code to the single address in `ADMIN_LOGIN_EMAIL`
   (default `arisenumero@gmail.com`; the recipient can never come from the

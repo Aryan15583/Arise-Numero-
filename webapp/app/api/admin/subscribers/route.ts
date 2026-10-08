@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   const pageSize = Math.min(100, Math.max(1, parseInt(searchParams.get("pageSize") || "20", 10) || 20));
   const search = searchParams.get("search")?.trim();
 
-  const where: Prisma.SubscriberWhereInput = search ? { email: { contains: search } } : {};
+  const where: Prisma.SubscriberWhereInput = search ? { email: { contains: search, mode: "insensitive" } } : {};
   const [rows, total, activeCount] = await Promise.all([
     prisma.subscriber.findMany({
       where,
