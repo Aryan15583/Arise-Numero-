@@ -42,10 +42,12 @@ function getClient(): Resend | null {
 }
 
 function smtpConfig() {
-  const host = process.env.SMTP_HOST?.trim();
-  const user = process.env.SMTP_USER?.trim();
   const pass = process.env.SMTP_PASS?.split(" ").join(""); // Google shows app passwords as 4 spaced groups
-  if (!host || !user || !pass) return null;
+  if (!pass) return null;
+  // Setting only SMTP_PASS (a Gmail App Password) is enough: host and account
+  // default to Gmail and the admin address.
+  const host = process.env.SMTP_HOST?.trim() || "smtp.gmail.com";
+  const user = process.env.SMTP_USER?.trim() || process.env.ADMIN_LOGIN_EMAIL?.trim() || "arisenumero@gmail.com";
   const port = parseInt(process.env.SMTP_PORT || "465", 10) || 465;
   return { host, user, pass, port };
 }
