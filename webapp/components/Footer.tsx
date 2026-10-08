@@ -46,7 +46,7 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
           <h4>Shop</h4>
           <ul role="list">
             <li><Link href="/shop">All Products</Link></li>
-            <li><Link href="/shop?type=bracelets">Bracelets</Link></li>
+            <li><Link href="/shop?type=pyramid-bracelets">Pyramid Bracelets</Link></li>
             <li><Link href="/shop?type=pendants">Pendants</Link></li>
             <li><Link href="/shop?type=rings">Rings</Link></li>
             <li><Link href="/shop?type=pencils">3 Inch Pencils</Link></li>

@@ -31,8 +31,8 @@ const products = [
       "/assets/products/amethyst-8mm-box.jpg",
     ],
     badge: "Bestseller",
-    active: true,
-    featured: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
+    featured: false,
   },
   {
     id: "lapis-lazuli",
@@ -49,7 +49,7 @@ const products = [
     imageUrl: "/assets/products/lapis-lazuli.jpg",
     images: ["/assets/products/lapis-lazuli.jpg", "/assets/products/lapis-lazuli-closeup.jpg"],
     badge: "New",
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -67,8 +67,8 @@ const products = [
     imageUrl: "/assets/products/rose-quartz.jpg",
     images: ["/assets/products/rose-quartz.jpg", "/assets/products/rose-quartz-closeup.jpg"],
     badge: null,
-    active: true,
-    featured: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
+    featured: false,
   },
   {
     id: "black-tourmaline",
@@ -84,7 +84,7 @@ const products = [
     imageUrl: "/assets/products/black-tourmaline.jpg",
     images: ["/assets/products/black-tourmaline.jpg", "/assets/products/black-tourmaline-closeup.jpg"],
     badge: null,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -101,8 +101,8 @@ const products = [
     imageUrl: "/assets/products/citrine.jpg",
     images: ["/assets/products/citrine.jpg", "/assets/products/citrine-closeup.jpg"],
     badge: "Sale",
-    active: true,
-    featured: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
+    featured: false,
   },
   {
     id: "obsidian",
@@ -118,7 +118,7 @@ const products = [
     imageUrl: "/assets/products/obsidian.jpg",
     images: ["/assets/products/obsidian.jpg", "/assets/products/obsidian-closeup.jpg"],
     badge: null,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -135,7 +135,7 @@ const products = [
     imageUrl: "/assets/products/amethyst-6mm.jpg",
     images: ["/assets/products/amethyst-6mm.jpg", "/assets/products/amethyst-6mm-closeup.jpg"],
     badge: null,
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
   {
@@ -153,7 +153,7 @@ const products = [
     imageUrl: "/assets/products/rose-quartz-premium.jpg",
     images: ["/assets/products/rose-quartz-premium.jpg", "/assets/products/rose-quartz-premium-pair.jpg"],
     badge: "Premium",
-    active: true,
+    active: false, // hidden: not in the current catalogue (hide_original_bracelets migration)
     featured: false,
   },
 ];

@@ -135,24 +135,26 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="section featured-products" aria-labelledby="featured-heading">
-          <div className="container">
-            <div className="section-header">
-              <h2 id="featured-heading" className="section-title">Featured Pieces</h2>
-              <p className="section-subtitle">Each piece is handcrafted with authentic gemstones and natural variations</p>
+        {products.length > 0 && (
+          <section className="section featured-products" aria-labelledby="featured-heading">
+            <div className="container">
+              <div className="section-header">
+                <h2 id="featured-heading" className="section-title">Featured Pieces</h2>
+                <p className="section-subtitle">Each piece is handcrafted with authentic gemstones and natural variations</p>
+              </div>
+              <div className="product-grid" role="list" aria-label="Featured products">
+                {products.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+              <div className="section-cta">
+                <Link href="/shop" className="btn btn-outline btn-lg" aria-label="View all products in the shop">
+                  View All Products
+                </Link>
+              </div>
             </div>
-            <div className="product-grid" role="list" aria-label="Featured products">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-            <div className="section-cta">
-              <Link href="/shop" className="btn btn-outline btn-lg" aria-label="View all products in the shop">
-                View All Products
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="section numerology-teaser" aria-labelledby="numerology-heading">
           <div className="container numerology-teaser-inner">
