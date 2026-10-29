@@ -43,7 +43,8 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
     <header className={`site-header ${variant === "checkout" ? "site-header--checkout" : ""}`} role="banner">
       <div className="header-inner container">
         <Link href="/" className="logo" aria-label="Arise Numero Home">
-          <span className="logo-symbol" aria-hidden="true">✦</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/brand/logo-badge-160.png" alt="" className="logo-badge" width={52} height={52} />
           <span className="logo-text">Arise Numero</span>
         </Link>
 
