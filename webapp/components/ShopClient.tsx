@@ -187,7 +187,7 @@ export function ShopClient({
             id="shop-search-input"
             type="search"
             className="form-input"
-            placeholder="Search — try “amethyst”, “pendant”, “rudraksha”…"
+            placeholder="Search crystals, pendants, rings…"
             value={query}
             maxLength={80}
             onChange={(e) => setQuery(e.target.value)}
