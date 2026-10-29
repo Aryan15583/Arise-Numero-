@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Icon } from "./Icon";
 
 export function ContactFormClient({ productName }: { productName?: string } = {}) {
   const [name, setName] = useState("");
@@ -100,12 +101,12 @@ export function ContactFormClient({ productName }: { productName?: string } = {}
 
       {status === "success" && (
         <div className="form-success" role="status" aria-live="polite">
-          <span aria-hidden="true">✅</span> Thank you! Your message has been sent. We&apos;ll reply within 24–48 hours.
+          <Icon name="check" size={16} /> Thank you! Your message has been sent. We&apos;ll reply within 24–48 hours.
         </div>
       )}
       {status === "error" && (
         <div className="form-error" role="alert" aria-live="assertive">
-          <span aria-hidden="true">⚠️</span> {error}
+          <Icon name="alert" size={16} /> {error}
         </div>
       )}
     </form>

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { lineLimit, useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { getPublicConfig } from "@/lib/public-config";
+import { Icon } from "./Icon";
 
 export function CartPageClient() {
   const { items, removeFromCart, updateQty, subtotalUsd } = useCart();
@@ -81,7 +82,7 @@ export function CartPageClient() {
         <section className="cart-main" aria-labelledby="cart-heading">
           <h1 id="cart-heading" className="page-title">Your Cart</h1>
           <div className="cart-empty">
-            <div className="cart-empty-icon" aria-hidden="true">🛒</div>
+            <div className="cart-empty-icon"><Icon name="bag" size={40} /></div>
             <h2>Your cart is empty</h2>
             <p>Add some beautiful crystal bracelets to get started.</p>
             <Link href="/shop" className="btn btn-primary" aria-label="Continue shopping for bracelets">
@@ -191,7 +192,7 @@ export function CartPageClient() {
         {freeShippingThreshold > 0 && (
           <div className="free-ship-progress" aria-live="polite">
             {afterDiscount >= freeShippingThreshold ? (
-              <p className="free-ship-text"><span aria-hidden="true">🎉</span> You&apos;ve unlocked <strong>free shipping</strong>!</p>
+              <p className="free-ship-text"><Icon name="celebrate" size={16} /> You&apos;ve unlocked <strong>free shipping</strong>!</p>
             ) : (
               <p className="free-ship-text">
                 Add <strong>{format(freeShippingThreshold - afterDiscount)}</strong> more for <strong>free shipping</strong>
@@ -234,10 +235,10 @@ export function CartPageClient() {
         <p className="summary-currency-note">Prices shown in your selected currency. Final amount is charged in USD.</p>
 
         <Link href="/checkout" className="btn btn-primary btn-lg btn-full checkout-btn" aria-label="Proceed to secure checkout">
-          🔒 Proceed to Checkout
+          <Icon name="lock" size={16} /> Proceed to Checkout
         </Link>
 
-        <p className="security-note"><span aria-hidden="true">🔐</span> Pay by Cash on Delivery, Bank Transfer, UPI/GPay, or card (Visa/Mastercard) at checkout.</p>
+        <p className="security-note"><Icon name="lock" size={16} /> Pay by Cash on Delivery, Bank Transfer, UPI/GPay, or card (Visa/Mastercard) at checkout.</p>
 
         <p className="cart-policy-note">
           <Link href="/returns">14-day returns</Link> · <Link href="/returns#shipping">Shipping info</Link>

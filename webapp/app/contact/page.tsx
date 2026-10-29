@@ -3,7 +3,9 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ContactFormClient } from "@/components/ContactFormClient";
 import { prisma } from "@/lib/db";
+import { getSocialLinks } from "@/lib/social";
 import { pageMetadata } from "@/lib/seo";
+import { Icon } from "@/components/Icon";
 
 export const metadata = pageMetadata({
   title: "Contact Us",
@@ -72,28 +74,30 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               <h2 className="summary-title">Contact Information</h2>
               <ul className="contact-info-list" role="list">
                 <li>
-                  <span className="contact-info-icon" aria-hidden="true">📧</span>
+                  <span className="contact-info-icon"><Icon name="mail" size={26} /></span>
                   <div><strong>Email</strong><a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a></div>
                 </li>
                 <li>
-                  <span className="contact-info-icon" aria-hidden="true">⏰</span>
+                  <span className="contact-info-icon"><Icon name="clock" size={26} /></span>
                   <div><strong>Response Time</strong><span>24–48 hours (Mon–Sat)</span></div>
                 </li>
                 <li>
-                  <span className="contact-info-icon" aria-hidden="true">🌍</span>
+                  <span className="contact-info-icon"><Icon name="globe" size={26} /></span>
                   <div><strong>Based In</strong><span>Mumbai, India — serving customers worldwide</span></div>
                 </li>
               </ul>
             </div>
 
-            <div className="contact-info-card">
-              <h2 className="summary-title">Follow Us</h2>
-              <div className="contact-socials" aria-label="Social media links">
-                <a href="#" className="social-link" rel="noopener noreferrer"><span aria-hidden="true">📸</span> Instagram</a>
-                <a href="#" className="social-link" rel="noopener noreferrer"><span aria-hidden="true">👤</span> Facebook</a>
-                <a href="#" className="social-link" rel="noopener noreferrer"><span aria-hidden="true">📌</span> Pinterest</a>
+            {getSocialLinks().length > 0 && (
+              <div className="contact-info-card">
+                <h2 className="summary-title">Follow Us</h2>
+                <div className="contact-socials" aria-label="Social media links">
+                  {getSocialLinks().map((l) => (
+                    <a key={l.label} href={l.href} className="social-link" target="_blank" rel="noopener noreferrer">{l.label}</a>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="faq-section" aria-labelledby="faq-heading">
               <h2 id="faq-heading" className="summary-title">Frequently Asked Questions</h2>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useWishlist } from "./WishlistContext";
+import { Icon } from "./Icon";
 
 // Heart toggle. "icon" floats over a product card's image; "full" is the labelled
 // button on the product page.
@@ -26,7 +27,7 @@ export function WishlistButton({
         onClick={() => toggle(productId)}
         style={saved ? { color: "var(--color-error)", borderColor: "var(--color-error)" } : undefined}
       >
-        {saved ? "♥ Saved" : "♡ Wishlist"}
+        <Icon name="heart" size={18} fill={saved ? "currentColor" : "none"} /> {saved ? "Saved" : "Wishlist"}
       </button>
     );
   }
@@ -45,7 +46,7 @@ export function WishlistButton({
         toggle(productId);
       }}
     >
-      <span aria-hidden="true">{saved ? "♥" : "♡"}</span>
+      <Icon name="heart" size={18} fill={saved ? "currentColor" : "none"} />
     </button>
   );
 }

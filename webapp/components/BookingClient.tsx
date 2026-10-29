@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useCurrency } from "./CurrencyContext";
+import { Icon } from "./Icon";
 
 const PACKAGES = [
   {
@@ -306,7 +307,7 @@ export function BookingClient() {
                 {error && <p className="form-error" role="alert">{error}</p>}
 
                 <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>
-                  {submitting ? "Submitting…" : "🔒 Confirm Booking"}
+                  {submitting ? "Submitting…" : "Confirm Booking"}
                 </button>
 
                 <p className="checkout-final-note">Payment instructions (Bank Transfer / Cash on Delivery) will be sent to your email after booking.</p>
@@ -327,10 +328,10 @@ export function BookingClient() {
               <strong>Reminder:</strong> All readings are for entertainment and self-insight purposes only.
             </div>
             <div className="booking-security">
-              <p><span aria-hidden="true">🔐</span> Secure &amp; private</p>
-              <p><span aria-hidden="true">🌍</span> Available worldwide</p>
-              <p><span aria-hidden="true">🕐</span> Timezone auto-detected</p>
-              <p><span aria-hidden="true">📩</span> Delivered by email</p>
+              <p><Icon name="lock" size={16} /> Secure &amp; private</p>
+              <p><Icon name="globe" size={16} /> Available worldwide</p>
+              <p><Icon name="clock" size={16} /> Timezone auto-detected</p>
+              <p><Icon name="mail" size={16} /> Delivered by email</p>
             </div>
           </aside>
         </div>

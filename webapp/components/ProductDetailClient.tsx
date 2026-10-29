@@ -14,6 +14,7 @@ import type { ProductDTO } from "@/lib/types";
 import { reviewsLabel, starString } from "@/lib/stars";
 import { isPriced } from "@/lib/pricing";
 import { getProductType } from "@/lib/product-types";
+import { Icon } from "./Icon";
 
 const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
 
@@ -75,7 +76,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                 height={600}
                 style={zoomOrigin ? { transformOrigin: zoomOrigin } : undefined}
               />
-              <div className="gallery-zoom-hint" aria-hidden="true">🔍 Zoom on hover</div>
+              <div className="gallery-zoom-hint" aria-hidden="true">Hover to zoom</div>
             </div>
             {images.length > 1 && (
               <div className="gallery-thumbs" role="list" aria-label="Product image thumbnails">
@@ -98,7 +99,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
           <div className="product-detail-info">
             <div className="product-detail-badges" aria-label="Product badges">
               {product.badge && <span className="badge badge-bestseller">{product.badge}</span>}
-              <span className="badge badge-authentic">✓ Certified Authentic</span>
+              <span className="badge badge-authentic"><Icon name="check" size={12} /> Natural stone</span>
             </div>
 
             <h1 id="product-heading" className="product-detail-title">{product.name}</h1>
@@ -136,7 +137,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             )}
             {priced && isLow && (
               <div className="stock-status stock-low" role="status" aria-live="polite">
-                <span className="stock-dot" aria-hidden="true"></span> ⚠️ Only {product.stock} left in stock — order soon
+                <span className="stock-dot" aria-hidden="true"></span> Only {product.stock} left — order soon
               </div>
             )}
             {priced && !isOut && !isLow && (
@@ -198,21 +199,21 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             <div className="product-cta-group">
               {priced ? (
                 <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
-                  {added ? "✓ Added to Cart!" : isOut ? "Out of Stock" : "🛒 Add to Cart"}
+                  {added ? <><Icon name="check" size={18} /> Added to bag</> : isOut ? "Out of stock" : <><Icon name="bag" size={18} /> Add to bag</>}
                 </button>
               ) : (
                 <Link href={`/contact?product=${encodeURIComponent(product.id)}`} className="btn btn-primary btn-lg add-to-cart-main">
-                  ✉️ Enquire about this item
+                  <Icon name="mail" size={18} /> Enquire about this item
                 </Link>
               )}
               <WishlistButton productId={product.id} productName={product.name} variant="full" />
             </div>
 
             <div className="product-trust" aria-label="Trust indicators">
-              <div className="trust-item-sm"><span aria-hidden="true">🔐</span> Secure Checkout</div>
-              <div className="trust-item-sm"><span aria-hidden="true">🌍</span> Ships Worldwide</div>
-              <div className="trust-item-sm"><span aria-hidden="true">↩️</span> 14-Day Returns</div>
-              <div className="trust-item-sm"><span aria-hidden="true">💎</span> Authentic Crystal</div>
+              <div className="trust-item-sm"><Icon name="lock" size={16} /> Secure checkout</div>
+              <div className="trust-item-sm"><Icon name="globe" size={16} /> Ships worldwide</div>
+              <div className="trust-item-sm"><Icon name="returns" size={16} /> 14-day returns</div>
+              <div className="trust-item-sm"><Icon name="gem" size={16} /> Natural crystal</div>
             </div>
 
             <ShareButtons path={productPath(product.id)} title={product.name} />

@@ -379,6 +379,21 @@
       ctx.save(); ctx.filter = "blur(1.5px)"; ctx.drawImage(ctx.canvas, 0, 0); ctx.restore();
       grain(ctx, w, h, 6, seed + 1);
     }
+    if (kind === "velvet") {
+      const g = ctx.createRadialGradient(w * 0.55, h * 0.4, 0, w * 0.55, h * 0.45, w * 0.95);
+      g.addColorStop(0, "#3a2754"); g.addColorStop(0.55, "#22163a"); g.addColorStop(1, "#120b1f");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      const N = makeNoise(seed);
+      const img = ctx.getImageData(0, 0, w, h);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const n = (N.fbm(x / 90, y / 300, 0.7, 3) - 0.5) * 16; // soft pile direction
+        const i = (y * w + x) * 4;
+        img.data[i] += n; img.data[i + 1] += n * 0.8; img.data[i + 2] += n * 1.1;
+      }
+      ctx.putImageData(img, 0, 0);
+      grain(ctx, w, h, 7, seed + 2);
+      return; // velvet has its own lighting
+    }
     // soft key light from top-left + vignette
     const lg = ctx.createRadialGradient(w * 0.25, h * 0.15, 0, w * 0.25, h * 0.15, w * 1.1);
     lg.addColorStop(0, "rgba(255,250,240,0.18)"); lg.addColorStop(1, "rgba(0,0,0,0)");
@@ -682,7 +697,7 @@
   // ── Scenes ──────────────────────────────────────────────────────────────
   // spec: { size, surface, seed, scene: "bracelet"|"closeup"|"box"|"pair"|"workbench", stone, beadMm, pattern }
   window.renderScene = function (spec) {
-    const W = spec.size || 1200, Hh = spec.size || 1200;
+    const W = spec.width || spec.size || 1200, Hh = spec.height || spec.size || 1200;
     const cv = document.createElement("canvas");
     cv.width = W; cv.height = Hh;
     const ctx = cv.getContext("2d");
@@ -765,6 +780,33 @@
     } else if (spec.scene === "plate") {
       surface(ctx, W, Hh, spec.surface || "slate", seed);
       drawPlate(ctx, W, Hh, seed);
+    } else if (spec.scene === "hero") {
+      // Still life for the home page: crystal point, bracelet and loose stones on velvet.
+      surface(ctx, W, Hh, "velvet", seed);
+      const layer = (draw) => {
+        const c = document.createElement("canvas"); c.width = W; c.height = Hh;
+        draw(c.getContext("2d")); return c;
+      };
+      // warm rim light behind the composition
+      const glow = ctx.createRadialGradient(W * 0.42, Hh * 0.38, 0, W * 0.42, Hh * 0.38, W * 0.55);
+      glow.addColorStop(0, "rgba(212,180,122,0.22)"); glow.addColorStop(1, "rgba(212,180,122,0)");
+      ctx.fillStyle = glow; ctx.fillRect(0, 0, W, Hh);
+      const pencil = layer((c) => drawPencil(c, W, Hh, "amethyst", seed));
+      ctx.drawImage(pencil, W * 0.07, Hh * 0.03, W * 0.68, Hh * 0.68);
+      const clear = layer((c) => drawPencil(c, W, Hh, "clearQuartz", seed + 9));
+      ctx.drawImage(clear, W * 0.44, Hh * 0.15, W * 0.46, Hh * 0.46);
+      drawBeads(ctx, layoutBracelet({ cx: W * 0.5, cy: Hh * 0.74, R: W * 0.27, tilt: 0.5, beadMm: 8, stone: "amethyst", pattern: (i) => (i % 7 === 3 ? "gold" : "amethyst"), seed: seed + 3, rot: 0.25 }), { shadow: 0.55, tilt: 0.5 });
+      const rand = mulberry32(seed + 5);
+      const loose = [["roseQuartz", 0.16, 0.9], ["citrine", 0.86, 0.6], ["lapis", 0.9, 0.86], ["roseQuartz", 0.8, 0.95], ["tigerEye", 0.1, 0.62]];
+      for (const [stone, fx, fy] of loose) {
+        const d = W * (0.07 + rand() * 0.025);
+        softShadow(ctx, W * fx + d * 0.15, Hh * fy + d * 0.38, d * 0.5, d * 0.22, 0.55, 8);
+        const b = renderBead(d, stone, Math.floor(rand() * 1000));
+        ctx.drawImage(b, W * fx - b.width / 2, Hh * fy - b.height / 2);
+      }
+      const vg = ctx.createRadialGradient(W / 2, Hh / 2, W * 0.3, W / 2, Hh / 2, W * 0.85);
+      vg.addColorStop(0, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(8,4,16,0.55)");
+      ctx.fillStyle = vg; ctx.fillRect(0, 0, W, Hh);
     } else if (spec.scene === "certificate") {
       surface(ctx, W, Hh, spec.surface || "linen", seed);
       drawCertificate(ctx, W, Hh);

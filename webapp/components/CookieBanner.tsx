@@ -67,7 +67,7 @@ export function CookieBanner() {
       <div className="cookie-banner is-visible" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
         <div className="cookie-inner">
           <div className="cookie-text">
-            <strong id="cookie-title">🍪 We use cookies</strong>
+            <strong id="cookie-title">We use cookies</strong>
             <p id="cookie-desc">
               We use cookies to enhance your experience. See our <a href="/privacy">Privacy Policy</a>.
             </p>

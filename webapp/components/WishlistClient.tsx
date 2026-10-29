@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ProductCard } from "./ProductCard";
 import { useWishlist } from "./WishlistContext";
 import type { ProductDTO } from "@/lib/types";
+import { Icon } from "./Icon";
 
 export function WishlistClient() {
   const { ids } = useWishlist();
@@ -30,7 +31,7 @@ export function WishlistClient() {
   if (ids.length === 0) {
     return (
       <div className="cart-empty">
-        <div className="cart-empty-icon" aria-hidden="true">♡</div>
+        <div className="cart-empty-icon"><Icon name="heart" size={40} /></div>
         <h2>Your wishlist is empty</h2>
         <p>Tap the heart on any bracelet to save it here for later.</p>
         <Link href="/shop" className="btn btn-primary">Browse Bracelets</Link>
