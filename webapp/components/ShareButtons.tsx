@@ -30,7 +30,7 @@ export function ShareButtons({ path, title }: { path: string; title: string }) {
 
   return (
     <div className="share-buttons" aria-label={`Share ${title}`}>
-      <span className="share-label">Share:</span>
+      <span className="share-label">Share</span>
       {links.map((l) => (
         <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className="share-link" aria-label={`Share on ${l.label}`}>
           {l.label}

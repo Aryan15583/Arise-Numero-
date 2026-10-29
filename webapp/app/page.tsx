@@ -12,6 +12,7 @@ import { getStoreRating } from "@/lib/ratings";
 import { starString } from "@/lib/stars";
 import { PRODUCT_TYPES } from "@/lib/product-types";
 import { Icon } from "@/components/Icon";
+import { thumbnailFor } from "@/lib/product-thumbs";
 
 const profileLinks = getSocialLinks().filter((s) => s.label !== "WhatsApp").map((s) => s.href);
 
@@ -135,7 +136,7 @@ export default async function HomePage() {
               {typeTiles.map((t) => (
                 <Link key={t.slug} href={`/shop?type=${t.slug}`} className="category-tile" role="listitem">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={t.image} alt="" loading="lazy" width={300} height={300} />
+                  <img src={thumbnailFor(t.image) ?? t.image} alt="" loading="lazy" decoding="async" width={300} height={300} />
                   <span className="category-tile-body">
                     <span className="category-tile-name">{t.name}</span>
                     <span className="category-tile-count">

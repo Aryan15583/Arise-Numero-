@@ -12,6 +12,7 @@ import { Providers } from "@/components/Providers";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@/components/Analytics";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { CardTilt } from "@/components/CardTilt";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl, isIndexableSite } from "@/lib/seo";
 
 const defaultTitle = `${SITE_NAME} — ${SITE_TAGLINE}`;
@@ -76,8 +77,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" data-theme="auto" data-scroll-behavior="smooth">
       <body>
         <Providers>
+          <a href="#main-content" className="skip-link">Skip to content</a>
           <CookieBanner />
           <ScrollReveal />
+          <CardTilt />
           {children}
           <Analytics />
         </Providers>

@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { NumerologyCalculator } from "@/components/NumerologyCalculator";
 import { pageMetadata } from "@/lib/seo";
+import { Icon } from "@/components/Icon";
 
 export const metadata = pageMetadata({
   title: "Free Numerology Calculator & Readings",
@@ -25,13 +26,13 @@ export default function NumerologyPage() {
 
         <section className="page-hero numerology-hero" aria-labelledby="num-hero-heading">
           <div className="container">
-            <div className="section-badge">✦ Free Tool</div>
+            <p className="eyebrow">Free Tool</p>
             <h1 id="num-hero-heading" className="page-title">Numerology Calculator</h1>
             <p className="page-subtitle" style={{ marginInline: "auto" }}>
               Discover the numbers that shape your life. Enter your details for an instant free reading.
             </p>
             <div className="entertainment-disclaimer" role="note" style={{ textAlign: "left", marginInline: "auto", maxWidth: 640 }}>
-              <span aria-hidden="true">ℹ️</span>
+              <Icon name="alert" size={18} />
               <p>
                 <strong>For entertainment &amp; self-insight purposes only.</strong> Numerology readings do not constitute
                 legal, financial, medical, or professional psychological advice.

@@ -27,7 +27,8 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
       <div className="container footer-inner">
         <div className="footer-brand">
           <Link href="/" className="logo" aria-label="Arise Numero Home">
-            <span className="logo-symbol" aria-hidden="true">✦</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/assets/brand/logo-badge-160.png" alt="" className="logo-badge" width={52} height={52} />
             <span className="logo-text">Arise Numero</span>
           </Link>
           <p>Authentic crystals, jewellery &amp; numerology readings delivered worldwide.</p>

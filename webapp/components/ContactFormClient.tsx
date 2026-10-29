@@ -91,7 +91,7 @@ export function ContactFormClient({ productName }: { productName?: string } = {}
       <div className="form-group">
         <label className="checkbox-label">
           <input type="checkbox" checked={privacyConsent} onChange={(e) => setPrivacyConsent(e.target.checked)} />
-          I agree that my submitted data is collected and stored per the <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span>
+          <span className="checkbox-text">I agree that my submitted data is collected and stored per the <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span></span>
         </label>
       </div>
 

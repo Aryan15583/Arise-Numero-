@@ -11,7 +11,7 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
     <div className="admin-scope">
       <div className="admin-layout">
         <AdminSidebar />
-        <main className="admin-main">{children}</main>
+        <main className="admin-main" id="main-content">{children}</main>
       </div>
     </div>
   );

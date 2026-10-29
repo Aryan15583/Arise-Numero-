@@ -292,15 +292,15 @@ export function BookingClient() {
                 <div className="checkout-consent">
                   <label className="checkbox-label">
                     <input type="checkbox" checked={privacyConsent} onChange={(e) => setPrivacyConsent(e.target.checked)} />
-                    I consent to my name and date of birth being used <strong>strictly</strong> to calculate my numerology reading per the <Link href="/privacy" target="_blank">Privacy Policy</Link>. <span className="required">*</span>
+                    <span className="checkbox-text">I consent to my name and date of birth being used <strong>strictly</strong> to calculate my numerology reading per the <Link href="/privacy" target="_blank">Privacy Policy</Link>. <span className="required">*</span></span>
                   </label>
                   <label className="checkbox-label">
                     <input type="checkbox" checked={disclaimerConsent} onChange={(e) => setDisclaimerConsent(e.target.checked)} />
-                    I understand this reading is for <strong>entertainment and self-insight purposes only</strong>. <span className="required">*</span>
+                    <span className="checkbox-text">I understand this reading is for <strong>entertainment and self-insight purposes only</strong>. <span className="required">*</span></span>
                   </label>
                   <label className="checkbox-label">
                     <input type="checkbox" checked={termsConsent} onChange={(e) => setTermsConsent(e.target.checked)} />
-                    I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> <span className="required">*</span>
+                    <span className="checkbox-text">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> <span className="required">*</span></span>
                   </label>
                 </div>
 

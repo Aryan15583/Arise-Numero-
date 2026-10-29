@@ -78,9 +78,7 @@ export function ProductReviews({ productId }: { productId: string }) {
     <>
       {reviews === null ? (
         <p className="rating-total">Loading reviews…</p>
-      ) : reviews.length === 0 ? (
-        <p className="rating-total">No reviews yet.</p>
-      ) : (
+      ) : reviews.length === 0 ? null : (
         <>
           <div className="review-breakdown" aria-label="Rating breakdown">
             {[5, 4, 3, 2, 1].map((n) => {

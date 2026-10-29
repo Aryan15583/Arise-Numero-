@@ -296,7 +296,7 @@ export function CheckoutClient() {
           </div>
           {isInternational && (
             <div className="customs-notice" role="note">
-              <span aria-hidden="true">ℹ️</span>
+              <Icon name="alert" size={18} />
               <p><strong>International Shipping:</strong> Your order may be subject to import duties and taxes levied by the destination country. These charges are the buyer&apos;s responsibility.</p>
             </div>
           )}
@@ -420,8 +420,8 @@ export function CheckoutClient() {
         <div className="checkout-consent">
           <label className="checkbox-label">
             <input type="checkbox" checked={termsAgree} onChange={(e) => setTermsAgree(e.target.checked)} />
-            I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and{" "}
-            <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span>
+            <span className="checkbox-text">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and{" "}
+            <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span></span>
           </label>
         </div>
 

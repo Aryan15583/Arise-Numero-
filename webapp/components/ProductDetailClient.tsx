@@ -250,7 +250,7 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
                   <span className="rating-total">Based on {reviewsLabel(product.reviewCount)}</span>
                 </div>
               ) : (
-                <p className="rating-total">No reviews yet. Bought this bracelet? Share your experience below.</p>
+                <p className="rating-total">No reviews yet. Own this piece? Be the first to share your experience below.</p>
               )}
             </div>
             <ProductReviews productId={product.id} />

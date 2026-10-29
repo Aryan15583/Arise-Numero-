@@ -68,15 +68,23 @@ export function NumerologyCalculator() {
           <div className="form-group">
             <label className="checkbox-label">
               <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} />
-              I understand my name and date of birth are used <strong>strictly</strong> to calculate my numeric blueprint and for no other purpose. <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span>
+              <span className="checkbox-text">I understand my name and date of birth are used <strong>strictly</strong> to calculate my numeric blueprint and for no other purpose. <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span></span>
             </label>
           </div>
 
           {error && <p className="form-error" role="alert">{error}</p>}
 
-          <button type="submit" className="btn btn-primary btn-lg">✦ Calculate My Numbers</button>
+          <button type="submit" className="btn btn-primary btn-lg">Calculate My Numbers</button>
         </form>
       </div>
+
+      {!results && (
+        <div className="numerology-placeholder" aria-hidden="true">
+          <div className="numerology-placeholder-numbers"><span>1</span><span>7</span><span>9</span><span>22</span></div>
+          <h3>Your reading appears here</h3>
+          <p>Life Path, Expression, Soul Urge and Birthday numbers, each with what it says about you.</p>
+        </div>
+      )}
 
       {results && (
         <div className="numerology-results" aria-live="polite" aria-label="Numerology reading results">
