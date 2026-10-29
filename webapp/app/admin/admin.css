@@ -344,3 +344,30 @@
 @keyframes img-pulse { 50% { opacity: 0.55; } }
 .img-manager-url { display: flex; gap: 8px; margin-top: 10px; }
 .img-manager-url .form-input { flex: 1; min-width: 0; }
+
+/* Let wide tables scroll inside their card instead of widening the page. */
+.admin-scope .admin-main { min-width: 0; }
+.admin-scope td .btn { white-space: nowrap; }
+
+/* Phones: slim top bar with a Menu button; the navigation opens on demand. */
+.admin-scope .sidebar-toggle { display: none; }
+@media (max-width: 768px) {
+  .admin-scope .sidebar { position: sticky; top: 0; z-index: 50; max-height: 100vh; }
+  .admin-scope .sidebar-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 0; }
+  .admin-scope .sidebar-toggle {
+    display: inline-flex; align-items: center; padding: 8px 14px; border-radius: 6px;
+    border: 1px solid rgba(212, 180, 122, 0.5); background: transparent; color: var(--gold);
+    font: inherit; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+  }
+  .admin-scope .sidebar-nav, .admin-scope .sidebar-footer { display: none; }
+  .admin-scope .sidebar.is-open .sidebar-nav { display: block; padding-top: 4px; }
+  .admin-scope .sidebar.is-open .sidebar-footer { display: block; }
+  .admin-scope .sidebar.is-open { overflow-y: auto; }
+}
+
+/* Keep the admin's compact buttons: the storefront's spaced-capital button
+   style, sheen and hover lift are for shoppers, not for dense admin tables. */
+.admin-scope .btn { text-transform: none; letter-spacing: 0.01em; font-size: 0.85rem; padding: 8px 16px; border-radius: 6px; transform: none; box-shadow: none; overflow: visible; }
+.admin-scope .btn-sm { font-size: 0.78rem; padding: 5px 12px; }
+.admin-scope .btn::after { display: none; }
+.admin-scope .btn:hover { transform: none; }

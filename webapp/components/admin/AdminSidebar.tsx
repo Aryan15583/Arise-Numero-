@@ -46,6 +46,13 @@ const NAV_SECTIONS = [
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  // Phones: the menu folds into a top bar and opens on demand.
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [lastPath, setLastPath] = useState(pathname);
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setMenuOpen(false); // close after choosing a page
+  }
   const [counts, setCounts] = useState<{ products: number; orders: number; bookings: number; messages: number; reviews: number }>({
     products: 0,
     orders: 0,
@@ -89,13 +96,24 @@ export function AdminSidebar() {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${menuOpen ? "is-open" : ""}`}>
       <div className="sidebar-header">
-        <div className="sidebar-logo">✦ Arise Numero</div>
-        <div className="sidebar-subtitle">Admin Panel</div>
+        <div>
+          <div className="sidebar-logo">✦ Arise Numero</div>
+          <div className="sidebar-subtitle">Admin Panel</div>
+        </div>
+        <button
+          type="button"
+          className="sidebar-toggle"
+          aria-expanded={menuOpen}
+          aria-controls="admin-nav"
+          onClick={() => setMenuOpen((v) => !v)}
+        >
+          {menuOpen ? "Close" : "Menu"}
+        </button>
       </div>
 
-      <nav className="sidebar-nav">
+      <nav className="sidebar-nav" id="admin-nav">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             <div className="nav-section-label">{section.label}</div>
