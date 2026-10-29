@@ -29,6 +29,7 @@
   --text-primary:     #1a1228;
   --text-body:        #3d3450;
   --text-muted:       #7a6e8a;
+  --text-secondary:   var(--text-body);
   --text-inverse:     #faf8f4;
   --text-on-gold:     #1a1228;
   --text-link:        #7c4d99;
@@ -75,6 +76,7 @@
   --space-4:  1rem;
   --space-5:  1.25rem;
   --space-6:  1.5rem;
+  --space-7:  1.75rem;
   --space-8:  2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
@@ -3160,8 +3162,8 @@ select.form-input {
 .faq-layout { max-width: 820px; padding-bottom: var(--space-16); }
 .faq-group { margin-top: var(--space-10); }
 .faq-group-title { font-size: 1.25rem; margin-bottom: var(--space-4); color: var(--text-primary); }
-.faq-item { border-bottom: 1px solid var(--border-color); }
-.faq-item summary {
+.faq-group .faq-item { border-bottom: 1px solid var(--border-color); }
+.faq-group .faq-item summary {
   cursor: pointer;
   list-style: none;
   padding: var(--space-4) var(--space-8) var(--space-4) 0;
@@ -3169,8 +3171,8 @@ select.form-input {
   color: var(--text-primary);
   position: relative;
 }
-.faq-item summary::-webkit-details-marker { display: none; }
-.faq-item summary::after {
+.faq-group .faq-item summary::-webkit-details-marker { display: none; }
+.faq-group .faq-item summary::after {
   content: "+";
   position: absolute;
   right: var(--space-2);
@@ -3180,10 +3182,10 @@ select.form-input {
   color: var(--brand-gold);
   transition: transform var(--transition-fast);
 }
-.faq-item[open] summary::after { content: "−"; }
-.faq-item summary:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
-.faq-answer { padding: 0 0 var(--space-4); color: var(--text-body); line-height: 1.7; }
-.faq-answer p + p { margin-top: var(--space-2); }
+.faq-group .faq-item[open] summary::after { content: "−"; }
+.faq-group .faq-item summary:focus-visible { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+.faq-group .faq-answer { padding: 0 0 var(--space-4); color: var(--text-body); line-height: 1.7; }
+.faq-group .faq-answer p + p { margin-top: var(--space-2); }
 
 /* ── Order tracking ────────────────────────────────────────── */
 .track-layout { max-width: 720px; padding-bottom: var(--space-16); }
@@ -3711,4 +3713,74 @@ html { scroll-behavior: smooth; }
 @keyframes card-rise {
   from { opacity: 0; translate: 0 28px; scale: 0.98; }
   to { opacity: 1; translate: 0 0; scale: 1; }
+}
+
+/* =============================================================
+   FINISHING: give text room inside its boxes
+   ============================================================= */
+/* Currency picker: keep the arrow clear of "USD". */
+.currency-selector select { padding: 7px 28px 7px 12px; min-height: 36px; line-height: 1.2; background-position: right 10px center; }
+@media (max-width: 480px) {
+  .currency-selector select { padding: 5px 22px 5px 8px; min-height: 32px; font-size: 0.75rem; background-position: right 7px center; }
+}
+
+/* Product cards: when a card is narrow (4 across), the price sits above a
+   full-width button instead of squeezing "Add to Cart". */
+.product-card .product-info { container-type: inline-size; }
+.product-card .add-to-cart { white-space: nowrap; min-height: 40px; }
+@container (max-width: 300px) {
+  .product-price-row { flex-direction: column; align-items: stretch; gap: var(--space-3); }
+  .product-price-row .add-to-cart { width: 100%; justify-content: center; }
+}
+
+/* Quantity stepper matches the height of "Add to Bag". */
+.quantity-control { border-width: 1px; border-radius: 4px; }
+.qty-btn { width: 48px; height: 52px; font-size: 1.25rem; }
+.qty-input { width: 64px; height: 52px; font-size: 1rem; border-inline-width: 1px; }
+
+/* Product trust points: an even two-column grid, slightly larger. */
+.product-trust { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3) var(--space-5); }
+.product-trust .trust-item-sm { font-size: 0.74rem; line-height: 1.4; }
+
+/* Product tabs: tighter padding on phones so all four fit. */
+@media (max-width: 600px) {
+  .tab-btn { padding: var(--space-4) var(--space-3); font-size: 0.875rem; }
+  .product-tabs { justify-content: space-between; }
+}
+
+/* Booking packages: three cards fill the row; roomier text. */
+.packages-grid { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: var(--space-6); }
+.package-card { padding: var(--space-8) var(--space-7); display: flex; flex-direction: column; }
+.package-card .btn { margin-top: auto; min-height: 48px; }
+.package-features li { font-size: 0.95rem; line-height: 1.55; }
+.booking-steps-list li { font-size: 0.925rem; line-height: 1.55; }
+
+/* Checkout payment options: card-sized like the other fields. */
+.payment-tab {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  min-height: 52px; padding: var(--space-3) var(--space-6);
+  font-size: 0.95rem; border-width: 1px; border-radius: 4px;
+}
+
+/* Contact page quick FAQ: text no longer touches the box edges. */
+.faq-list .faq-question { padding: var(--space-4) var(--space-5); font-size: 0.95rem; line-height: 1.45; gap: var(--space-3); }
+
+/* Shop toolbar: keep the product count on one line. */
+.results-count { white-space: nowrap; }
+
+/* FAQ page: heading and questions share one centred column; roomy boxes. */
+.faq-header, .faq-layout { max-width: 860px; margin-inline: auto; }
+.faq-group .faq-item { margin-bottom: var(--space-2); border: 1px solid var(--border-light); border-radius: 4px; }
+.faq-group .faq-item[open] { border-color: var(--brand-gold); }
+.faq-group .faq-item summary { padding: var(--space-5) var(--space-12) var(--space-5) var(--space-6); font-size: 1rem; line-height: 1.45; }
+.faq-group .faq-item summary::after { right: var(--space-5); }
+.faq-group .faq-answer { padding: 0 var(--space-6) var(--space-5); font-size: 0.95rem; border-top: 0; }
+.faq-group-title { font-size: 1.5rem; }
+@media (max-width: 480px) {
+  .shop-toolbar { flex-wrap: wrap; gap: var(--space-3); }
+  .shop-toolbar .sort-group { flex: 1 1 100%; display: flex; align-items: center; gap: var(--space-3); }
+  .shop-toolbar .sort-select { flex: 1; min-width: 0; }
+}
+@media (max-width: 480px) {
+  .payment-tab { flex: 1 1 100%; justify-content: flex-start; }
 }

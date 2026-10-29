@@ -137,7 +137,7 @@ export default function FaqPage() {
       />
       <Header />
       <main id="main-content">
-        <div className="page-header container">
+        <div className="page-header container faq-header">
           <h1 className="page-title">Frequently Asked Questions</h1>
           <p className="page-subtitle">
             Can&apos;t find your answer? <Link href="/contact">Get in touch</Link> — we reply within 24–48 hours.
