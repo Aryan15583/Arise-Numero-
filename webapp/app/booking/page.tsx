@@ -3,6 +3,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { BookingClient } from "@/components/BookingClient";
 import { pageMetadata } from "@/lib/seo";
+import { Icon } from "@/components/Icon";
 
 export const metadata = pageMetadata({
   title: "Book a Numerology Reading",
@@ -28,7 +29,7 @@ export default function BookingPage() {
           <h1 className="page-title">Book a Personalised Reading</h1>
           <p className="page-subtitle">A comprehensive, handcrafted numerology report tailored to you.</p>
           <div className="entertainment-disclaimer" role="note">
-            <span aria-hidden="true">ℹ️</span>
+            <Icon name="alert" size={18} />
             <p><strong>For entertainment &amp; self-insight purposes only.</strong> Numerology readings do not constitute legal, financial, medical, or professional psychological advice.</p>
           </div>
         </div>

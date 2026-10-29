@@ -30,7 +30,7 @@ export default async function AboutPage() {
 
         <section className="page-hero" aria-labelledby="about-hero-heading">
           <div className="container">
-            <div className="section-badge">✦ Our Story</div>
+            <p className="eyebrow">Our Story</p>
             <h1 id="about-hero-heading" className="page-title">Born from a Love of Crystals &amp; Numbers</h1>
             <p className="page-subtitle" style={{ marginInline: "auto" }}>
               Arise Numero was founded on the belief that beautiful, authentic gemstones and the ancient wisdom of
@@ -113,43 +113,17 @@ export default async function AboutPage() {
           </div>
         </section>
 
-        <section className="section meet-team" aria-labelledby="team-heading">
-          <div className="container">
-            <h2 id="team-heading" className="section-title text-center">Meet the Team</h2>
-            <div className="team-grid" role="list">
-              <article className="team-card" role="listitem">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/team-founder.svg" alt="Portrait of Arise Numero founder" className="team-img" width={200} height={200} loading="lazy" />
-                <h3 className="team-name">Ananya Rao</h3>
-                <p className="team-role">Founder &amp; Lead Artisan</p>
-                <p className="team-bio">Gemologist, crystal artisan, and numerology practitioner with 12 years of experience.</p>
-              </article>
-              <article className="team-card" role="listitem">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/team-numerologist.svg" alt="Portrait of Arise Numero lead numerologist" className="team-img" width={200} height={200} loading="lazy" />
-                <h3 className="team-name">Riya Sharma</h3>
-                <p className="team-role">Lead Numerologist</p>
-                <p className="team-bio">Certified numerologist with over 8 years of practice, specialising in life path forecasts.</p>
-              </article>
-              <article className="team-card" role="listitem">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/team-ops.svg" alt="Portrait of Arise Numero operations manager" className="team-img" width={200} height={200} loading="lazy" />
-                <h3 className="team-name">Kiran Mehta</h3>
-                <p className="team-role">Operations &amp; Customer Care</p>
-                <p className="team-bio">Ensures every order ships on time and every customer query is resolved with care.</p>
-              </article>
-            </div>
-          </div>
-        </section>
-
         <section className="section certifications" aria-labelledby="cert-heading">
           <div className="container">
-            <h2 id="cert-heading" className="section-title text-center">Our Commitments</h2>
+            <div className="section-header">
+              <p className="eyebrow">Peace of mind</p>
+              <h2 id="cert-heading" className="section-title">Our Commitments</h2>
+            </div>
             <div className="cert-grid" role="list">
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="lock" size={26} /></span><h3>SSL / TLS Encrypted</h3><p>All communication between your browser and our servers is encrypted via HTTPS.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="card" size={26} /></span><h3>Card Data Never Stored</h3><p>We don&apos;t collect raw card numbers on this site. Pay by Cash on Delivery, Bank Transfer, or PayPal.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">🇪🇺</span><h3>GDPR Compliant</h3><p>We meet European Union data protection standards. Cookie consent, data access rights, and full transparency.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon" aria-hidden="true">🇺🇸</span><h3>CCPA Compliant</h3><p>California residents can request, delete, or opt out of data sale at any time.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>GDPR Compliant</h3><p>We meet European Union data protection standards. Cookie consent, data access rights, and full transparency.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>CCPA Compliant</h3><p>California residents can request, delete, or opt out of data sale at any time.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="accessibility" size={26} /></span><h3>WCAG 2.1 AA</h3><p>Designed to meet Web Content Accessibility Guidelines 2.1 Level AA.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="returns" size={26} /></span><h3>EU Distance Selling</h3><p>14-day return window on non-customised products, in compliance with EU consumer law.</p></div>
             </div>
@@ -159,9 +133,9 @@ export default async function AboutPage() {
         <section className="section about-cta" aria-labelledby="about-cta-heading">
           <div className="container text-center">
             <h2 id="about-cta-heading" className="section-title">Ready to Explore?</h2>
-            <p>Browse our crystal bracelet collection or discover your numerology blueprint with our free calculator.</p>
+            <p>Browse our crystals and gemstone jewellery, or discover your numerology blueprint with our free calculator.</p>
             <div className="hero-cta-group" style={{ justifyContent: "center" }}>
-              <Link href="/shop" className="btn btn-primary btn-lg">Shop Bracelets</Link>
+              <Link href="/shop" className="btn btn-primary btn-lg">Shop the Collection</Link>
               <Link href="/numerology" className="btn btn-outline btn-lg">Free Reading</Link>
             </div>
           </div>

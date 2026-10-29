@@ -8,6 +8,7 @@ import { WishlistButton } from "./WishlistButton";
 import type { ProductDTO } from "@/lib/types";
 import { reviewsLabel, starString } from "@/lib/stars";
 import { isPriced } from "@/lib/pricing";
+import { thumbnailFor } from "@/lib/product-thumbs";
 
 export function ProductCard({ product }: { product: ProductDTO }) {
   const { addToCart } = useCart();
@@ -24,19 +25,24 @@ export function ProductCard({ product }: { product: ProductDTO }) {
     setTimeout(() => setAdded(false), 1500);
   }
 
+  const thumb = thumbnailFor(product.imageUrl);
+
   return (
     <article className="product-card" role="listitem">
       <Link href={`/product/${encodeURIComponent(product.id)}`} className="product-img-link" aria-label={`View ${product.name} details`}>
         <div className="product-img-wrap">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={product.imageUrl || "/assets/placeholder.svg"}
-            alt={product.name}
-            className="product-img"
-            loading="lazy"
-            width={400}
-            height={400}
-          />
+          <picture>
+            {thumb && <source srcSet={thumb} type="image/webp" />}
+            <img
+              src={product.imageUrl || "/assets/placeholder.svg"}
+              alt={product.name}
+              className="product-img"
+              loading="lazy"
+              decoding="async"
+              width={400}
+              height={400}
+            />
+          </picture>
           {product.badge && (
             <div
               className={`product-badge ${product.badge === "New" ? "product-badge--new" : ""} ${

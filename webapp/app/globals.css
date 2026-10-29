@@ -891,6 +891,7 @@ select.form-input {
 .cookie-row:last-child { border-bottom: none; }
 
 .site-footer {
+  --text-inverse: #faf8f4; /* the footer is dark in both themes */
   background: var(--bg-footer);
   color: var(--text-inverse);
   margin-top: auto;
@@ -2304,16 +2305,17 @@ select.form-input {
 .numerology-form { display: flex; flex-direction: column; }
 
 .data-notice {
-  background: var(--color-info-bg);
-  border: 1px solid rgba(26,111,168,0.15);
+  background: color-mix(in srgb, var(--brand-gold) 8%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--brand-gold) 30%, transparent);
   border-radius: var(--radius-md);
   padding: var(--space-4);
   font-size: 0.85rem;
   color: var(--color-info);
   margin-bottom: var(--space-5);
 }
-.data-notice strong { color: var(--color-info); }
-.data-notice p { margin-bottom: var(--space-2); color: var(--color-info); }
+.data-notice { color: var(--text-secondary); }
+.data-notice strong { color: var(--text-primary); }
+.data-notice p { margin-bottom: var(--space-2); color: var(--text-secondary); }
 
 .numerology-results {
   background: var(--bg-surface);
@@ -2627,7 +2629,7 @@ select.form-input {
 
 .cert-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: var(--space-5);
 }
 .cert-item {
@@ -3102,10 +3104,10 @@ select.form-input {
   margin-block: var(--space-5);
   font-size: 0.85rem;
 }
-.share-label { color: var(--text-muted); font-weight: 600; }
+.share-label { color: var(--text-muted); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.72rem; }
 .share-link {
   font: inherit;
-  color: var(--text-link);
+  color: var(--text-secondary);
   background: none;
   border: 1px solid var(--border-color);
   border-radius: 999px;
@@ -3114,7 +3116,7 @@ select.form-input {
   cursor: pointer;
   transition: border-color var(--transition-fast), color var(--transition-fast);
 }
-.share-link:hover { color: var(--text-link-hover); border-color: var(--brand-gold); }
+.share-link:hover { color: var(--brand-gold); border-color: var(--brand-gold); }
 
 /* ── Shop search ───────────────────────────────────────────── */
 .shop-search { margin-bottom: var(--space-4); }
@@ -3619,3 +3621,94 @@ html { scroll-behavior: smooth; }
 @media (max-width: 480px) { .logo-badge { width: 40px; height: 40px; } .logo { gap: 8px; } }
 @media (max-width: 360px) { .logo-badge { width: 36px; height: 36px; } }
 @media (prefers-reduced-motion: reduce) { .logo:hover .logo-badge { transform: none; } }
+.checkbox-text { flex: 1; min-width: 0; }
+
+/* Numerology: preview card so the right column isn't empty before a reading */
+.numerology-placeholder {
+  align-self: stretch;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: var(--space-10) var(--space-8);
+  border: 1px dashed color-mix(in srgb, var(--brand-gold) 45%, transparent);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--brand-gold) 12%, transparent), transparent 60%),
+    var(--bg-surface);
+  min-height: 320px;
+}
+.numerology-placeholder h3 { font-family: var(--font-heading); font-size: 1.6rem; margin: var(--space-5) 0 var(--space-2); }
+.numerology-placeholder p { color: var(--text-secondary); max-width: 34ch; margin: 0; }
+.numerology-placeholder-numbers { display: flex; gap: var(--space-3); }
+.numerology-placeholder-numbers span {
+  width: 56px; height: 56px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--font-heading); font-size: 1.6rem; font-weight: 600;
+  color: var(--brand-gold); border: 1px solid color-mix(in srgb, var(--brand-gold) 45%, transparent);
+  background: var(--bg-page);
+}
+@media (max-width: 900px) { .numerology-placeholder { display: none; } }
+
+/* ── Interaction polish ─────────────────────────────────────── */
+/* Product cards tilt toward the mouse with a soft light sheen (see CardTilt). */
+.product-card.is-tilting {
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) translateY(-4px);
+  transition: transform 0.12s ease-out, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.product-card::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 0%), rgba(255, 255, 255, 0.28), transparent 55%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  z-index: 1;
+}
+.product-card.is-tilting::after { opacity: 1; }
+@media (prefers-color-scheme: dark) { .product-card::after { background: radial-gradient(circle at var(--glare-x, 50%) var(--glare-y, 0%), rgba(212, 180, 122, 0.14), transparent 55%); } }
+
+/* Buttons give a small press when tapped or clicked. */
+.btn:active:not(:disabled) { transform: scale(0.97); transition-duration: 0.08s; }
+
+/* Loading skeletons: a soft shimmer while pages fetch, instead of a blank screen. */
+.skeleton {
+  position: relative; overflow: hidden;
+  background: color-mix(in srgb, var(--text-primary) 7%, var(--bg-surface));
+  border-radius: 4px;
+}
+.skeleton::after {
+  content: ""; position: absolute; inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--bg-surface) 70%, transparent), transparent);
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer { to { transform: translateX(100%); } }
+.skeleton-card { border: 1px solid var(--border-light); border-radius: 4px; overflow: hidden; background: var(--bg-surface); }
+.skeleton-card .skeleton-img { aspect-ratio: 1; border-radius: 0; }
+.skeleton-card .skeleton-body { padding: var(--space-4); display: grid; gap: var(--space-3); }
+.skeleton-line { height: 12px; }
+.skeleton-line--title { height: 18px; width: 75%; }
+.skeleton-line--short { width: 40%; }
+.skeleton-product { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-10); padding-block: var(--space-10); }
+.skeleton-product .skeleton-img { aspect-ratio: 1; }
+.skeleton-product .skeleton-body { display: grid; gap: var(--space-4); align-content: start; }
+@media (max-width: 768px) { .skeleton-product { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
+  .product-card.is-tilting { transform: none; }
+}
+
+/* Cards in grids rise in as they scroll into view. Pure CSS (scroll-driven
+   animation), so browsers without support simply show them as normal. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :is(.product-grid, .category-tiles, .values-grid, .testimonial-grid, .how-grid, .features-grid, .cert-grid, .packages-grid) > * {
+      animation: card-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+@keyframes card-rise {
+  from { opacity: 0; translate: 0 28px; scale: 0.98; }
+  to { opacity: 1; translate: 0 0; scale: 1; }
+}
