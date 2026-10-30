@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { crystalPath, getCrystalGuide } from "@/lib/guides/crystals";
+import { RUDRAKSHA_PATH } from "@/lib/guides/rudraksha";
 import { prisma } from "@/lib/db";
 import { serializeProduct } from "@/lib/serialize";
 import { Header } from "@/components/Header";
@@ -111,6 +113,12 @@ export default async function ShopPage({ searchParams }: Props) {
         <div className="page-header container">
           <h1 className="page-title">{heading}</h1>
           <p className="page-subtitle">{productType ? productType.description : "Natural crystals and gemstones. Each piece is unique with natural variations."}</p>
+          {(() => {
+            const g = category ? getCrystalGuide(category.slug) : null;
+            if (g) return <Link href={crystalPath(g.slug)} className="page-guide-link">{g.name} meaning, benefits &amp; care →</Link>;
+            if (productType?.slug === "rudraksha") return <Link href={RUDRAKSHA_PATH} className="page-guide-link">What each Rudraksha mukhi means →</Link>;
+            return null;
+          })()}
         </div>
 
         <ShopClient initialProducts={products} initialCat={cat} initialQuery={q} initialType={productType?.slug} categories={categories} />

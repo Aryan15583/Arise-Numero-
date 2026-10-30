@@ -15,12 +15,14 @@ const NAV_LINKS = [
   { href: "/shop", label: "Shop" },
   { href: "/numerology", label: "Numerology" },
   { href: "/booking", label: "Book a Reading" },
+  { href: "/guides", label: "Guides" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 export function Header({ variant = "default" }: { variant?: "default" | "checkout" }) {
   const pathname = usePathname();
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`));
   const { totalCount } = useCart();
   const { currency, setCurrency } = useCurrency();
   const { ids: wishlistIds } = useWishlist();
@@ -59,7 +61,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className={`nav-link ${pathname === link.href ? "active" : ""}`}
+                    className={`nav-link ${isActive(link.href) ? "active" : ""}`}
                     aria-current={pathname === link.href ? "page" : undefined}
                   >
                     {link.label}

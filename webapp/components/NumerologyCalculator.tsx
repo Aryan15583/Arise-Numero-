@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { getLifePathGuide, lifePathPath } from "@/lib/guides/life-path";
 import { calcBirthday, calcExpression, calcLifePath, calcSoulUrge, getMeaning } from "@/lib/numerology";
 
 type Results = { lifePath: number; expression: number; soulUrge: number; birthday: number };
@@ -99,6 +100,11 @@ export function NumerologyCalculator() {
             <div className="number-info">
               <h3 className="number-title">Life Path Number</h3>
               <p className="number-description">{getMeaning(results.lifePath).title} — {getMeaning(results.lifePath).desc}</p>
+              {getLifePathGuide(results.lifePath) && (
+                <Link href={lifePathPath(results.lifePath)} className="number-guide-link">
+                  Read the Life Path {results.lifePath} guide: love, career &amp; lucky crystals →
+                </Link>
+              )}
             </div>
           </div>
 
@@ -127,8 +133,11 @@ export function NumerologyCalculator() {
           </div>
 
           <div className="results-cta">
-            <p>Want a <strong>deeper, personalised reading</strong> with a one-to-one session?</p>
-            <Link href="/booking" className="btn btn-primary btn-lg">Book a Full Reading</Link>
+            <p>
+              These are the headline meanings. Your <strong>personal reading</strong> explains how your four numbers work
+              together, and what your year ahead holds.
+            </p>
+            <Link href="/booking?package=full#booking-form-section" className="btn btn-primary btn-lg">Get My Full Reading</Link>
           </div>
 
           <div className="results-disclaimer" role="note">

@@ -4,12 +4,11 @@ import { serializeBooking } from "@/lib/serialize";
 import { sendEmail, notifyAdmin, bookingConfirmationEmail, escapeHtml } from "@/lib/email";
 import { bookingCreateSchema, formatZodError } from "@/lib/validation";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { READING_PACKAGES } from "@/lib/reading-packages";
 
-const PACKAGE_PRICES: Record<string, { label: string; price: number }> = {
-  core: { label: "Core Blueprint", price: 49.99 },
-  full: { label: "Full Numeroscope", price: 89.99 },
-  premium: { label: "Premium + Live Session", price: 149.99 },
-};
+const PACKAGE_PRICES: Record<string, { label: string; price: number }> = Object.fromEntries(
+  READING_PACKAGES.map((p) => [p.key, { label: p.name, price: p.price }])
+);
 
 // PUBLIC: submit a numerology reading booking.
 export async function POST(req: NextRequest) {

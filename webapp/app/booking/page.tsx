@@ -12,7 +12,8 @@ export const metadata = pageMetadata({
   path: "/booking",
 });
 
-export default function BookingPage() {
+export default async function BookingPage({ searchParams }: { searchParams: Promise<{ package?: string | string[] }> }) {
+  const { package: pkg } = await searchParams;
   return (
     <>
       <Header />
@@ -34,7 +35,7 @@ export default function BookingPage() {
           </div>
         </div>
 
-        <BookingClient />
+        <BookingClient initialPackage={typeof pkg === "string" ? pkg : undefined} />
       </main>
       <Footer />
     </>

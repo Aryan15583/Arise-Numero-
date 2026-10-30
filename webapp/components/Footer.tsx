@@ -62,6 +62,9 @@ export function Footer({ minimal = false }: { minimal?: boolean }) {
             <li><Link href="/numerology">Free Calculator</Link></li>
             <li><Link href="/booking">Book a Reading</Link></li>
             <li><Link href="/numerology#how-it-works">How It Works</Link></li>
+            <li><Link href="/guides#life-path">Life Path Meanings</Link></li>
+            <li><Link href="/guides#crystals">Crystal Meanings</Link></li>
+            <li><Link href="/guides/rudraksha">Rudraksha Guide</Link></li>
           </ul>
         </nav>
         <nav className="footer-nav" aria-label="Legal and help navigation">
