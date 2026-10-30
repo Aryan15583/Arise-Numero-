@@ -18,7 +18,7 @@ import { Icon } from "./Icon";
 
 const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
 
-export function ProductDetailClient({ product }: { product: ProductDTO }) {
+export function ProductDetailClient({ product, guide }: { product: ProductDTO; guide?: { href: string; label: string } }) {
   const { addToCart } = useCart();
   const { format } = useCurrency();
   const [activeImg, setActiveImg] = useState(product.imageUrl || product.images[0] || "/assets/placeholder.svg");
@@ -221,6 +221,9 @@ export function ProductDetailClient({ product }: { product: ProductDTO }) {
             <div className="product-description">
               <h2>About This {product.productType === "certificates" ? "Certificate" : product.productType === "rudraksha" ? "Rudraksha" : "Crystal"}</h2>
               <p>{product.description}</p>
+              {guide && (
+                <Link href={guide.href} className="product-guide-link">{guide.label} →</Link>
+              )}
             </div>
           </div>
         </div>

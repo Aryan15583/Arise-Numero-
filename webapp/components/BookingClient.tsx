@@ -4,50 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useCurrency } from "./CurrencyContext";
 import { Icon } from "./Icon";
-
-const PACKAGES = [
-  {
-    key: "core",
-    name: "Core Blueprint",
-    price: 49.99,
-    features: [
-      "Life Path Number Analysis",
-      "Expression Number Report",
-      "Soul Urge Number Insight",
-      "Written PDF Report (10–12 pages)",
-      "Delivered in 3–5 business days",
-    ],
-    popular: false,
-  },
-  {
-    key: "full",
-    name: "Full Numeroscope",
-    price: 89.99,
-    features: [
-      "Everything in Core Blueprint",
-      "Personal Year & Monthly Forecast",
-      "Birthday & Personality Numbers",
-      "Compatibility Overview",
-      "Comprehensive PDF (20–25 pages)",
-      "Delivered in 5–7 business days",
-    ],
-    popular: true,
-  },
-  {
-    key: "premium",
-    name: "Premium + Live Session",
-    price: 149.99,
-    features: [
-      "Everything in Full Numeroscope",
-      "45-minute live video session",
-      "Career & Life Purpose Deep Dive",
-      "Q&A with your numerologist",
-      "Session recording provided",
-      "Scheduled at your convenience",
-    ],
-    popular: false,
-  },
-];
+import { READING_PACKAGES as PACKAGES, getReadingPackage } from "@/lib/reading-packages";
 
 const TIMEZONES = [
   { value: "Asia/Kolkata", label: "India Standard Time (IST, UTC+5:30)" },
@@ -80,9 +37,10 @@ function browserTimezone(): string {
 
 const noSubscribe = () => () => {};
 
-export function BookingClient() {
+export function BookingClient({ initialPackage }: { initialPackage?: string }) {
   const { format } = useCurrency();
-  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
+  // A guide page can link straight to a plan with /booking?package=full.
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(getReadingPackage(initialPackage)?.key ?? null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
