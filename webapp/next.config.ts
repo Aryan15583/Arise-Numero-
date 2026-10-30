@@ -56,6 +56,11 @@ const appRoot = path.resolve(__dirname);
 const nextConfig: NextConfig = {
   turbopack: { root: appRoot },
   outputFileTracingRoot: appRoot,
+  // Link-preview images read the logo seal from disk (lib/brand-image.ts).
+  outputFileTracingIncludes: {
+    "/opengraph-image": ["./public/assets/brand/logo-badge-160.png"],
+    "/product/[id]/opengraph-image": ["./public/assets/brand/logo-badge-160.png"],
+  },
   poweredByHeader: false, // don't advertise "X-Powered-By: Next.js" to every visitor
   async headers() {
     return [

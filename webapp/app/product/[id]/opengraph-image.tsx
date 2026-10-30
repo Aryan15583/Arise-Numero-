@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { prisma } from "@/lib/db";
 import { SITE_NAME, truncate } from "@/lib/seo";
+import { logoSealDataUrl } from "@/lib/brand-image";
 
 export const alt = `${SITE_NAME} crystal`;
 export const size = { width: 1200, height: 630 };
@@ -17,6 +18,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
   const name = product?.active ? product.name : SITE_NAME;
   const material = product?.active ? truncate(product.material, 70) : "Authentic crystals";
   const price = product?.active ? `$${product.priceUsd.toFixed(2)}` : "";
+  const seal = await logoSealDataUrl();
 
   return new ImageResponse(
     (
@@ -33,7 +35,7 @@ export default async function Image({ params }: { params: Promise<{ id: string }
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ width: 28, height: 28, background: "#d4b47a", transform: "rotate(45deg)", marginRight: 22, display: "flex" }} />
+          <img src={seal} width={64} height={64} alt="" style={{ marginRight: 20 }} />
           <div style={{ fontSize: 36, color: "#d4b47a", letterSpacing: 2, display: "flex" }}>{SITE_NAME}</div>
         </div>
 
