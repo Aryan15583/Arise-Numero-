@@ -7,7 +7,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ProductImageManager } from "@/components/admin/ProductImageManager";
 import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
 import type { ProductDTO } from "@/lib/types";
-import { AdminCurrencyPicker, AllCurrencies, useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { AllCurrencies, CurrencyMenu, useAdminCurrency } from "@/components/admin/AdminCurrency";
 import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 const BEAD_SIZES = ["", "4mm", "6mm", "8mm", "10mm", "12mm"];
@@ -221,7 +221,7 @@ export default function AdminProductsPage() {
         </div>
         <div className="page-actions">
           {del.bar}
-          <AdminCurrencyPicker variant="toolbar" />
+          <CurrencyMenu />
           <button className="btn btn-primary" onClick={openAdd}>+ Add Product</button>
         </div>
       </div>
@@ -261,7 +261,7 @@ export default function AdminProductsPage() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><SelectAllCell bulk={del.bulk} /><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price ({currency})</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
+              <tr><SelectAllCell bulk={del.bulk} /><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price <CurrencyMenu /></th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {products.length === 0 ? (

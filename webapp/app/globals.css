@@ -2949,7 +2949,10 @@ select.form-input {
 }
 
 #main-content {
-  animation: fadeIn 0.4s ease both;
+  /* "backwards", not "both": once it finishes the animation lets go entirely.
+     A held transform would trap fixed popups inside #main-content instead of
+     centring them on the screen. */
+  animation: fadeIn 0.4s ease backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

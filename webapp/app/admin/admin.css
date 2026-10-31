@@ -397,3 +397,33 @@
 .admin-scope .admin-currency small { text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.45); }
 .admin-scope .admin-currency--toolbar { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--text-muted); }
 .admin-scope .admin-currency--toolbar select { width: auto; max-width: 240px; padding: 8px 10px; background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
+
+/* ── "₹ INR ▾" currency button and its list ── */
+.admin-scope .currency-menu { display: inline-block; vertical-align: middle; }
+.admin-scope .currency-menu-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--gold); background: var(--bg-card); color: var(--text);
+  font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; text-transform: none;
+}
+.admin-scope .currency-menu-btn strong { color: var(--gold); font-size: 0.95rem; }
+.admin-scope .currency-menu-btn:hover { background: rgba(184, 151, 90, 0.12); }
+.admin-scope th .currency-menu-btn { padding: 3px 9px; font-size: 0.72rem; margin-left: 4px; }
+.admin-scope .currency-menu-backdrop { position: fixed; inset: 0; z-index: 900; background: rgba(0,0,0,0.5); }
+.admin-scope .currency-menu-pop {
+  position: fixed; z-index: 901; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: min(360px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 8px;
+  padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+  box-shadow: 0 18px 40px -12px rgba(26, 18, 40, 0.35); text-transform: none; letter-spacing: 0;
+}
+.admin-scope .currency-menu-list { display: flex; flex-direction: column; max-height: min(420px, 60vh); overflow-y: auto; }
+.admin-scope .currency-menu-title { font-size: 1rem; font-weight: 600; color: var(--text); padding: 4px 4px 2px; }
+.admin-scope .currency-menu-item {
+  display: grid; grid-template-columns: 48px 1fr; gap: 8px; align-items: center; text-align: left;
+  padding: 8px 10px; border: 0; border-radius: 8px; background: none; color: var(--text); cursor: pointer; font-size: 0.85rem; font-weight: 400;
+}
+.admin-scope .currency-menu-item span:first-child { font-weight: 700; }
+.admin-scope .currency-menu-item:hover { background: rgba(184, 151, 90, 0.12); }
+.admin-scope .currency-menu-item.is-current { background: rgba(184, 151, 90, 0.2); }
+.admin-scope .currency-menu-item.is-first-other { border-top: 1px solid var(--border); border-radius: 0 0 8px 8px; margin-top: 4px; padding-top: 12px; }
+.admin-scope .currency-menu-empty { padding: 10px; color: var(--text-muted); font-size: 0.85rem; }

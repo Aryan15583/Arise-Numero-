@@ -6,7 +6,7 @@ import { useAdminToast } from "@/components/admin/useAdminToast";
 import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import type { OrderDTO } from "@/lib/types";
-import { useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { CurrencyMenu, useAdminCurrency } from "@/components/admin/AdminCurrency";
 import { deleteRestocks } from "@/lib/order-rules";
 import { BulkDeleteBar, SelectAllCell, SelectCell, useBulkSelect } from "@/components/admin/BulkDelete";
 
@@ -173,7 +173,7 @@ export default function AdminOrdersPage() {
               <table>
                 <thead><tr>
                   <SelectAllCell bulk={bulk} />
-                  <th>Order ID</th><th>Customer</th><th>Total</th><th>Items</th><th>Payment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                  <th>Order ID</th><th>Customer</th><th>Total <CurrencyMenu /></th><th>Items</th><th>Payment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {orders.map((o) => (
                     <tr key={o.id} className={bulk.isSelected(o) ? "is-selected" : ""}>
