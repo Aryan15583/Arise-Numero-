@@ -39,6 +39,8 @@ type Ctx = {
   money: (usd: number) => string;
   /** The same USD amount in a specific currency. */
   moneyIn: (usd: number, c: string) => string;
+  /** How many units of a currency one US dollar buys. */
+  rateOf: (c: string) => number;
 };
 
 const AdminCurrencyContext = createContext<Ctx | null>(null);
@@ -113,6 +115,7 @@ export function AdminCurrencyProvider({ children }: { children: React.ReactNode 
       updatedAt: fx.updatedAt,
       moneyIn,
       money: (usd) => moneyIn(usd, currency),
+      rateOf: (c) => fx.rates[c] ?? 1,
     };
   }, [currency, fx, setCurrency]);
 
@@ -126,12 +129,12 @@ export function useAdminCurrency(): Ctx {
 }
 
 /** The currency picker shown in the admin sidebar: every currency we have a rate for. */
-export function AdminCurrencyPicker() {
+export function AdminCurrencyPicker({ variant = "sidebar" }: { variant?: "sidebar" | "toolbar" }) {
   const { currency, setCurrency, available, storeCurrencies, live } = useAdminCurrency();
   const others = available.filter((c) => !storeCurrencies.includes(c));
   return (
-    <label className="admin-currency">
-      <span>Show prices in</span>
+    <label className={variant === "toolbar" ? "admin-currency admin-currency--toolbar" : "admin-currency"}>
+      <span>{variant === "toolbar" ? "Currency" : "Show prices in"}</span>
       <select className="form-input" value={currency} onChange={(e) => setCurrency(e.target.value)}>
         <optgroup label="Shop currencies">
           {storeCurrencies.map((c) => <option key={c} value={c}>{c} — {currencyName(c)}</option>)}
@@ -142,7 +145,7 @@ export function AdminCurrencyPicker() {
           </optgroup>
         )}
       </select>
-      {!live && <small>Live rates unavailable; showing shop currencies.</small>}
+      {!live && variant === "sidebar" && <small>Live rates unavailable; showing shop currencies.</small>}
     </label>
   );
 }

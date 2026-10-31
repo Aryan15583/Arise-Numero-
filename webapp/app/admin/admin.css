@@ -395,3 +395,5 @@
 .admin-scope .select-cell input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--error); }
 .admin-scope tr:has(.select-cell input:checked) td { background: rgba(192, 57, 43, 0.06); }
 .admin-scope .admin-currency small { text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.45); }
+.admin-scope .admin-currency--toolbar { display: inline-flex; align-items: center; gap: 8px; margin: 0; color: var(--text-muted); }
+.admin-scope .admin-currency--toolbar select { width: auto; max-width: 240px; padding: 8px 10px; background: var(--bg-card); color: var(--text); border: 1px solid var(--border); }
