@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
 import { useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 type Coupon = {
   code: string;
@@ -119,16 +120,15 @@ export default function AdminCouponsPage() {
     }
   }
 
-  async function handleDelete(c: Coupon) {
-    if (!confirm(`Delete coupon "${c.code}"?`)) return;
-    try {
-      await adminFetchJson(`/api/admin/coupons/${c.code}`, { method: "DELETE" });
-      showToast(`Coupon "${c.code}" deleted.`);
-      load();
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not delete coupon.", "error");
-    }
-  }
+
+  const del = useBulkDelete({
+    items: coupons,
+    idOf: (c) => c.code,
+    urlOf: (c) => `/api/admin/coupons/${encodeURIComponent(c.code)}`,
+    noun: "coupon",
+    onDone: load,
+    showToast,
+  });
 
   return (
     <>
@@ -137,19 +137,23 @@ export default function AdminCouponsPage() {
           <div className="page-title">Coupon Codes</div>
           <div className="page-subtitle">Manage discount codes — optionally with an expiry date, usage limit or minimum order</div>
         </div>
-        <button className="btn btn-primary" onClick={openAdd}>+ Add Coupon</button>
+        <div className="page-actions">
+          {del.bar}
+          <button className="btn btn-primary" onClick={openAdd}>+ Add Coupon</button>
+        </div>
       </div>
 
       <div className="card">
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Code</th><th>Discount</th><th>Rules</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><SelectAllCell bulk={del.bulk} /><th>Code</th><th>Discount</th><th>Rules</th><th>Description</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {coupons.length === 0 ? (
                 <tr><td colSpan={6}><div className="empty-state"><div className="empty-icon">🏷️</div><div className="empty-title">No coupons yet</div></div></td></tr>
               ) : (
                 coupons.map((c) => (
                   <tr key={c.code}>
+                    <SelectCell bulk={del.bulk} item={c} label={c.code} />
                     <td><code style={{ fontSize: "1rem", fontWeight: 700, letterSpacing: "0.06em" }}>{c.code}</code></td>
                     <td><strong>{c.discountPercent}% off</strong></td>
                     <td style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{describeRules(c, money)}</td>
@@ -159,7 +163,6 @@ export default function AdminCouponsPage() {
                       <div style={{ display: "flex", gap: 6 }}>
                         <button className="btn btn-sm btn-outline" onClick={() => openEdit(c)}>Edit</button>
                         <button className={`btn btn-sm ${c.active ? "btn-ghost" : "btn-success"}`} onClick={() => toggleActive(c)}>{c.active ? "Deactivate" : "Activate"}</button>
-                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(c)}>Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -222,6 +225,7 @@ export default function AdminCouponsPage() {
         </div>
       )}
 
+      {del.modal}
       {ToastEl}
     </>
   );

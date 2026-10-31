@@ -5,6 +5,7 @@ import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
 import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 type Message = {
   id: string;
@@ -46,17 +47,15 @@ export default function AdminMessagesPage() {
     }
   }
 
-  async function handleDelete(m: Message) {
-    if (!confirm("Delete this message?")) return;
-    try {
-      await adminFetchJson(`/api/admin/messages/${m.id}`, { method: "DELETE" });
-      showToast("Message deleted.");
-      setViewing(null);
-      load();
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not delete message.", "error");
-    }
-  }
+
+  const del = useBulkDelete({
+    items: messages,
+    idOf: (m) => m.id,
+    urlOf: (m) => `/api/admin/messages/${m.id}`,
+    noun: "message",
+    onDone: load,
+    showToast,
+  });
 
   return (
     <>
@@ -65,19 +64,23 @@ export default function AdminMessagesPage() {
           <div className="page-title">Contact Messages</div>
           <div className="page-subtitle">Enquiries submitted through the contact form</div>
         </div>
-        <ExportButton type="messages" />
+        <div className="page-actions">
+          {del.bar}
+          <ExportButton type="messages" />
+        </div>
       </div>
 
       <div className="card">
         <div className="table-wrap">
           <table>
-            <thead><tr><th>From</th><th>Subject</th><th>Message</th><th>Received</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><SelectAllCell bulk={del.bulk} /><th>From</th><th>Subject</th><th>Message</th><th>Received</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {messages.length === 0 ? (
                 <tr><td colSpan={6}><div className="empty-state"><div className="empty-icon">✉️</div><div className="empty-title">No messages yet</div></div></td></tr>
               ) : (
                 messages.map((m) => (
                   <tr key={m.id} style={{ fontWeight: m.status === "new" ? 600 : 400 }}>
+                    <SelectCell bulk={del.bulk} item={m} label={`message from ${m.name}`} />
                     <td>{m.name}<br /><small style={{ color: "var(--text-muted)", fontWeight: 400 }}>{m.email}</small></td>
                     <td>{m.subject || "—"} {m.orderNumber && <><br /><small>Order: {m.orderNumber}</small></>}</td>
                     <td style={{ maxWidth: 280, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.message}</td>
@@ -86,7 +89,6 @@ export default function AdminMessagesPage() {
                     <td>
                       <div style={{ display: "flex", gap: 6 }}>
                         <button className="btn btn-sm btn-ghost" onClick={() => openMessage(m)}>View</button>
-                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(m)}>Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -122,6 +124,7 @@ export default function AdminMessagesPage() {
         </div>
       )}
 
+      {del.modal}
       {ToastEl}
     </>
   );

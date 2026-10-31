@@ -5,6 +5,7 @@ import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
 import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 type Subscriber = { id: string; email: string; source: string | null; subscribedAt: string; unsubscribedAt: string | null };
 
@@ -41,16 +42,15 @@ export default function AdminSubscribersPage() {
     return () => clearTimeout(t);
   }, [searchInput]);
 
-  async function remove(s: Subscriber) {
-    if (!confirm(`Permanently delete ${s.email}? (Use this for a "delete my data" request.)`)) return;
-    try {
-      await adminFetchJson(`/api/admin/subscribers/${s.id}`, { method: "DELETE" });
-      showToast("Subscriber deleted.");
-      load();
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not delete.", "error");
-    }
-  }
+
+  const del = useBulkDelete({
+    items: items,
+    idOf: (s) => s.id,
+    urlOf: (s) => `/api/admin/subscribers/${s.id}`,
+    noun: "subscriber",
+    onDone: load,
+    showToast,
+  });
 
   return (
     <>
@@ -59,7 +59,10 @@ export default function AdminSubscribersPage() {
           <div className="page-title">Newsletter Subscribers</div>
           <div className="page-subtitle">{activeCount} active subscriber{activeCount === 1 ? "" : "s"} · people who joined from the website footer</div>
         </div>
-        <ExportButton type="subscribers" />
+        <div className="page-actions">
+          {del.bar}
+          <ExportButton type="subscribers" />
+        </div>
       </div>
 
       <div className="card">
@@ -79,10 +82,11 @@ export default function AdminSubscribersPage() {
           ) : (
             <div className="table-wrap">
               <table>
-                <thead><tr><th>Email</th><th>Status</th><th>Subscribed</th><th>Source</th><th>Actions</th></tr></thead>
+                <thead><tr><SelectAllCell bulk={del.bulk} /><th>Email</th><th>Status</th><th>Subscribed</th><th>Source</th></tr></thead>
                 <tbody>
                   {items.map((s) => (
                     <tr key={s.id}>
+                      <SelectCell bulk={del.bulk} item={s} label={s.email} />
                       <td>{s.email}</td>
                       <td>
                         {s.unsubscribedAt ? (
@@ -93,7 +97,6 @@ export default function AdminSubscribersPage() {
                       </td>
                       <td style={{ whiteSpace: "nowrap" }}>{new Date(s.subscribedAt).toLocaleDateString()}</td>
                       <td>{s.source || "—"}</td>
-                      <td><button className="btn btn-sm btn-danger" onClick={() => remove(s)}>Delete</button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -104,6 +107,7 @@ export default function AdminSubscribersPage() {
         <AdminPagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
       </div>
 
+      {del.modal}
       {ToastEl}
     </>
   );

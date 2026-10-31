@@ -8,6 +8,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import type { OrderDTO } from "@/lib/types";
 import { useAdminCurrency } from "@/components/admin/AdminCurrency";
 import { deleteRestocks } from "@/lib/order-rules";
+import { BulkDeleteBar, SelectAllCell, SelectCell, useBulkSelect } from "@/components/admin/BulkDelete";
 
 const STATUS_BADGE: Record<string, string> = {
   pending: "badge-low",
@@ -44,8 +45,8 @@ export default function AdminOrdersPage() {
   const [saving, setSaving] = useState(false);
   const { money } = useAdminCurrency();
 
-  // Selection for bulk delete (kept to the current page of results).
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  // "Delete…" shows a tick box on each row; ticked orders go to the confirm box.
+  const bulk = useBulkSelect(orders, (o) => o.id);
   const [confirming, setConfirming] = useState<OrderDTO[] | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -57,7 +58,6 @@ export default function AdminOrdersPage() {
       .then((d) => {
         setOrders(d.items);
         setTotal(d.total);
-        setSelected(new Set());
       })
       .catch(() => {});
   }
@@ -108,16 +108,6 @@ export default function AdminOrdersPage() {
     }
   }
 
-  function toggle(id: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-  const allSelected = orders.length > 0 && orders.every((o) => selected.has(o.id));
-
   async function confirmDelete() {
     if (!confirming) return;
     setDeleting(true);
@@ -131,6 +121,7 @@ export default function AdminOrdersPage() {
       showToast(`Deleted ${n} order${n === 1 ? "" : "s"}.${back}`);
       setConfirming(null);
       setViewing(null);
+      bulk.stop();
       load();
     } catch (err) {
       showToast(err instanceof Error ? err.message : "Could not delete.", "error");
@@ -148,7 +139,10 @@ export default function AdminOrdersPage() {
           <div className="page-title">Orders</div>
           <div className="page-subtitle">Track and manage customer orders</div>
         </div>
-        <ExportButton type="orders" />
+        <div className="page-actions">
+          <BulkDeleteBar bulk={bulk} noun="order" onDelete={setConfirming} />
+          <ExportButton type="orders" />
+        </div>
       </div>
 
       <div className="card">
@@ -165,11 +159,6 @@ export default function AdminOrdersPage() {
               <option value="cancelled">Cancelled</option>
               <option value="failed">Failed</option>
             </select>
-            {selected.size > 0 && (
-              <button className="btn btn-danger" onClick={() => setConfirming(orders.filter((o) => selected.has(o.id)))}>
-                Delete selected ({selected.size})
-              </button>
-            )}
           </div>
         </div>
         <div className="card-body">
@@ -183,19 +172,12 @@ export default function AdminOrdersPage() {
             <div className="table-wrap">
               <table>
                 <thead><tr>
-                  <th style={{ width: 36 }}>
-                    <input
-                      type="checkbox"
-                      aria-label="Select all orders on this page"
-                      checked={allSelected}
-                      onChange={() => setSelected(allSelected ? new Set() : new Set(orders.map((o) => o.id)))}
-                    />
-                  </th>
+                  <SelectAllCell bulk={bulk} />
                   <th>Order ID</th><th>Customer</th><th>Total</th><th>Items</th><th>Payment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {orders.map((o) => (
-                    <tr key={o.id} className={selected.has(o.id) ? "is-selected" : ""}>
-                      <td><input type="checkbox" aria-label={`Select order ${o.id}`} checked={selected.has(o.id)} onChange={() => toggle(o.id)} /></td>
+                    <tr key={o.id} className={bulk.isSelected(o) ? "is-selected" : ""}>
+                      <SelectCell bulk={bulk} item={o} label={`order ${o.id}`} />
                       <td><code style={{ fontSize: "0.8rem" }}>{o.id}</code></td>
                       <td>{o.customerName || "—"}<br /><small style={{ color: "var(--text-muted)" }}>{o.customerEmail || ""}</small></td>
                       <td style={{ whiteSpace: "nowrap" }}>{money(o.totalUsd)}</td>
