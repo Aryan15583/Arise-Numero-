@@ -371,3 +371,15 @@
 .admin-scope .btn-sm { font-size: 0.78rem; padding: 5px 12px; }
 .admin-scope .btn::after { display: none; }
 .admin-scope .btn:hover { transform: none; }
+
+/* ── Display currency (sidebar picker + all-currency line) ── */
+.admin-scope .admin-currency { display: grid; gap: 6px; margin-bottom: 12px; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+.admin-scope .admin-currency select {
+  width: 100%; padding: 8px 10px; font-size: 0.85rem; letter-spacing: 0; text-transform: none;
+  background: rgba(255,255,255,0.06); color: #f0eafa; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+}
+.admin-scope .admin-currency select option { color: #1a1228; }
+.admin-scope .all-currencies { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; }
+.admin-scope .all-currencies span { white-space: nowrap; }
+.admin-scope .all-currencies .is-current { color: var(--gold); font-weight: 600; }
+.admin-scope tr.is-selected td { background: rgba(184, 151, 90, 0.08); }

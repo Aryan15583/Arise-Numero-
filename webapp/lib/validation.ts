@@ -140,6 +140,10 @@ export const adminOrderStatusSchema = z.object({
 
 // ── Public: order tracking, newsletter ────────────────────────────────────
 
+export const adminOrderDeleteSchema = z.object({
+  ids: z.array(z.string().min(1).max(100)).min(1).max(100),
+});
+
 export const trackOrderSchema = z.object({
   orderId: z.string().trim().min(1).max(64),
   email: z.string().trim().email().max(200),

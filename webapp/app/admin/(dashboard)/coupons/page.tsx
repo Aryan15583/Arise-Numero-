@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
+import { useAdminCurrency } from "@/components/admin/AdminCurrency";
 
 type Coupon = {
   code: string;
@@ -15,9 +16,9 @@ type Coupon = {
   minOrderUsd: number | null;
 };
 
-function describeRules(c: Coupon): string {
+function describeRules(c: Coupon, money: (usd: number) => string): string {
   const parts: string[] = [];
-  if (c.minOrderUsd !== null) parts.push(`Min order $${c.minOrderUsd.toFixed(2)}`);
+  if (c.minOrderUsd !== null) parts.push(`Min order ${money(c.minOrderUsd)}`);
   if (c.maxUses !== null) parts.push(`${c.usedCount}/${c.maxUses} uses`);
   else if (c.usedCount > 0) parts.push(`${c.usedCount} uses`);
   if (c.expiresAt) parts.push(`${new Date(c.expiresAt) < new Date() ? "Expired" : "Expires"} ${new Date(c.expiresAt).toLocaleDateString()}`);
@@ -26,6 +27,7 @@ function describeRules(c: Coupon): string {
 
 export default function AdminCouponsPage() {
   const { showToast, ToastEl } = useAdminToast();
+  const { money } = useAdminCurrency();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingCode, setEditingCode] = useState<string | null>(null);
@@ -150,7 +152,7 @@ export default function AdminCouponsPage() {
                   <tr key={c.code}>
                     <td><code style={{ fontSize: "1rem", fontWeight: 700, letterSpacing: "0.06em" }}>{c.code}</code></td>
                     <td><strong>{c.discountPercent}% off</strong></td>
-                    <td style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{describeRules(c)}</td>
+                    <td style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{describeRules(c, money)}</td>
                     <td>{c.description || "—"}</td>
                     <td>{c.active ? <span className="badge badge-active">Active</span> : <span className="badge badge-inactive">Inactive</span>}</td>
                     <td>

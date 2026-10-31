@@ -7,6 +7,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ProductImageManager } from "@/components/admin/ProductImageManager";
 import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
 import type { ProductDTO } from "@/lib/types";
+import { AllCurrencies, useAdminCurrency } from "@/components/admin/AdminCurrency";
 
 const BEAD_SIZES = ["", "4mm", "6mm", "8mm", "10mm", "12mm"];
 const BADGES = ["", "Bestseller", "New", "Sale", "Premium"];
@@ -57,6 +58,7 @@ function emptyForm(defaultCategory: string): FormState {
 
 export default function AdminProductsPage() {
   const { showToast, ToastEl } = useAdminToast();
+  const { money, currency } = useAdminCurrency();
   const [products, setProducts] = useState<ProductDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -242,7 +244,7 @@ export default function AdminProductsPage() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price (USD)</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
+              <tr><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price ({currency})</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
@@ -261,8 +263,8 @@ export default function AdminProductsPage() {
                       <td><strong>{p.name}</strong><br /><small style={{ color: "var(--text-muted)" }}>{p.id}</small></td>
                       <td>{getProductType(p.productType)?.name || p.productType}<br /><small style={{ color: "var(--text-muted)" }}>{categories.find((c) => c.slug === p.category)?.name || "—"}</small></td>
                       <td>
-                        {p.priceUsd > 0 ? `$${p.priceUsd.toFixed(2)}` : <span className="badge badge-gold" title="No price yet — shown as Price on request and can't be ordered">On request</span>}
-                        {p.originalPriceUsd && <><br /><small style={{ textDecoration: "line-through", color: "var(--text-muted)" }}>${p.originalPriceUsd.toFixed(2)}</small></>}
+                        {p.priceUsd > 0 ? <span title={currency === "USD" ? undefined : `$${p.priceUsd.toFixed(2)} USD`}>{money(p.priceUsd)}</span> : <span className="badge badge-gold" title="No price yet — shown as Price on request and can't be ordered">On request</span>}
+                        {p.originalPriceUsd && <><br /><small style={{ textDecoration: "line-through", color: "var(--text-muted)" }}>{money(p.originalPriceUsd)}</small></>}
                       </td>
                       <td>{stockBadge}</td>
                       <td>{p.active ? <span className="badge badge-active">Active</span> : <span className="badge badge-inactive">Hidden</span>}</td>
@@ -326,10 +328,12 @@ export default function AdminProductsPage() {
                 <div className="form-group">
                   <label className="form-label">Price (USD) *</label>
                   <input type="number" step="0.01" min="0" className="form-input" value={form.priceUsd} onChange={(e) => setForm((f) => ({ ...f, priceUsd: e.target.value }))} placeholder="24.99" />
+                  {parseFloat(form.priceUsd) > 0 && <span className="form-hint">= <AllCurrencies usd={parseFloat(form.priceUsd)} /></span>}
                 </div>
                 <div className="form-group">
                   <label className="form-label">Original Price (USD)</label>
                   <input type="number" step="0.01" min="0" className="form-input" value={form.originalPriceUsd} onChange={(e) => setForm((f) => ({ ...f, originalPriceUsd: e.target.value }))} placeholder="Leave blank if no sale" />
+                  {parseFloat(form.originalPriceUsd) > 0 && <span className="form-hint">= <AllCurrencies usd={parseFloat(form.originalPriceUsd)} /></span>}
                 </div>
                 <div className="form-group">
                   <label className="form-label">Stock Quantity *</label>
