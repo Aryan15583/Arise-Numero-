@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import { useAdminToast } from "@/components/admin/useAdminToast";
 import { AdminPagination } from "@/components/admin/AdminPagination";
+import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 type Review = {
   id: string;
@@ -51,16 +52,15 @@ export default function AdminReviewsPage() {
     }
   }
 
-  async function handleDelete(r: Review) {
-    if (!confirm("Delete this review permanently?")) return;
-    try {
-      await adminFetchJson(`/api/admin/reviews/${r.id}`, { method: "DELETE" });
-      showToast("Review deleted.");
-      load();
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not delete review.", "error");
-    }
-  }
+
+  const del = useBulkDelete({
+    items: reviews,
+    idOf: (r) => r.id,
+    urlOf: (r) => `/api/admin/reviews/${r.id}`,
+    noun: "review",
+    onDone: load,
+    showToast,
+  });
 
   return (
     <>
@@ -69,6 +69,7 @@ export default function AdminReviewsPage() {
           <div className="page-title">Reviews</div>
           <div className="page-subtitle">Moderate customer reviews before they appear on product pages</div>
         </div>
+        <div className="page-actions">{del.bar}</div>
       </div>
 
       <div className="card">
@@ -91,13 +92,14 @@ export default function AdminReviewsPage() {
         </div>
         <div className="table-wrap">
           <table>
-            <thead><tr><th>Product</th><th>Author</th><th>Rating</th><th>Comment</th><th>Received</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><SelectAllCell bulk={del.bulk} /><th>Product</th><th>Author</th><th>Rating</th><th>Comment</th><th>Received</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody>
               {reviews.length === 0 ? (
                 <tr><td colSpan={7}><div className="empty-state"><div className="empty-icon">⭐</div><div className="empty-title">No reviews found</div></div></td></tr>
               ) : (
                 reviews.map((r) => (
                   <tr key={r.id}>
+                    <SelectCell bulk={del.bulk} item={r} label={`review by ${r.authorName}`} />
                     <td>{r.productName}</td>
                     <td>{r.authorName}{r.verified && <><br /><span className="badge badge-active" title="Email matches an order for this product">✓ Verified buyer</span></>}</td>
                     <td>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</td>
@@ -110,7 +112,6 @@ export default function AdminReviewsPage() {
                       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                         {r.status !== "approved" && <button className="btn btn-sm btn-success" onClick={() => setStatus(r, "approved")}>Approve</button>}
                         {r.status !== "rejected" && <button className="btn btn-sm btn-ghost" onClick={() => setStatus(r, "rejected")}>Reject</button>}
-                        <button className="btn btn-sm btn-danger" onClick={() => handleDelete(r)}>Delete</button>
                       </div>
                     </td>
                   </tr>
@@ -122,6 +123,7 @@ export default function AdminReviewsPage() {
         <AdminPagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
       </div>
 
+      {del.modal}
       {ToastEl}
     </>
   );

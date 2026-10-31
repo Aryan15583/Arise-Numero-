@@ -8,6 +8,7 @@ import { ProductImageManager } from "@/components/admin/ProductImageManager";
 import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
 import type { ProductDTO } from "@/lib/types";
 import { AllCurrencies, useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 const BEAD_SIZES = ["", "4mm", "6mm", "8mm", "10mm", "12mm"];
 const BADGES = ["", "Bestseller", "New", "Sale", "Premium"];
@@ -171,16 +172,6 @@ export default function AdminProductsPage() {
     }
   }
 
-  async function handleDelete(p: ProductDTO) {
-    if (!confirm(`Delete "${p.name}"? This cannot be undone.`)) return;
-    try {
-      await adminFetchJson(`/api/admin/products/${p.id}`, { method: "DELETE" });
-      showToast(`"${p.name}" deleted.`);
-      load();
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not delete product.", "error");
-    }
-  }
 
   async function handleQuickStock(p: ProductDTO) {
     const qty = prompt(`Update stock for "${p.name}"\nCurrent: ${p.stock}\n\nEnter new quantity:`, String(p.stock));
@@ -199,6 +190,15 @@ export default function AdminProductsPage() {
     }
   }
 
+  const del = useBulkDelete({
+    items: products,
+    idOf: (p) => p.id,
+    urlOf: (p) => `/api/admin/products/${p.id}`,
+    noun: "product",
+    onDone: load,
+    showToast,
+  });
+
   return (
     <>
       <div className="page-header">
@@ -206,7 +206,10 @@ export default function AdminProductsPage() {
           <div className="page-title">Products</div>
           <div className="page-subtitle">Manage your crystal bracelet catalogue</div>
         </div>
-        <button className="btn btn-primary" onClick={openAdd}>+ Add Product</button>
+        <div className="page-actions">
+          {del.bar}
+          <button className="btn btn-primary" onClick={openAdd}>+ Add Product</button>
+        </div>
       </div>
 
       <div className="card">
@@ -244,7 +247,7 @@ export default function AdminProductsPage() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price ({currency})</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
+              <tr><SelectAllCell bulk={del.bulk} /><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price ({currency})</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
@@ -258,6 +261,7 @@ export default function AdminProductsPage() {
                     : <span className="badge badge-active">{p.stock}</span>;
                   return (
                     <tr key={p.id}>
+                      <SelectCell bulk={del.bulk} item={p} label={p.name} />
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <td><img src={p.imageUrl || "/assets/placeholder.svg"} className="product-thumb" alt={p.name} /></td>
                       <td><strong>{p.name}</strong><br /><small style={{ color: "var(--text-muted)" }}>{p.id}</small></td>
@@ -273,7 +277,6 @@ export default function AdminProductsPage() {
                         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           <button className="btn btn-sm btn-outline" onClick={() => openEdit(p)}>Edit</button>
                           <button className="btn btn-sm btn-ghost" onClick={() => handleQuickStock(p)}>Stock</button>
-                          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(p)}>Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -393,6 +396,7 @@ export default function AdminProductsPage() {
         </div>
       )}
 
+      {del.modal}
       {ToastEl}
     </>
   );

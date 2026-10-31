@@ -1,15 +1,16 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from "react";
-import { EXCHANGE_RATES, type CurrencyCode } from "@/lib/currency";
-import { getPublicConfig } from "@/lib/public-config";
+import { EXCHANGE_RATES } from "@/lib/currency";
+import { adminFetchJson } from "@/lib/admin-api";
 
-// The currency the admin panel shows prices in. Prices are always stored in
-// USD; this only changes how they're displayed. Defaults to INR and is
-// remembered in this browser. Rates come from Admin -> Settings.
+// The currency the admin panel shows prices in: any world currency. Prices are
+// always stored in USD; this only changes how they're displayed. Defaults to
+// INR and is remembered in this browser. The shop's own five currencies use
+// the rates from Admin -> Settings; the rest use live daily rates.
 const KEY = "ariseNumero_adminCurrency";
-const DEFAULT: CurrencyCode = "INR";
-export const ADMIN_CURRENCIES = Object.keys(EXCHANGE_RATES) as CurrencyCode[];
+const DEFAULT = "INR";
+const STORE_CURRENCIES = Object.keys(EXCHANGE_RATES);
 
 const listeners = new Set<() => void>();
 function readSaved(): string {
@@ -24,32 +25,71 @@ function subscribe(onChange: () => void) {
   return () => listeners.delete(onChange);
 }
 
+type FxResponse = { rates: Record<string, number>; storeCurrencies: string[]; live: boolean; updatedAt: string | null };
+
 type Ctx = {
-  currency: CurrencyCode;
-  setCurrency: (c: CurrencyCode) => void;
+  currency: string;
+  setCurrency: (c: string) => void;
+  /** Currencies with a known rate, shop currencies first. */
+  available: string[];
+  storeCurrencies: string[];
+  live: boolean;
+  updatedAt: string | null;
   /** A USD amount in the chosen currency, e.g. "₹1,336.00". */
   money: (usd: number) => string;
   /** The same USD amount in a specific currency. */
-  moneyIn: (usd: number, c: CurrencyCode) => string;
+  moneyIn: (usd: number, c: string) => string;
 };
 
 const AdminCurrencyContext = createContext<Ctx | null>(null);
 
+const formatters = new Map<string, Intl.NumberFormat>();
+function formatterFor(code: string): Intl.NumberFormat {
+  let f = formatters.get(code);
+  if (!f) {
+    try {
+      f = new Intl.NumberFormat(code === "INR" ? "en-IN" : "en", { style: "currency", currency: code });
+    } catch {
+      f = new Intl.NumberFormat("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    formatters.set(code, f);
+  }
+  return f;
+}
+
+let namer: Intl.DisplayNames | null = null;
+export function currencyName(code: string): string {
+  try {
+    namer ??= new Intl.DisplayNames(["en"], { type: "currency" });
+    return namer.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}
+
 export function AdminCurrencyProvider({ children }: { children: React.ReactNode }) {
   const saved = useSyncExternalStore(subscribe, readSaved, () => "");
-  const [override, setOverride] = useState<CurrencyCode | null>(null);
-  const currency: CurrencyCode = override ?? (saved in EXCHANGE_RATES ? (saved as CurrencyCode) : DEFAULT);
+  const [override, setOverride] = useState<string | null>(null);
+  const [fx, setFx] = useState<FxResponse>(() => ({
+    rates: Object.fromEntries(STORE_CURRENCIES.map((c) => [c, EXCHANGE_RATES[c as keyof typeof EXCHANGE_RATES].rate])),
+    storeCurrencies: STORE_CURRENCIES,
+    live: false,
+    updatedAt: null,
+  }));
 
-  const [rates, setRates] = useState<Record<string, number>>(() =>
-    Object.fromEntries(ADMIN_CURRENCIES.map((c) => [c, EXCHANGE_RATES[c].rate]))
-  );
   useEffect(() => {
-    getPublicConfig().then((cfg) => {
-      if (cfg?.exchangeRates) setRates((r) => ({ ...r, ...cfg.exchangeRates }));
-    });
+    adminFetchJson<FxResponse>("/api/admin/fx-rates")
+      .then((d) => setFx(d))
+      .catch(() => {
+        /* keep the built-in rates */
+      });
   }, []);
 
-  const setCurrency = useCallback((c: CurrencyCode) => {
+  const wanted = override ?? (saved || DEFAULT);
+  // A saved currency we have no rate for (yet) falls back to INR.
+  const currency = fx.rates[wanted] ? wanted : DEFAULT;
+
+  const setCurrency = useCallback((c: string) => {
     setOverride(c);
     try {
       localStorage.setItem(KEY, c);
@@ -60,13 +100,21 @@ export function AdminCurrencyProvider({ children }: { children: React.ReactNode 
   }, []);
 
   const value = useMemo<Ctx>(() => {
-    const moneyIn = (usd: number, c: CurrencyCode) => {
-      const amount = usd * (rates[c] ?? 1);
-      const number = amount.toLocaleString(c === "INR" ? "en-IN" : "en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      return `${amount < 0 ? "−" : ""}${EXCHANGE_RATES[c].symbol}${number.replace("-", "")}`;
+    const moneyIn = (usd: number, c: string) => formatterFor(c).format(usd * (fx.rates[c] ?? 1));
+    const others = Object.keys(fx.rates)
+      .filter((c) => !fx.storeCurrencies.includes(c))
+      .sort((a, b) => currencyName(a).localeCompare(currencyName(b)));
+    return {
+      currency,
+      setCurrency,
+      available: [...fx.storeCurrencies, ...others],
+      storeCurrencies: fx.storeCurrencies,
+      live: fx.live,
+      updatedAt: fx.updatedAt,
+      moneyIn,
+      money: (usd) => moneyIn(usd, currency),
     };
-    return { currency, setCurrency, moneyIn, money: (usd) => moneyIn(usd, currency) };
-  }, [currency, rates, setCurrency]);
+  }, [currency, fx, setCurrency]);
 
   return <AdminCurrencyContext.Provider value={value}>{children}</AdminCurrencyContext.Provider>;
 }
@@ -77,27 +125,35 @@ export function useAdminCurrency(): Ctx {
   return ctx;
 }
 
-/** The currency picker shown in the admin sidebar. */
+/** The currency picker shown in the admin sidebar: every currency we have a rate for. */
 export function AdminCurrencyPicker() {
-  const { currency, setCurrency } = useAdminCurrency();
+  const { currency, setCurrency, available, storeCurrencies, live } = useAdminCurrency();
+  const others = available.filter((c) => !storeCurrencies.includes(c));
   return (
     <label className="admin-currency">
       <span>Show prices in</span>
-      <select className="form-input" value={currency} onChange={(e) => setCurrency(e.target.value as CurrencyCode)}>
-        {ADMIN_CURRENCIES.map((c) => (
-          <option key={c} value={c}>{EXCHANGE_RATES[c].symbol} {c}</option>
-        ))}
+      <select className="form-input" value={currency} onChange={(e) => setCurrency(e.target.value)}>
+        <optgroup label="Shop currencies">
+          {storeCurrencies.map((c) => <option key={c} value={c}>{c} — {currencyName(c)}</option>)}
+        </optgroup>
+        {others.length > 0 && (
+          <optgroup label="All currencies (live rates)">
+            {others.map((c) => <option key={c} value={c}>{c} — {currencyName(c)}</option>)}
+          </optgroup>
+        )}
       </select>
+      {!live && <small>Live rates unavailable; showing shop currencies.</small>}
     </label>
   );
 }
 
-/** A USD amount shown in every currency at once (for product prices). */
+/** A USD amount in the shop's currencies (plus the chosen one), for product prices. */
 export function AllCurrencies({ usd }: { usd: number }) {
-  const { moneyIn, currency } = useAdminCurrency();
+  const { moneyIn, currency, storeCurrencies } = useAdminCurrency();
+  const list = storeCurrencies.includes(currency) ? storeCurrencies : [currency, ...storeCurrencies];
   return (
     <span className="all-currencies">
-      {ADMIN_CURRENCIES.map((c) => (
+      {list.map((c) => (
         <span key={c} className={c === currency ? "is-current" : ""}>{moneyIn(usd, c)}</span>
       ))}
     </span>

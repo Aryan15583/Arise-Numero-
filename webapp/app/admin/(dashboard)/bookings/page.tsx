@@ -7,6 +7,7 @@ import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import type { BookingDTO } from "@/lib/types";
 import { useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 const PAGE_SIZE = 20;
 
@@ -42,16 +43,15 @@ export default function AdminBookingsPage() {
     }
   }
 
-  async function handleDelete(b: BookingDTO) {
-    if (!confirm("Delete this booking?")) return;
-    try {
-      await adminFetchJson(`/api/admin/bookings/${b.id}`, { method: "DELETE" });
-      showToast("Booking deleted.");
-      load();
-    } catch (err) {
-      showToast(err instanceof Error ? err.message : "Could not delete booking.", "error");
-    }
-  }
+
+  const del = useBulkDelete({
+    items: bookings,
+    idOf: (b) => b.id,
+    urlOf: (b) => `/api/admin/bookings/${b.id}`,
+    noun: "booking",
+    onDone: load,
+    showToast,
+  });
 
   return (
     <>
@@ -60,7 +60,10 @@ export default function AdminBookingsPage() {
           <div className="page-title">Booking Requests</div>
           <div className="page-subtitle">Numerology reading bookings</div>
         </div>
-        <ExportButton type="bookings" />
+        <div className="page-actions">
+          {del.bar}
+          <ExportButton type="bookings" />
+        </div>
       </div>
 
       <div className="card">
@@ -84,10 +87,11 @@ export default function AdminBookingsPage() {
           ) : (
             <div className="table-wrap">
               <table>
-                <thead><tr><th>Email</th><th>Package</th><th>Birth Name</th><th>DOB</th><th>Session Date</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr><SelectAllCell bulk={del.bulk} /><th>Email</th><th>Package</th><th>Birth Name</th><th>DOB</th><th>Session Date</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {bookings.map((b) => (
                     <tr key={b.id}>
+                      <SelectCell bulk={del.bulk} item={b} label={b.clientEmail} />
                       <td>{b.clientEmail}</td>
                       <td><span className="badge badge-gold">{b.packageSelected || "—"}</span></td>
                       <td>{b.birthName}</td>
@@ -104,7 +108,6 @@ export default function AdminBookingsPage() {
                       <td>
                         <div style={{ display: "flex", gap: 6 }}>
                           <button className="btn btn-sm btn-ghost" onClick={() => setViewing(b)}>View</button>
-                          <button className="btn btn-sm btn-danger" onClick={() => handleDelete(b)}>Delete</button>
                         </div>
                       </td>
                     </tr>
@@ -145,6 +148,7 @@ export default function AdminBookingsPage() {
         </div>
       )}
 
+      {del.modal}
       {ToastEl}
     </>
   );
