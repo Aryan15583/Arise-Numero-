@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
+import { AdminCurrencyPicker } from "./AdminCurrency";
 
 const NAV_SECTIONS = [
   {
@@ -132,6 +133,7 @@ export function AdminSidebar() {
       </nav>
 
       <div className="sidebar-footer">
+        <AdminCurrencyPicker />
         <button className="logout-btn" onClick={handleLogout}>🔒 Lock Admin</button>
       </div>
     </aside>

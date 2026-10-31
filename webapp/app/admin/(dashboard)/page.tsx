@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { adminFetchJson } from "@/lib/admin-api";
 import type { BookingDTO } from "@/lib/types";
+import { useAdminCurrency } from "@/components/admin/AdminCurrency";
 
 type DashboardData = {
   totalProducts: number;
@@ -24,6 +25,7 @@ type DashboardData = {
 
 // Dependency-free bar chart (inline SVG) of revenue per day.
 function RevenueChart({ days }: { days: DashboardData["revenueByDay"] }) {
+  const { money } = useAdminCurrency();
   const W = 600;
   const H = 150;
   const gap = 6;
@@ -32,13 +34,13 @@ function RevenueChart({ days }: { days: DashboardData["revenueByDay"] }) {
   const total = days.reduce((s, d) => s + d.revenue, 0);
 
   return (
-    <svg viewBox={`0 0 ${W} ${H + 26}`} role="img" aria-label={`Revenue over the last ${days.length} days: $${total.toFixed(2)} total`} style={{ width: "100%", height: "auto" }}>
+    <svg viewBox={`0 0 ${W} ${H + 26}`} role="img" aria-label={`Revenue over the last ${days.length} days: ${money(total)} total`} style={{ width: "100%", height: "auto" }}>
       {days.map((d, i) => {
         const h = d.revenue > 0 ? Math.max(3, Math.round((d.revenue / max) * H)) : 0;
         const x = i * (bar + gap);
         return (
           <g key={d.date}>
-            <title>{`${d.date}: $${d.revenue.toFixed(2)} from ${d.orders} order${d.orders === 1 ? "" : "s"}`}</title>
+            <title>{`${d.date}: ${money(d.revenue)} from ${d.orders} order${d.orders === 1 ? "" : "s"}`}</title>
             <rect x={x} y={0} width={bar} height={H} rx={3} fill="var(--border)" opacity={0.35} />
             {h > 0 && <rect x={x} y={H - h} width={bar} height={h} rx={3} fill="var(--gold)" />}
             {i % 2 === 0 && (
@@ -52,6 +54,7 @@ function RevenueChart({ days }: { days: DashboardData["revenueByDay"] }) {
 }
 
 export default function AdminDashboardPage() {
+  const { money } = useAdminCurrency();
   const [data, setData] = useState<DashboardData | null>(null);
   const [dateStr] = useState(() =>
     new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
@@ -82,7 +85,7 @@ export default function AdminDashboardPage() {
         <div className="stat-card stat-success">
           <div className="stat-label">Total Orders</div>
           <div className="stat-value">{data.totalOrders}</div>
-          <div className="stat-sub">${data.revenue.toFixed(2)} revenue</div>
+          <div className="stat-sub">{money(data.revenue)} revenue</div>
         </div>
         <div className="stat-card stat-warning">
           <div className="stat-label">Low Stock</div>

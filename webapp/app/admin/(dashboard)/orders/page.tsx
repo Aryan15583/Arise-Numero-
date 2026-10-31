@@ -6,6 +6,8 @@ import { useAdminToast } from "@/components/admin/useAdminToast";
 import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import type { OrderDTO } from "@/lib/types";
+import { useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { deleteRestocks } from "@/lib/order-rules";
 
 const STATUS_BADGE: Record<string, string> = {
   pending: "badge-low",
@@ -40,6 +42,12 @@ export default function AdminOrdersPage() {
   const [formMessage, setFormMessage] = useState("");
   const [formNotify, setFormNotify] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { money } = useAdminCurrency();
+
+  // Selection for bulk delete (kept to the current page of results).
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirming, setConfirming] = useState<OrderDTO[] | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function load() {
     const params = new URLSearchParams({ page: String(page), pageSize: String(PAGE_SIZE) });
@@ -49,6 +57,7 @@ export default function AdminOrdersPage() {
       .then((d) => {
         setOrders(d.items);
         setTotal(d.total);
+        setSelected(new Set());
       })
       .catch(() => {});
   }
@@ -99,6 +108,39 @@ export default function AdminOrdersPage() {
     }
   }
 
+  function toggle(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+  const allSelected = orders.length > 0 && orders.every((o) => selected.has(o.id));
+
+  async function confirmDelete() {
+    if (!confirming) return;
+    setDeleting(true);
+    try {
+      const result = await adminFetchJson<{ deleted: string[]; restocked: string[] }>("/api/admin/orders", {
+        method: "DELETE",
+        body: JSON.stringify({ ids: confirming.map((o) => o.id) }),
+      });
+      const n = result.deleted.length;
+      const back = result.restocked.length ? ` Stock returned for ${result.restocked.length}.` : "";
+      showToast(`Deleted ${n} order${n === 1 ? "" : "s"}.${back}`);
+      setConfirming(null);
+      setViewing(null);
+      load();
+    } catch (err) {
+      showToast(err instanceof Error ? err.message : "Could not delete.", "error");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  const restockCount = confirming ? confirming.filter(deleteRestocks).length : 0;
+
   return (
     <>
       <div className="page-header">
@@ -123,6 +165,11 @@ export default function AdminOrdersPage() {
               <option value="cancelled">Cancelled</option>
               <option value="failed">Failed</option>
             </select>
+            {selected.size > 0 && (
+              <button className="btn btn-danger" onClick={() => setConfirming(orders.filter((o) => selected.has(o.id)))}>
+                Delete selected ({selected.size})
+              </button>
+            )}
           </div>
         </div>
         <div className="card-body">
@@ -135,13 +182,23 @@ export default function AdminOrdersPage() {
           ) : (
             <div className="table-wrap">
               <table>
-                <thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Items</th><th>Payment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+                <thead><tr>
+                  <th style={{ width: 36 }}>
+                    <input
+                      type="checkbox"
+                      aria-label="Select all orders on this page"
+                      checked={allSelected}
+                      onChange={() => setSelected(allSelected ? new Set() : new Set(orders.map((o) => o.id)))}
+                    />
+                  </th>
+                  <th>Order ID</th><th>Customer</th><th>Total</th><th>Items</th><th>Payment</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {orders.map((o) => (
-                    <tr key={o.id}>
+                    <tr key={o.id} className={selected.has(o.id) ? "is-selected" : ""}>
+                      <td><input type="checkbox" aria-label={`Select order ${o.id}`} checked={selected.has(o.id)} onChange={() => toggle(o.id)} /></td>
                       <td><code style={{ fontSize: "0.8rem" }}>{o.id}</code></td>
                       <td>{o.customerName || "—"}<br /><small style={{ color: "var(--text-muted)" }}>{o.customerEmail || ""}</small></td>
-                      <td>${o.totalUsd.toFixed(2)}</td>
+                      <td style={{ whiteSpace: "nowrap" }}>{money(o.totalUsd)}</td>
                       <td>{o.items.length} item(s)</td>
                       <td>{o.paymentMethod || "—"}</td>
                       <td style={{ whiteSpace: "nowrap" }}>{new Date(o.date).toLocaleDateString()}</td>
@@ -182,14 +239,14 @@ export default function AdminOrdersPage() {
                 <div><strong>Status:</strong> <span className={`badge ${STATUS_BADGE[viewing.status] || "badge-inactive"}`}>{viewing.status}</span></div>
                 {viewing.trackingNumber && <div><strong>Tracking:</strong> {viewing.carrier ? `${viewing.carrier} · ` : ""}{viewing.trackingNumber}</div>}
                 <div><strong>Payment Method:</strong> {viewing.paymentMethod || "—"}</div>
-                <div><strong>Subtotal:</strong> ${viewing.subtotalUsd.toFixed(2)}</div>
-                {viewing.discountUsd > 0 && <div><strong>Discount:</strong> −${viewing.discountUsd.toFixed(2)} {viewing.couponCode && `(${viewing.couponCode})`}</div>}
-                <div><strong>Shipping:</strong> ${viewing.shippingUsd.toFixed(2)}</div>
-                <div><strong>Total:</strong> ${viewing.totalUsd.toFixed(2)}</div>
+                <div><strong>Subtotal:</strong> {money(viewing.subtotalUsd)}</div>
+                {viewing.discountUsd > 0 && <div><strong>Discount:</strong> −{money(viewing.discountUsd)} {viewing.couponCode && `(${viewing.couponCode})`}</div>}
+                <div><strong>Shipping:</strong> {money(viewing.shippingUsd)}</div>
+                <div><strong>Total:</strong> {money(viewing.totalUsd)}</div>
                 <div>
                   <strong>Items:</strong><br />
                   {viewing.items.map((i, idx) => (
-                    <span key={idx}>• {i.name} × {i.qty} — ${(i.priceUsd * i.qty).toFixed(2)}<br /></span>
+                    <span key={idx}>• {i.name} × {i.qty} — {money(i.priceUsd * i.qty)}<br /></span>
                   ))}
                 </div>
                 <div>
@@ -206,6 +263,7 @@ export default function AdminOrdersPage() {
               </div>
             </div>
             <div className="modal-footer">
+              <button className="btn btn-danger" style={{ marginRight: "auto" }} onClick={() => setConfirming([viewing])}>Delete</button>
               <a className="btn btn-ghost" href={`/admin/invoice/${viewing.id}`} target="_blank" rel="noopener noreferrer">🖨 Invoice</a>
               <button className="btn btn-outline" onClick={() => openUpdate(viewing)}>Update order</button>
               <button className="btn btn-ghost" onClick={() => setViewing(null)}>Close</button>
@@ -256,6 +314,39 @@ export default function AdminOrdersPage() {
             <div className="modal-footer">
               <button className="btn btn-ghost" onClick={() => setUpdating(null)}>Cancel</button>
               <button className="btn btn-primary" onClick={saveUpdate} disabled={saving}>{saving ? "Saving…" : "Save update"}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirming && (
+        <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && !deleting && setConfirming(null)}>
+          <div className="modal" style={{ maxWidth: 460 }} role="alertdialog" aria-labelledby="delete-orders-title">
+            <div className="modal-header">
+              <span className="modal-title" id="delete-orders-title">
+                Delete {confirming.length === 1 ? "this order" : `${confirming.length} orders`}?
+              </span>
+              <button className="modal-close" onClick={() => setConfirming(null)} disabled={deleting}>✕</button>
+            </div>
+            <div className="modal-body" style={{ display: "grid", gap: 12, fontSize: "0.9rem" }}>
+              <p>
+                This permanently removes {confirming.length === 1 ? <><code>{confirming[0].id}</code> ({confirming[0].customerName || "no name"})</> : "the selected orders"},
+                including the customer details and tracking history. <strong>It can&apos;t be undone.</strong>
+              </p>
+              <p>
+                {restockCount > 0
+                  ? confirming.length === 1
+                    ? "It hasn't shipped yet, so its items will go back into stock."
+                    : `${restockCount} of these haven't shipped yet, so their items will go back into stock.`
+                  : "Stock levels won't change (shipped, completed and cancelled orders don't hold stock)."}
+              </p>
+              <p style={{ color: "var(--text-muted)" }}>To keep a record instead, set the order to Cancelled. Consider exporting first if you need it for your accounts.</p>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={() => setConfirming(null)} disabled={deleting}>Keep</button>
+              <button className="btn btn-danger" onClick={confirmDelete} disabled={deleting}>
+                {deleting ? "Deleting…" : `Delete permanently`}
+              </button>
             </div>
           </div>
         </div>

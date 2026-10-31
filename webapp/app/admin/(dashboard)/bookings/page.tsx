@@ -6,11 +6,13 @@ import { useAdminToast } from "@/components/admin/useAdminToast";
 import { ExportButton } from "@/components/admin/ExportButton";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import type { BookingDTO } from "@/lib/types";
+import { useAdminCurrency } from "@/components/admin/AdminCurrency";
 
 const PAGE_SIZE = 20;
 
 export default function AdminBookingsPage() {
   const { showToast, ToastEl } = useAdminToast();
+  const { money } = useAdminCurrency();
   const [bookings, setBookings] = useState<BookingDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -128,7 +130,7 @@ export default function AdminBookingsPage() {
                 <div><strong>Name:</strong> {viewing.firstName} {viewing.lastName}</div>
                 <div><strong>Birth Name:</strong> {viewing.birthName}</div>
                 <div><strong>Date of Birth:</strong> {viewing.dateOfBirth}</div>
-                <div><strong>Package:</strong> {viewing.packageSelected || "—"} {viewing.packagePriceUsd ? `($${viewing.packagePriceUsd})` : ""}</div>
+                <div><strong>Package:</strong> {viewing.packageSelected || "—"} {viewing.packagePriceUsd ? `(${money(viewing.packagePriceUsd)})` : ""}</div>
                 <div><strong>Timezone:</strong> {viewing.timezone || "—"}</div>
                 <div><strong>Session Date:</strong> {viewing.sessionDate || "Written report"}</div>
                 <div><strong>Reading Focus:</strong> {viewing.readingFocus || "Not specified"}</div>
