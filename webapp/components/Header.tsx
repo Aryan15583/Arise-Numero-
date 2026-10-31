@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
 import { useWishlist } from "./WishlistContext";
 import type { CurrencyCode } from "@/lib/currency";
 import { AnnouncementBar } from "./AnnouncementBar";
 import { Icon } from "./Icon";
+import { MobileMenu } from "./MobileMenu";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -27,6 +28,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
   const { currency, setCurrency } = useCurrency();
   const { ids: wishlistIds } = useWishlist();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
@@ -104,7 +106,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
                 <Icon name={searchOpen ? "close" : "search"} />
               </button>
 
-              <Link href="/wishlist" className="cart-btn" aria-label={`Wishlist, ${wishlistIds.length} saved`}>
+              <Link href="/wishlist" className="cart-btn header-wishlist" aria-label={`Wishlist, ${wishlistIds.length} saved`}>
                 <Icon name="heart" />
                 {wishlistIds.length > 0 && <span className="cart-count">{wishlistIds.length}</span>}
               </Link>
@@ -115,8 +117,8 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
               </Link>
 
               <button
-                className="mobile-menu-btn"
-                aria-label={mobileOpen ? "Close mobile menu" : "Open mobile menu"}
+                className={`mobile-menu-btn ${mobileOpen ? "is-open" : ""}`}
+                aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-nav"
                 onClick={() => setMobileOpen((v) => !v)}
@@ -146,33 +148,11 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
         </form>
       )}
 
-      {variant !== "checkout" && (
-        <nav id="mobile-nav" className="mobile-nav" role="navigation" aria-label="Mobile navigation" hidden={!mobileOpen}>
-          <form className="mobile-nav-search" role="search" onSubmit={submitSearch}>
-            <label htmlFor="mobile-search-input" className="sr-only">Search bracelets</label>
-            <input
-              id="mobile-search-input"
-              type="search"
-              className="form-input"
-              placeholder="Search bracelets…"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              maxLength={80}
-            />
-            <button type="submit" className="btn btn-primary btn-sm">Search</button>
-          </form>
-          <ul className="mobile-nav-list" role="list">
-            {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="nav-link" onClick={() => setMobileOpen(false)}>
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      )}
     </header>
+    {/* Outside <header>: its backdrop blur would otherwise trap the fixed panel. */}
+    {variant !== "checkout" && (
+      <MobileMenu open={mobileOpen} onClose={closeMobile} links={NAV_LINKS} isActive={isActive} />
+    )}
     </>
   );
 }
