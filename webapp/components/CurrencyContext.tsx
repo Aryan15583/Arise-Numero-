@@ -48,7 +48,8 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
 
   // `override` covers browsers where localStorage is unavailable, so choosing a currency still works.
   const [override, setOverride] = useState<CurrencyCode | null>(null);
-  const [detected, setDetected] = useState<CurrencyCode>("USD");
+  // ₹ INR unless the visitor's country says otherwise (most customers are in India).
+  const [detected, setDetected] = useState<CurrencyCode>("INR");
   const currency = override ?? saved ?? detected;
 
   // Rates start from the static defaults so the page renders immediately;
@@ -81,7 +82,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     if (hasSaved) return;
     // Best-effort auto-detect. Prefer our own /api/geo (country from the host/CDN
     // headers — no third party sees the visitor's IP); if there's no such header,
-    // fall back to a browser-side geo-IP lookup. Silently stays on USD on failure.
+    // fall back to a browser-side geo-IP lookup. Silently stays on INR on failure.
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
     fetch("/api/geo", { signal: controller.signal })
@@ -93,10 +94,10 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
         }
         return fetch("https://ipapi.co/json/", { signal: controller.signal })
           .then((r) => r.json())
-          .then((geo) => setDetected(COUNTRY_CURRENCY[geo.country_code] || "USD"));
+          .then((geo) => geo?.country_code && setDetected(COUNTRY_CURRENCY[geo.country_code] || "USD"));
       })
       .catch(() => {
-        /* stay on USD */
+        /* stay on INR */
       })
       .finally(() => clearTimeout(timeout));
     return () => {

@@ -39,6 +39,8 @@ type Ctx = {
   money: (usd: number) => string;
   /** The same USD amount in a specific currency. */
   moneyIn: (usd: number, c: string) => string;
+  /** How many units of a currency one US dollar buys. */
+  rateOf: (c: string) => number;
 };
 
 const AdminCurrencyContext = createContext<Ctx | null>(null);
@@ -113,6 +115,7 @@ export function AdminCurrencyProvider({ children }: { children: React.ReactNode 
       updatedAt: fx.updatedAt,
       moneyIn,
       money: (usd) => moneyIn(usd, currency),
+      rateOf: (c) => fx.rates[c] ?? 1,
     };
   }, [currency, fx, setCurrency]);
 
@@ -126,12 +129,12 @@ export function useAdminCurrency(): Ctx {
 }
 
 /** The currency picker shown in the admin sidebar: every currency we have a rate for. */
-export function AdminCurrencyPicker() {
+export function AdminCurrencyPicker({ variant = "sidebar" }: { variant?: "sidebar" | "toolbar" }) {
   const { currency, setCurrency, available, storeCurrencies, live } = useAdminCurrency();
   const others = available.filter((c) => !storeCurrencies.includes(c));
   return (
-    <label className="admin-currency">
-      <span>Show prices in</span>
+    <label className={variant === "toolbar" ? "admin-currency admin-currency--toolbar" : "admin-currency"}>
+      <span>{variant === "toolbar" ? "Currency" : "Show prices in"}</span>
       <select className="form-input" value={currency} onChange={(e) => setCurrency(e.target.value)}>
         <optgroup label="Shop currencies">
           {storeCurrencies.map((c) => <option key={c} value={c}>{c} — {currencyName(c)}</option>)}
@@ -142,7 +145,7 @@ export function AdminCurrencyPicker() {
           </optgroup>
         )}
       </select>
-      {!live && <small>Live rates unavailable; showing shop currencies.</small>}
+      {!live && variant === "sidebar" && <small>Live rates unavailable; showing shop currencies.</small>}
     </label>
   );
 }
@@ -156,6 +159,80 @@ export function AllCurrencies({ usd }: { usd: number }) {
       {list.map((c) => (
         <span key={c} className={c === currency ? "is-current" : ""}>{moneyIn(usd, c)}</span>
       ))}
+    </span>
+  );
+}
+
+/**
+ * A compact "₹ INR ▾" button. Clicking it opens a searchable list of every
+ * currency; choosing one switches the whole admin panel.
+ */
+export function CurrencyMenu() {
+  const { currency, setCurrency, available, storeCurrencies } = useAdminCurrency();
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const q = query.trim().toLowerCase();
+  const matches = available.filter((c) => !q || c.toLowerCase().includes(q) || currencyName(c).toLowerCase().includes(q));
+  const symbol = formatterFor(currency).formatToParts(0).find((p) => p.type === "currency")?.value ?? currency;
+
+  function choose(c: string) {
+    setCurrency(c);
+    setOpen(false);
+    setQuery("");
+  }
+
+  return (
+    <span className="currency-menu">
+      <button
+        type="button"
+        className="currency-menu-btn"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        title="Change currency"
+        onClick={() => setOpen((v) => !v)}
+      >
+        <strong>{symbol}</strong> {currency} <span aria-hidden="true">▾</span>
+      </button>
+      {open && (
+        <>
+          <span className="currency-menu-backdrop" onClick={() => setOpen(false)} />
+          <span className="currency-menu-pop" role="dialog" aria-label="Choose currency">
+            <span className="currency-menu-title">Show prices in</span>
+            <input
+              autoFocus
+              className="form-input"
+              placeholder="Search currency…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && matches[0] && choose(matches[0])}
+            />
+            <span className="currency-menu-list" role="listbox" aria-label="Currencies">
+              {matches.map((c, i) => (
+                <button
+                  type="button"
+                  key={c}
+                  role="option"
+                  aria-selected={c === currency}
+                  className={`currency-menu-item ${c === currency ? "is-current" : ""} ${!q && i === storeCurrencies.length ? "is-first-other" : ""}`}
+                  onClick={() => choose(c)}
+                >
+                  <span>{c}</span>
+                  <span>{currencyName(c)}</span>
+                </button>
+              ))}
+              {matches.length === 0 && <span className="currency-menu-empty">No match</span>}
+            </span>
+          </span>
+        </>
+      )}
     </span>
   );
 }

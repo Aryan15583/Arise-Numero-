@@ -7,7 +7,7 @@ import { AdminPagination } from "@/components/admin/AdminPagination";
 import { ProductImageManager } from "@/components/admin/ProductImageManager";
 import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
 import type { ProductDTO } from "@/lib/types";
-import { AllCurrencies, useAdminCurrency } from "@/components/admin/AdminCurrency";
+import { AllCurrencies, CurrencyMenu, useAdminCurrency } from "@/components/admin/AdminCurrency";
 import { SelectAllCell, SelectCell, useBulkDelete } from "@/components/admin/BulkDelete";
 
 const BEAD_SIZES = ["", "4mm", "6mm", "8mm", "10mm", "12mm"];
@@ -22,8 +22,14 @@ type FormState = {
   category: string;
   productType: string;
   beadSize: string;
+  // Prices are stored in USD. The form shows and accepts them in the admin's
+  // chosen currency (₹ by default); priceUsd follows whatever is typed, and an
+  // untouched price keeps its exact stored value.
   priceUsd: string;
   originalPriceUsd: string;
+  priceText: string;
+  originalText: string;
+  entryCurrency: string;
   stock: string;
   lowStockThreshold: string;
   badge: string;
@@ -45,6 +51,9 @@ function emptyForm(defaultCategory: string): FormState {
     beadSize: "8mm",
     priceUsd: "",
     originalPriceUsd: "",
+    priceText: "",
+    originalText: "",
+    entryCurrency: "USD",
     stock: "",
     lowStockThreshold: "5",
     badge: "",
@@ -59,7 +68,8 @@ function emptyForm(defaultCategory: string): FormState {
 
 export default function AdminProductsPage() {
   const { showToast, ToastEl } = useAdminToast();
-  const { money, currency } = useAdminCurrency();
+  const { money, currency, rateOf } = useAdminCurrency();
+  const toText = (usd: number) => String(Math.round(usd * rateOf(currency) * 100) / 100);
   const [products, setProducts] = useState<ProductDTO[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -102,7 +112,7 @@ export default function AdminProductsPage() {
 
   function openAdd() {
     setEditingId(null);
-    setForm(emptyForm(categories[0]?.slug || ""));
+    setForm({ ...emptyForm(categories[0]?.slug || ""), entryCurrency: currency });
     setModalOpen(true);
   }
 
@@ -116,6 +126,9 @@ export default function AdminProductsPage() {
       beadSize: p.beadSize || "",
       priceUsd: String(p.priceUsd),
       originalPriceUsd: p.originalPriceUsd !== null ? String(p.originalPriceUsd) : "",
+      priceText: p.priceUsd > 0 ? toText(p.priceUsd) : "",
+      originalText: p.originalPriceUsd !== null ? toText(p.originalPriceUsd) : "",
+      entryCurrency: currency,
       stock: String(p.stock),
       lowStockThreshold: String(p.lowStockThreshold),
       badge: p.badge || "",
@@ -208,6 +221,7 @@ export default function AdminProductsPage() {
         </div>
         <div className="page-actions">
           {del.bar}
+          <CurrencyMenu />
           <button className="btn btn-primary" onClick={openAdd}>+ Add Product</button>
         </div>
       </div>
@@ -247,7 +261,7 @@ export default function AdminProductsPage() {
         <div className="table-wrap">
           <table>
             <thead>
-              <tr><SelectAllCell bulk={del.bulk} /><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price ({currency})</th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
+              <tr><SelectAllCell bulk={del.bulk} /><th>Image</th><th>Name</th><th>Type / Stone</th><th>Price <CurrencyMenu /></th><th>Stock</th><th>Status</th><th>Featured</th><th>Actions</th></tr>
             </thead>
             <tbody>
               {products.length === 0 ? (
@@ -329,13 +343,25 @@ export default function AdminProductsPage() {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Price (USD) *</label>
-                  <input type="number" step="0.01" min="0" className="form-input" value={form.priceUsd} onChange={(e) => setForm((f) => ({ ...f, priceUsd: e.target.value }))} placeholder="24.99" />
+                  <label className="form-label">Price ({form.entryCurrency}) *</label>
+                  <input
+                    type="number" step="0.01" min="0" className="form-input" value={form.priceText} placeholder={form.entryCurrency === "INR" ? "1499" : "24.99"}
+                    onChange={(e) => {
+                      const text = e.target.value;
+                      setForm((f) => ({ ...f, priceText: text, priceUsd: text ? String(parseFloat(text) / rateOf(f.entryCurrency)) : "" }));
+                    }}
+                  />
                   {parseFloat(form.priceUsd) > 0 && <span className="form-hint">= <AllCurrencies usd={parseFloat(form.priceUsd)} /></span>}
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Original Price (USD)</label>
-                  <input type="number" step="0.01" min="0" className="form-input" value={form.originalPriceUsd} onChange={(e) => setForm((f) => ({ ...f, originalPriceUsd: e.target.value }))} placeholder="Leave blank if no sale" />
+                  <label className="form-label">Original Price ({form.entryCurrency})</label>
+                  <input
+                    type="number" step="0.01" min="0" className="form-input" value={form.originalText} placeholder="Leave blank if no sale"
+                    onChange={(e) => {
+                      const text = e.target.value;
+                      setForm((f) => ({ ...f, originalText: text, originalPriceUsd: text ? String(parseFloat(text) / rateOf(f.entryCurrency)) : "" }));
+                    }}
+                  />
                   {parseFloat(form.originalPriceUsd) > 0 && <span className="form-hint">= <AllCurrencies usd={parseFloat(form.originalPriceUsd)} /></span>}
                 </div>
                 <div className="form-group">
