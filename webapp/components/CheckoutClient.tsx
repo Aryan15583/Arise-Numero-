@@ -421,7 +421,7 @@ export function CheckoutClient() {
           <label className="checkbox-label">
             <input type="checkbox" checked={termsAgree} onChange={(e) => setTermsAgree(e.target.checked)} />
             <span className="checkbox-text">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and{" "}
-            <Link href="/privacy" target="_blank">Privacy Policy</Link> <span className="required">*</span></span>
+            <Link href="/privacy" target="_blank">Privacy Policy</Link>, and confirm I am 18 or older <span className="required">*</span></span>
           </label>
         </div>
 

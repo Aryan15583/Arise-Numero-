@@ -48,7 +48,7 @@ export default function TermsPage() {
             <p>Please read these Terms of Service carefully before using the Arise Numero website or placing an order. By accessing our website or purchasing our products or services, you agree to be bound by these Terms.</p>
 
             <section id="acceptance"><h2>1. Acceptance of Terms</h2>
-              <p>By using our website, you confirm that you are at least 18 years of age (or the legal age of majority in your jurisdiction) and agree to these Terms and our <Link href="/privacy">Privacy Policy</Link>.</p>
+              <p>By using our website, you confirm that you are at least 18 years of age (or the legal age of majority in your jurisdiction) and agree to these Terms and our <Link href="/privacy">Privacy Policy</Link>. A numerology reading for someone under 18 must be booked by their parent or legal guardian, who consents to their details being used for that reading.</p>
             </section>
 
             <section id="products"><h2>2. Products &amp; Services</h2>
@@ -93,7 +93,7 @@ export default function TermsPage() {
             <section id="contact-terms"><h2>11. Contact</h2>
               <address>
                 <strong>Arise Numero</strong><br />
-                Email: <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a><br />
+                Email: <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a><br />
                 Address: Mumbai, Maharashtra, India
               </address>
             </section>

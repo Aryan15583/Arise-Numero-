@@ -10,7 +10,6 @@ type Results = { lifePath: number; expression: number; soulUrge: number; birthda
 export function NumerologyCalculator() {
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
-  const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [results, setResults] = useState<Results | null>(null);
@@ -57,13 +56,7 @@ export function NumerologyCalculator() {
           <div className="form-group">
             <label className="form-label" htmlFor="num-dob">Date of Birth <span className="required">*</span></label>
             <input type="date" id="num-dob" className="form-input" value={dob} onChange={(e) => setDob(e.target.value)} />
-            <p className="form-hint">Your date of birth is used to calculate your Life Path number.</p>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="num-email">Email Address <span className="optional-label">(optional)</span></label>
-            <input type="email" id="num-email" className="form-input" placeholder="your@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <p className="form-hint">Optional. We do not share your email with third parties. See our <Link href="/privacy">Privacy Policy</Link>.</p>
+            <p className="form-hint">Your date of birth is used to calculate your Life Path number. Your details stay in your browser: nothing is sent to us or saved.</p>
           </div>
 
           <div className="form-group">

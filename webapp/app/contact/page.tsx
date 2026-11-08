@@ -75,7 +75,7 @@ export default async function ContactPage({ searchParams }: { searchParams: Prom
               <ul className="contact-info-list" role="list">
                 <li>
                   <span className="contact-info-icon"><Icon name="mail" size={26} /></span>
-                  <div><strong>Email</strong><a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a></div>
+                  <div><strong>Email</strong><a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a></div>
                 </li>
                 <li>
                   <span className="contact-info-icon"><Icon name="clock" size={26} /></span>

@@ -70,7 +70,7 @@ export function NewsletterForm() {
         className="newsletter-hp"
       />
       {state === "error" && <p className="newsletter-error" role="alert">{message}</p>}
-      <p className="newsletter-fineprint">New collections &amp; numerology tips. Unsubscribe any time.</p>
+      <p className="newsletter-fineprint">New collections &amp; numerology tips. 18+ only. Unsubscribe any time.</p>
     </form>
   );
 }

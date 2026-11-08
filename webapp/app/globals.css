@@ -4058,3 +4058,7 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .mnav-panel, .mnav-backdrop, .mnav-links li { transition: none; }
 }
+
+/* Booking: shown when the date of birth is under 18 (DPDP Act guardian consent). */
+.guardian-consent { margin: var(--space-3) 0; padding: var(--space-4) var(--space-5); border: 1px solid color-mix(in srgb, var(--brand-gold) 45%, transparent); border-left: 3px solid var(--brand-gold); border-radius: 4px; background: color-mix(in srgb, var(--brand-gold) 8%, var(--bg-surface)); }
+.guardian-consent p { margin: 0 0 var(--space-3); font-size: 0.92rem; color: var(--text-body); line-height: 1.6; }

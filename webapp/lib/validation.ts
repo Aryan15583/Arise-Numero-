@@ -43,6 +43,8 @@ export const bookingCreateSchema = z.object({
   sessionDate: z.string().max(30).optional().nullable(),
   readingFocus: z.union([z.array(z.string()), z.string()]).optional().nullable(),
   additionalNotes: z.string().max(2000).optional().nullable(),
+  /** Required when the date of birth is under 18 (DPDP Act: parent/guardian consent). */
+  guardianConsent: z.boolean().optional(),
 });
 
 export const contactCreateSchema = z.object({

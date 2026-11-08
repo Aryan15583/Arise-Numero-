@@ -59,7 +59,7 @@ export default function ReturnsPage() {
 
             <section id="how-to-return"><h2>2. How to Return</h2>
               <ol className="numbered-list">
-                <li><strong>Contact us</strong> within 14 days of delivery at <a href="mailto:returns@arisenumero.com">returns@arisenumero.com</a> with your order number and reason for return</li>
+                <li><strong>Contact us</strong> within 14 days of delivery at <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a> with your order number and reason for return</li>
                 <li><strong>Receive your return authorisation</strong> — we&apos;ll confirm your return is eligible and provide a return address</li>
                 <li><strong>Pack securely</strong> — use the original packaging if possible</li>
                 <li><strong>Ship the item</strong> — use a tracked shipping method</li>
@@ -106,14 +106,14 @@ export default function ReturnsPage() {
             </section>
 
             <section id="lost-damaged"><h2>8. Lost or Damaged Orders</h2>
-              <p>If your order arrives damaged, please photograph the damage immediately and contact us at <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a> within 48 hours of delivery. We will arrange a replacement or full refund.</p>
+              <p>If your order arrives damaged, please photograph the damage immediately and contact us at <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a> within 48 hours of delivery. We will arrange a replacement or full refund.</p>
             </section>
 
             <section id="contact-returns"><h2>9. Contact</h2>
               <address>
                 <strong>Arise Numero — Returns &amp; Shipping</strong><br />
-                Email: <a href="mailto:returns@arisenumero.com">returns@arisenumero.com</a><br />
-                General enquiries: <a href="mailto:hello@arisenumero.com">hello@arisenumero.com</a>
+                Email: <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a><br />
+                General enquiries: <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a>
               </address>
             </section>
           </article>
