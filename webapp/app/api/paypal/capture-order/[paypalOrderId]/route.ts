@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { serializeOrder } from "@/lib/serialize";
 import { finalizeOrderAsPaid } from "@/lib/order-fulfillment";
 import { recordOrderEvent } from "@/lib/order-events";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
+import { logAudit } from "@/lib/audit";
+import { notifyAdmin, escapeHtml } from "@/lib/email";
 
 const PAYPAL_MODE = process.env.PAYPAL_MODE === "live" ? "live" : "sandbox";
 const PAYPAL_BASE = PAYPAL_MODE === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -22,21 +24,28 @@ async function getAccessToken() {
   return data.access_token as string;
 }
 
+// Only what the checkout page needs: never echo the customer's personal details.
+function publicResult(order: { id: string; totalUsd: number; status: string }) {
+  return { order: { id: order.id, totalUsd: order.totalUsd, status: order.status } };
+}
+
 export async function POST(req: NextRequest, { params }: { params: Promise<{ paypalOrderId: string }> }) {
+  const ip = getClientIp(req);
+  if (!rateLimit(ip, "paypal-capture", 20, 60_000)) {
+    return NextResponse.json({ error: "Too many requests. Please try again shortly." }, { status: 429 });
+  }
+
   const { paypalOrderId } = await params;
+  if (!/^[A-Z0-9]{8,40}$/i.test(paypalOrderId)) {
+    return NextResponse.json({ error: "No matching order found for this payment." }, { status: 404 });
+  }
+
   try {
     const orderRow = await prisma.order.findFirst({ where: { paymentReference: paypalOrderId } });
     if (!orderRow) return NextResponse.json({ error: "No matching order found for this payment." }, { status: 404 });
 
-    // Idempotency: a flaky network can make the client retry this call
-    // after a capture that actually succeeded. PayPal rejects a second
-    // capture of the same order, which — before this check existed — made
-    // this route incorrectly flip an already-paid order's status back to
-    // "failed" and double-decrement stock. If we've already recorded this
-    // as paid, just hand back the existing order instead of hitting PayPal
-    // again.
     if (["paid", "shipped", "completed"].includes(orderRow.status)) {
-      return NextResponse.json({ order: serializeOrder(orderRow), payerName: null, payerEmail: null });
+      return NextResponse.json(publicResult(orderRow));
     }
 
     const accessToken = await getAccessToken();
@@ -53,17 +62,28 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pay
       return NextResponse.json({ error: "Payment was not completed." }, { status: 402 });
     }
 
-    const updated = await finalizeOrderAsPaid(orderRow.id);
+    // Never trust that the right amount was paid: compare what PayPal actually
+    // captured with the total we calculated on the server.
+    const captured = capData?.purchase_units?.[0]?.payments?.captures?.[0]?.amount;
+    const amountOk =
+      captured?.currency_code === "USD" && Math.abs(Number(captured?.value) - orderRow.totalUsd) < 0.01;
+    if (!amountOk) {
+      await recordOrderEvent(orderRow.id, "pending", "Payment amount did not match the order total. Needs review");
+      await logAudit("order.payment_mismatch", `Order ${orderRow.id}: expected USD ${orderRow.totalUsd.toFixed(2)}, PayPal captured ${captured?.currency_code} ${captured?.value}`, ip);
+      await notifyAdmin(
+        `Payment mismatch on order ${orderRow.id}`,
+        `<p>PayPal captured <strong>${escapeHtml(String(captured?.currency_code))} ${escapeHtml(String(captured?.value))}</strong> but the order total is <strong>USD ${orderRow.totalUsd.toFixed(2)}</strong>. The order was NOT marked paid. Please check it in PayPal and the admin panel.</p>`
+      );
+      return NextResponse.json(
+        { error: "We couldn't confirm your payment amount. Please contact us with your order reference." },
+        { status: 402 }
+      );
+    }
 
-    const payer = capData.payer || {};
-    return NextResponse.json({
-      order: updated,
-      payerName: payer.name ? `${payer.name.given_name || ""} ${payer.name.surname || ""}`.trim() : null,
-      payerEmail: payer.email_address || null,
-    });
+    const updated = await finalizeOrderAsPaid(orderRow.id);
+    return NextResponse.json(publicResult(updated ?? orderRow));
   } catch (err) {
     console.error("capture-order error:", err);
-    const message = err instanceof Error ? err.message : "Could not capture payment.";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: "Could not confirm the payment. Please try again." }, { status: 502 });
   }
 }

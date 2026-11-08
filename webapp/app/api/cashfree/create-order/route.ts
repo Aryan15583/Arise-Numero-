@@ -7,17 +7,7 @@ import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { checkCoupon } from "@/lib/coupons";
 import { recordOrderEvent } from "@/lib/order-events";
 import type { ResolvedCartLine } from "@/lib/types";
-
-function computeTotals(items: ResolvedCartLine[], discountPercent: number, shippingMethod: string, config: { standardShippingUsd: number; expressShippingUsd: number; freeShippingThresholdUsd: number }) {
-  const subtotal = items.reduce((sum, i) => sum + i.priceUsd * i.qty, 0);
-  const discount = +(subtotal * (discountPercent / 100)).toFixed(2);
-  const afterDiscount = subtotal - discount;
-  let shipping = shippingMethod === "express" ? config.expressShippingUsd : config.standardShippingUsd;
-  if (afterDiscount === 0) shipping = 0;
-  else if (shippingMethod !== "express" && afterDiscount >= config.freeShippingThresholdUsd) shipping = 0;
-  const total = +(afterDiscount + shipping).toFixed(2);
-  return { subtotal: +subtotal.toFixed(2), discount, shipping, total };
-}
+import { computeOrderTotals } from "@/lib/pricing";
 
 // PUBLIC: start a Cashfree payment session (UPI / GPay / Mastercard / Visa /
 // netbanking / wallets — all through Cashfree's hosted checkout).
@@ -67,7 +57,7 @@ export async function POST(req: NextRequest) {
   }
 
   const config = await getSiteConfig();
-  const { subtotal, discount, shipping: shippingCost, total } = computeTotals(
+  const { subtotal, discount, shipping: shippingCost, total } = computeOrderTotals(
     resolved,
     discountPercent,
     shippingMethod || "standard",
@@ -116,7 +106,8 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     await prisma.order.update({ where: { id: order.id }, data: { status: "failed" } });
     await recordOrderEvent(order.id, "failed", "Could not start payment");
-    const message = err instanceof Error ? err.message : "Could not start Cashfree checkout.";
-    return NextResponse.json({ error: message }, { status: 502 });
+    // Log the provider's error for us; show the customer a plain message.
+    console.error("Cashfree create-order failed:", err);
+    return NextResponse.json({ error: "Could not start the payment. Please try again." }, { status: 502 });
   }
 }

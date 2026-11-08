@@ -6,6 +6,7 @@ import { serializeProduct } from "@/lib/serialize";
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const row = await prisma.product.findUnique({ where: { id } });
-  if (!row) return NextResponse.json({ error: "Product not found." }, { status: 404 });
+  // Hidden (inactive) products 404 here just like their product pages do.
+  if (!row || !row.active) return NextResponse.json({ error: "Product not found." }, { status: 404 });
   return NextResponse.json(serializeProduct(row));
 }

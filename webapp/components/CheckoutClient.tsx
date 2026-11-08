@@ -403,6 +403,7 @@ export function CheckoutClient() {
                 buildPayload={() => ({
                   items: items.map((i) => ({ id: i.id, qty: i.qty })),
                   couponCode,
+                  shippingMethod,
                   customer: { name: `${firstName} ${lastName}`.trim(), email, phone },
                   shipping: { firstName, lastName, address1, address2, city, state, postalCode, country },
                 })}

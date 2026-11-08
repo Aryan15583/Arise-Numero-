@@ -19,9 +19,28 @@ setInterval(() => {
   }
 }, 5 * 60 * 1000).unref();
 
+/**
+ * The visitor's IP, read in a way they can't fake (rate limits and the login
+ * lockout are keyed on it, so a forgeable value would let anyone bypass them).
+ *
+ * - On Vercel, x-real-ip / x-forwarded-for are written by Vercel's edge and any
+ *   value the visitor sent is overwritten, so they're trustworthy.
+ * - Elsewhere (e.g. Render, or behind another proxy) the visitor controls the
+ *   START of x-forwarded-for; each proxy appends the address it saw at the END.
+ *   So we take the LAST entry: the one added by our own hosting proxy.
+ */
 export function getClientIp(req: Request): string {
   const forwarded = req.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
+  if (process.env.VERCEL) {
+    const realIp = req.headers.get("x-real-ip");
+    if (realIp) return realIp.trim();
+    if (forwarded) return forwarded.split(",")[0].trim();
+    return "unknown";
+  }
+  if (forwarded) {
+    const hops = forwarded.split(",").map((s) => s.trim()).filter(Boolean);
+    if (hops.length > 0) return hops[hops.length - 1];
+  }
   return req.headers.get("x-real-ip") || "unknown";
 }
 

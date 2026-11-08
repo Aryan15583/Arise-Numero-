@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { checkCoupon } from "@/lib/coupons";
 import { recordOrderEvent } from "@/lib/order-events";
-import type { CartLine, ResolvedCartLine, ShippingAddress } from "@/lib/types";
+import type { ResolvedCartLine } from "@/lib/types";
+import { computeOrderTotals } from "@/lib/pricing";
+import { getSiteConfig } from "@/lib/site-config";
+import { paypalCreateOrderSchema, formatZodError } from "@/lib/validation";
+import { getClientIp, rateLimit } from "@/lib/rate-limit";
 
 const PAYPAL_MODE = process.env.PAYPAL_MODE === "live" ? "live" : "sandbox";
 const PAYPAL_BASE = PAYPAL_MODE === "live" ? "https://api-m.paypal.com" : "https://api-m.sandbox.paypal.com";
@@ -23,25 +27,21 @@ async function getAccessToken() {
   return data.access_token as string;
 }
 
-function computeTotals(items: ResolvedCartLine[], discountPercent: number) {
-  const subtotal = items.reduce((sum, i) => sum + i.priceUsd * i.qty, 0);
-  const discount = +(subtotal * (discountPercent / 100)).toFixed(2);
-  const total = +(subtotal - discount).toFixed(2);
-  return { subtotal: +subtotal.toFixed(2), discount, total };
-}
-
-// PUBLIC: start a real PayPal payment. Only works once PAYPAL_CLIENT_ID /
-// PAYPAL_SECRET are set in .env — see .env.example. Prices are always
-// re-resolved from our own database, never trusted from the client.
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json().catch(() => ({}));
-    const items: CartLine[] = Array.isArray(body.items) ? body.items : [];
-    const couponCode: string | undefined = body.couponCode ? String(body.couponCode).toUpperCase() : undefined;
-    const customer = body.customer || {};
-    const shipping: Partial<ShippingAddress> = body.shipping || {};
+  const ip = getClientIp(req);
+  if (!rateLimit(ip, "paypal-create-order", 10, 60_000)) {
+    return NextResponse.json({ error: "Too many requests. Please try again shortly." }, { status: 429 });
+  }
 
-    if (items.length === 0) return NextResponse.json({ error: "Cart is empty." }, { status: 400 });
+  // Same validation as the other checkout routes: nothing unchecked reaches the database.
+  const parsed = paypalCreateOrderSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: formatZodError(parsed.error) }, { status: 400 });
+  }
+  const { items, shippingMethod, customer, shipping } = parsed.data;
+  const couponCode = parsed.data.couponCode ? parsed.data.couponCode.toUpperCase() : undefined;
+
+  try {
 
     const resolved: ResolvedCartLine[] = [];
     for (const line of items) {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
       if (p.priceUsd <= 0) {
         return NextResponse.json({ error: `"${p.name}" is price on request — please contact us to order it.` }, { status: 400 });
       }
-      const qty = Math.max(1, Math.min(10, Math.round(Number(line.qty) || 1)));
+      const qty = line.qty;
       if (p.stock < qty) {
         return NextResponse.json({ error: `Only ${p.stock} left in stock for "${p.name}".` }, { status: 409 });
       }
@@ -70,7 +70,15 @@ export async function POST(req: NextRequest) {
       appliedCouponCode = coupon.code;
     }
 
-    const { subtotal, discount, total } = computeTotals(resolved, discountPercent);
+    // Shipping is included here exactly as on the other checkout routes, so
+    // PayPal charges the same total the checkout page showed.
+    const config = await getSiteConfig();
+    const { subtotal, discount, shipping: shippingCost, total } = computeOrderTotals(
+      resolved,
+      discountPercent,
+      shippingMethod || "standard",
+      config
+    );
     if (total <= 0) return NextResponse.json({ error: "Order total must be greater than zero." }, { status: 400 });
 
     const accessToken = await getAccessToken();
@@ -95,15 +103,15 @@ export async function POST(req: NextRequest) {
     // the buyer abandons payment on PayPal's page.
     const created = await prisma.order.create({
       data: {
-        customerName: customer.name || null,
-        customerEmail: customer.email || null,
+        customerName: customer.name,
+        customerEmail: customer.email,
         customerPhone: customer.phone || null,
         shippingAddress: JSON.stringify(shipping || {}),
         items: JSON.stringify(resolved),
         subtotalUsd: subtotal,
         discountUsd: discount,
         couponCode: appliedCouponCode,
-        shippingUsd: 0,
+        shippingUsd: shippingCost,
         totalUsd: total,
         status: "pending",
         paymentMethod: "paypal",
@@ -115,7 +123,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ paypalOrderId: ppOrder.id, totalUsd: total });
   } catch (err) {
     console.error("create-order error:", err);
-    const message = err instanceof Error ? err.message : "Could not create order.";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: "Could not start PayPal checkout. Please try again." }, { status: 502 });
   }
 }

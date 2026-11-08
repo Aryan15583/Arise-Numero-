@@ -267,6 +267,20 @@ export const cashfreeCreateOrderSchema = z.object({
   shipping: shippingAddressSchema.partial().optional(),
 });
 
+// ── PayPal ────────────────────────────────────────────────────────────────
+
+export const paypalCreateOrderSchema = z.object({
+  items: z.array(cartLineSchema).min(1).max(50),
+  couponCode: z.string().max(40).optional().nullable(),
+  shippingMethod: z.enum(["standard", "express"]).optional(),
+  customer: z.object({
+    name: z.string().min(1).max(200),
+    email: z.string().email(),
+    phone: z.string().max(30).optional(),
+  }),
+  shipping: shippingAddressSchema.partial().optional(),
+});
+
 // ── Helper ────────────────────────────────────────────────────────────────
 
 export function formatZodError(error: z.ZodError): string {
