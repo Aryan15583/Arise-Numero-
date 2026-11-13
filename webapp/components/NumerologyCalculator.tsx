@@ -40,7 +40,6 @@ export function NumerologyCalculator() {
           <div className="form-group">
             <label className="form-label" htmlFor="num-name">
               Full Birth Name <span className="required">*</span>
-              <button type="button" className="info-tooltip-btn" title="The full name given at birth is used to calculate your Expression number">ℹ</button>
             </label>
             <input
               type="text"

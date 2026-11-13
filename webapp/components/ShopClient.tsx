@@ -6,6 +6,7 @@ import type { ProductDTO } from "@/lib/types";
 import { isPriced } from "@/lib/pricing";
 import { PRODUCT_TYPES, getProductType } from "@/lib/product-types";
 import { Icon } from "./Icon";
+import { useCurrency } from "./CurrencyContext";
 
 const SIZE_OPTIONS = ["6mm", "8mm", "10mm"];
 
@@ -24,6 +25,7 @@ export function ShopClient({
   initialType?: string;
   categories: { slug: string; name: string }[];
 }) {
+  const { format } = useCurrency();
   const [productType, setProductType] = useState<string>(getProductType(initialType) ? initialType! : "all");
   const [crystal, setCrystal] = useState<string>(
     initialCat && categories.some((c) => c.slug === initialCat) ? initialCat : "all"
@@ -142,10 +144,10 @@ export function ShopClient({
             <legend className="filter-label">Price Range</legend>
             {[
               { value: "all", label: "All Prices" },
-              { value: "0-20", label: "Under $20" },
-              { value: "20-30", label: "$20 – $30" },
-              { value: "30-50", label: "$30 – $50" },
-              { value: "50+", label: "Over $50" },
+              { value: "0-20", label: `Under ${format(20)}` },
+              { value: "20-30", label: `${format(20)} – ${format(30)}` },
+              { value: "30-50", label: `${format(30)} – ${format(50)}` },
+              { value: "50+", label: `Over ${format(50)}` },
             ].map((opt) => (
               <label className="filter-option" key={opt.value}>
                 <input type="radio" name="price" checked={price === opt.value} onChange={() => setPrice(opt.value)} />

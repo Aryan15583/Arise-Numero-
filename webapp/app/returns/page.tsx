@@ -73,7 +73,7 @@ export default function ReturnsPage() {
 
             <section id="non-returnable"><h2>4. Non-Returnable Items</h2>
               <ul>
-                <li>Customised or personalised bracelets</li>
+                <li>Customised or personalised pieces</li>
                 <li>Numerology readings once delivered (digital personalised service)</li>
                 <li>Items returned after the 14-day window</li>
               </ul>

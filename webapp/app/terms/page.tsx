@@ -52,7 +52,7 @@ export default function TermsPage() {
             </section>
 
             <section id="products"><h2>2. Products &amp; Services</h2>
-              <p>Arise Numero offers handcrafted crystal bracelets made with authentic gemstones, plus a free numerology calculator and paid personalised readings. Product images are representative; colour, texture, and pattern may vary from the images shown as natural characteristics of authentic crystals, not defects.</p>
+              <p>Arise Numero offers natural crystals and gemstone jewellery (bracelets, pendants, rings, crystal pencils, Rudraksha and more), plus a free numerology calculator and paid personalised readings. Product images are representative; colour, texture, and pattern may vary from the images shown as natural characteristics of authentic crystals, not defects.</p>
             </section>
 
             <section id="numerology-terms"><h2>3. Numerology Services — Important Disclaimer</h2>

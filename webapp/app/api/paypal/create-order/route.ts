@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         intent: "CAPTURE",
         purchase_units: [
-          { description: "Arise Numero — Crystal Bracelet Order", amount: { currency_code: "USD", value: total.toFixed(2) } },
+          { description: "Arise Numero — Crystal Order", amount: { currency_code: "USD", value: total.toFixed(2) } },
         ],
         application_context: { brand_name: "Arise Numero", shipping_preference: "NO_SHIPPING", user_action: "PAY_NOW" },
       }),

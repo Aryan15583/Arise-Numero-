@@ -120,7 +120,10 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     (usd: number) => {
       const rate = ratesRef.current[currency] ?? 1;
       const symbol = DEFAULT_RATES[currency].symbol;
-      return `${symbol}${(usd * rate).toFixed(2)}`;
+      // Grouped digits (₹1,49,999 in Indian style, $1,499 elsewhere); whole amounts drop ".00".
+      const amount = Math.round(usd * rate * 100) / 100;
+      const digits = Number.isInteger(amount) ? 0 : 2;
+      return `${symbol}${amount.toLocaleString(currency === "INR" ? "en-IN" : "en-US", { minimumFractionDigits: digits, maximumFractionDigits: 2 })}`;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currency, ratesRef.current]

@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: "Are the crystals genuine?",
-    a: "Yes. Every bracelet uses certified authentic gemstones. Natural colour and texture variations are expected and are signs of authenticity.",
+    a: "Yes. Every piece uses genuine natural gemstones. Natural colour and texture variations are expected and are signs of authenticity.",
   },
   {
     q: "Can I return my order?",

@@ -59,7 +59,7 @@ export default async function AboutPage() {
                 original vision: accessible, authentic, and meaningful.
               </p>
               <p>
-                We are not a mass-production factory. Every bracelet is assembled by hand. Every numerology reading
+                We are not a mass-production factory. Every piece is chosen and checked by hand. Every numerology reading
                 is written individually. We believe quality and intention matter — in the products we make and the
                 services we offer.
               </p>
@@ -96,8 +96,8 @@ export default async function AboutPage() {
               </div>
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="globe" size={26} /></div>
-                <h3>Accessibility</h3>
-                <p>We ship to 50+ countries, support multiple currencies, and offer a free numerology calculator to all visitors.</p>
+                <h3>Worldwide Reach</h3>
+                <p>We ship worldwide, show prices in your currency, and offer a free numerology calculator to every visitor.</p>
               </div>
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="lock" size={26} /></div>
@@ -121,7 +121,7 @@ export default async function AboutPage() {
             </div>
             <div className="cert-grid" role="list">
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="lock" size={26} /></span><h3>SSL / TLS Encrypted</h3><p>All communication between your browser and our servers is encrypted via HTTPS.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="card" size={26} /></span><h3>Card Data Never Stored</h3><p>We don&apos;t collect raw card numbers on this site. Pay by Cash on Delivery, Bank Transfer, or PayPal.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="card" size={26} /></span><h3>Card Data Never Stored</h3><p>We don&apos;t collect raw card numbers on this site. Payments are handled by secure payment partners, or pay by Cash on Delivery or bank transfer.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>GDPR Compliant</h3><p>We meet European Union data protection standards. Cookie consent, data access rights, and full transparency.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>CCPA Compliant</h3><p>California residents can request, delete, or opt out of data sale at any time.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="accessibility" size={26} /></span><h3>WCAG 2.1 AA</h3><p>Designed to meet Web Content Accessibility Guidelines 2.1 Level AA.</p></div>

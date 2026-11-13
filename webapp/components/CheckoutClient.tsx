@@ -223,6 +223,7 @@ export function CheckoutClient() {
 
   return (
     <div className="container checkout-layout">
+      <h1 className="sr-only">Checkout</h1>
       <div className="checkout-form-wrap">
         {errors.length > 0 && (
           <div className="form-error" role="alert">
@@ -311,7 +312,7 @@ export function CheckoutClient() {
                 <span className="shipping-name">Standard Shipping</span>
                 <span className="shipping-time">7–14 business days · free over {format(shippingRates.freeThreshold)}</span>
               </div>
-              <span className="shipping-cost">{format(shippingRates.standard)}</span>
+              <span className="shipping-cost">{afterDiscount >= shippingRates.freeThreshold ? "Free" : format(shippingRates.standard)}</span>
             </label>
             <label className="shipping-option">
               <input type="radio" name="shipping_method" checked={shippingMethod === "express"} onChange={() => setShippingMethod("express")} />
