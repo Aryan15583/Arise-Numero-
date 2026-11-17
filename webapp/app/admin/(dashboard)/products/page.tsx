@@ -217,7 +217,7 @@ export default function AdminProductsPage() {
       <div className="page-header">
         <div>
           <div className="page-title">Products</div>
-          <div className="page-subtitle">Manage your crystal bracelet catalogue</div>
+          <div className="page-subtitle">Manage your crystal and jewellery catalogue</div>
         </div>
         <div className="page-actions">
           {del.bar}

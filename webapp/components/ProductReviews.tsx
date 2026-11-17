@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { starString } from "@/lib/stars";
 
@@ -198,6 +199,7 @@ export function ProductReviews({ productId }: { productId: string }) {
               </p>
             )}
             <div style={{ display: "flex", gap: 8 }}>
+              <p className="form-hint">By submitting you confirm you are 18 or older. Your name is shown with your review; your email is never published (see our <Link href="/privacy">Privacy Policy</Link>).</p>
               <button type="submit" className="btn btn-primary" disabled={submitting}>{submitting ? "Submitting…" : "Submit Review"}</button>
               <button type="button" className="btn btn-ghost" onClick={() => setShowForm(false)}>Cancel</button>
             </div>

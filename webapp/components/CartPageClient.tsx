@@ -15,10 +15,13 @@ export function CartPageClient() {
   const [discountPercent, setDiscountPercent] = useState(0);
   const [applying, setApplying] = useState(false);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(50);
+  const [onlinePay, setOnlinePay] = useState({ cashfree: false, paypal: false });
 
   useEffect(() => {
     getPublicConfig().then((d) => {
-      if (d) setFreeShippingThreshold(d.freeShippingThresholdUsd ?? 50);
+      if (!d) return;
+      setFreeShippingThreshold(d.freeShippingThresholdUsd ?? 50);
+      setOnlinePay({ cashfree: d.cashfreeEnabled, paypal: !!d.paypalClientId });
     });
   }, []);
 
@@ -84,7 +87,7 @@ export function CartPageClient() {
           <div className="cart-empty">
             <div className="cart-empty-icon"><Icon name="bag" size={40} /></div>
             <h2>Your cart is empty</h2>
-            <p>Add some beautiful crystal bracelets to get started.</p>
+            <p>Add some beautiful crystals to get started.</p>
             <Link href="/shop" className="btn btn-primary" aria-label="Continue shopping for bracelets">
               Continue Shopping
             </Link>
@@ -116,8 +119,7 @@ export function CartPageClient() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={item.imageUrl || "/assets/placeholder.svg"} alt="" className="cart-item-img" width={80} height={80} />
                   <div className="cart-item-info">
-                    <span className="cart-item-name">{item.name}</span>
-                    <span className="cart-item-meta">Crystal Bracelet</span>
+                    <Link href={`/product/${encodeURIComponent(item.id)}`} className="cart-item-name">{item.name}</Link>
                   </div>
                 </td>
                 <td className="cart-price">{format(item.priceUsd)}</td>
@@ -238,7 +240,7 @@ export function CartPageClient() {
           <Icon name="lock" size={16} /> Proceed to Checkout
         </Link>
 
-        <p className="security-note"><Icon name="lock" size={16} /> Pay by Cash on Delivery, Bank Transfer, UPI/GPay, or card (Visa/Mastercard) at checkout.</p>
+        <p className="security-note"><Icon name="lock" size={16} /> Pay by {[onlinePay.cashfree && "UPI or card", onlinePay.paypal && "PayPal", "Cash on Delivery", "bank transfer"].filter(Boolean).join(", ").replace(/, ([^,]*)$/, " or $1")} at checkout.</p>
 
         <p className="cart-policy-note">
           <Link href="/returns">14-day returns</Link> · <Link href="/returns#shipping">Shipping info</Link>

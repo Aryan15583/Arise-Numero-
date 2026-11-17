@@ -33,8 +33,8 @@ export function WishlistClient() {
       <div className="cart-empty">
         <div className="cart-empty-icon"><Icon name="heart" size={40} /></div>
         <h2>Your wishlist is empty</h2>
-        <p>Tap the heart on any bracelet to save it here for later.</p>
-        <Link href="/shop" className="btn btn-primary">Browse Bracelets</Link>
+        <p>Tap the heart on any piece to save it here for later.</p>
+        <Link href="/shop" className="btn btn-primary">Browse the Shop</Link>
       </div>
     );
   }

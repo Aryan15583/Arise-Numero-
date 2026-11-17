@@ -54,7 +54,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
 
         {variant === "checkout" ? (
           <div className="checkout-header-secure" aria-label="Secure checkout indicator">
-            <Icon name="lock" size={16} /> Secure Checkout
+            <Icon name="lock" size={16} /> <span className="checkout-secure-text">Secure Checkout</span>
           </div>
         ) : (
           <nav className="main-nav" role="navigation" aria-label="Main navigation">
@@ -113,7 +113,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
 
               <Link href="/cart" className="cart-btn" aria-label={`Shopping cart, ${totalCount} items`}>
                 <Icon name="bag" />
-                <span className="cart-count" aria-live="polite">{totalCount}</span>
+                {totalCount > 0 && <span className="cart-count">{totalCount}</span>}
               </Link>
 
               <button
@@ -132,12 +132,12 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
 
       {variant !== "checkout" && searchOpen && (
         <form id="header-search" className="header-search container" role="search" onSubmit={submitSearch}>
-          <label htmlFor="header-search-input" className="sr-only">Search bracelets</label>
+          <label htmlFor="header-search-input" className="sr-only">Search the shop</label>
           <input
             id="header-search-input"
             type="search"
             className="form-input"
-            placeholder="Search bracelets — amethyst, protection, 8mm…"
+            placeholder="Search crystals, pendants, rings, rudraksha…"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}

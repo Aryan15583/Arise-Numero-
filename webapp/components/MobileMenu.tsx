@@ -34,14 +34,35 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
 
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
+    // Lock both <html> and <body>: iPhones keep scrolling the page if only body is locked.
+    const html = document.documentElement;
+    const previous = [html.style.overflow, document.body.style.overflow];
+    html.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const opener = document.activeElement as HTMLElement | null;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") return onClose();
+      if (e.key !== "Tab" || !panelRef.current) return;
+      // Keep keyboard focus inside the menu while it's open.
+      const focusable = [...panelRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled]), input")];
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener("keydown", onKey);
     panelRef.current?.querySelector<HTMLElement>(".mnav-close")?.focus();
     return () => {
-      document.body.style.overflow = previous;
+      html.style.overflow = previous[0];
+      document.body.style.overflow = previous[1];
       window.removeEventListener("keydown", onKey);
+      opener?.focus?.();
     };
   }, [open, onClose]);
 

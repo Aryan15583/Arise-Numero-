@@ -44,7 +44,7 @@ function RevenueChart({ days }: { days: DashboardData["revenueByDay"] }) {
             <rect x={x} y={0} width={bar} height={H} rx={3} fill="var(--border)" opacity={0.35} />
             {h > 0 && <rect x={x} y={H - h} width={bar} height={h} rx={3} fill="var(--gold)" />}
             {i % 2 === 0 && (
-              <text x={x + bar / 2} y={H + 17} textAnchor="middle" fontSize={10} fill="var(--text-muted)">{d.date.slice(5)}</text>
+              <text x={x + bar / 2} y={H + 17} textAnchor="middle" fontSize={11} fill="var(--text-muted)">{d.date.slice(5)}</text>
             )}
           </g>
         );
@@ -105,7 +105,7 @@ export default function AdminDashboardPage() {
           <Link href="/admin/orders" className="btn btn-ghost btn-sm">View Orders</Link>
         </div>
         <div className="card-body">
-          <RevenueChart days={data.revenueByDay} />
+          <div className="revenue-chart-wrap"><RevenueChart days={data.revenueByDay} /></div>
           <p className="page-subtitle" style={{ marginTop: 12 }}>
             Paid, shipped and completed orders only ·{" "}
             <Link href="/admin/orders">{data.pendingOrdersCount} pending order{data.pendingOrdersCount === 1 ? "" : "s"}</Link>{" "}

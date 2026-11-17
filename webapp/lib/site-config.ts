@@ -20,7 +20,7 @@ export type SiteConfig = {
 
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
   storeName: "Arise Numero",
-  supportEmail: "hello@arisenumero.com",
+  supportEmail: "arisenumero@gmail.com",
   standardShippingUsd: 5.99,
   expressShippingUsd: 14.99,
   freeShippingThresholdUsd: 50,

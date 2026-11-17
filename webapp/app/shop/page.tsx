@@ -121,7 +121,8 @@ export default async function ShopPage({ searchParams }: Props) {
           })()}
         </div>
 
-        <ShopClient initialProducts={products} initialCat={cat} initialQuery={q} initialType={productType?.slug} categories={categories} />
+        {/* Keyed by the URL filters so following a shop link (menu, search, chips) starts fresh instead of keeping the previous filters. */}
+        <ShopClient key={`${productType?.slug ?? ""}|${cat ?? ""}|${q ?? ""}`} initialProducts={products} initialCat={cat} initialQuery={q} initialType={productType?.slug} categories={categories} />
       </main>
       <Footer />
     </>

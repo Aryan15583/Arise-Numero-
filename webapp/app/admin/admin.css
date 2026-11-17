@@ -9,19 +9,19 @@
 .admin-scope {
   --gold:        #b8975a;
   --gold-light:  #d4b47a;
-  --gold-dark:   #8a6e3e;
+  --gold-dark:   #7d6233; /* text-safe gold (WCAG AA on white) */
   --deep:        #1a1228;
   --bg:          #f5f1eb;
   --bg-card:     #ffffff;
   --bg-sidebar:  #1a1228;
   --text:        #1a1228;
-  --text-muted:  #7a6e8a;
+  --text-muted:  #6e6280;
   --border:      #ddd6cc;
   --success:     #2d7a4f;
   --success-bg:  #edf7f2;
   --error:       #c0392b;
   --error-bg:    #fdf0ee;
-  --warning:     #b8600a;
+  --warning:     #9a4f06;
   --warning-bg:  #fef3e8;
   --radius:      10px;
   --shadow:      0 2px 12px rgba(0,0,0,0.08);
@@ -38,7 +38,8 @@
     --bg:         #0e0b16;
     --bg-card:    #1a1228;
     --text:       #f0eafa;
-    --text-muted: #8a7a9a;
+    --text-muted: #9a8bab;
+    --gold-dark:  #d4b47a; /* gold text needs the light shade on dark cards */
     --border:     #3a2d50;
     --bg-sidebar: #070510;
   }
@@ -147,7 +148,7 @@
 
 .admin-scope .sidebar-nav { flex: 1; padding: 16px 0; }
 
-.admin-scope .nav-section-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(240,234,250,0.3); padding: 16px 20px 6px; }
+.admin-scope .nav-section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(240,234,250,0.55); padding: 16px 20px 6px; }
 
 .admin-scope .nav-item {
   display: flex;
@@ -170,7 +171,7 @@
 
 .admin-scope .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
 
-.admin-scope .nav-badge { margin-left: auto; background: var(--gold); color: #1a1228; font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+.admin-scope .nav-badge { margin-left: auto; background: var(--gold); color: #1a1228; font-size: 0.72rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
 
 .admin-scope .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
 
@@ -225,7 +226,7 @@
 /* ── BADGES ──────────────────────────────────────── */
 .admin-scope .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; }
 .admin-scope .badge-active   { background: var(--success-bg); color: var(--success); }
-.admin-scope .badge-inactive { background: #f0f0f0; color: #888; }
+.admin-scope .badge-inactive { background: #f0f0f0; color: #5c5c5c; }
 .admin-scope .badge-low      { background: var(--warning-bg); color: var(--warning); }
 .admin-scope .badge-out      { background: var(--error-bg); color: var(--error); }
 .admin-scope .badge-gold     { background: rgba(184,151,90,0.15); color: var(--gold-dark); }
@@ -234,7 +235,7 @@
 .admin-scope .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; border: 1.5px solid transparent; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; text-decoration: none; }
 .admin-scope .btn-primary { background: var(--gold); color: #1a1228; border-color: var(--gold); }
 .admin-scope .btn-primary:hover { background: var(--gold-light); }
-.admin-scope .btn-outline { background: transparent; color: var(--gold); border-color: var(--gold); }
+.admin-scope .btn-outline { background: transparent; color: var(--gold-dark); border-color: var(--gold); }
 .admin-scope .btn-outline:hover { background: var(--gold); color: #1a1228; }
 .admin-scope .btn-ghost { background: transparent; color: var(--text-muted); border-color: var(--border); }
 .admin-scope .btn-ghost:hover { background: var(--border); color: var(--text); }
@@ -427,3 +428,11 @@
 .admin-scope .currency-menu-item.is-current { background: rgba(184, 151, 90, 0.2); }
 .admin-scope .currency-menu-item.is-first-other { border-top: 1px solid var(--border); border-radius: 0 0 8px 8px; margin-top: 4px; padding-top: 12px; }
 .admin-scope .currency-menu-empty { padding: 10px; color: var(--text-muted); font-size: 0.85rem; }
+
+@media (prefers-color-scheme: dark) {
+  .admin-scope .btn-outline-danger { color: #ff8a7a; border-color: #ff8a7a; }
+  .admin-scope .btn-outline-danger:hover { background: rgba(255, 138, 122, 0.12); }
+}
+/* Revenue chart keeps a readable size on phones (scrolls sideways in its card). */
+.admin-scope .revenue-chart-wrap { overflow-x: auto; }
+.admin-scope .revenue-chart-wrap svg { min-width: 560px; }

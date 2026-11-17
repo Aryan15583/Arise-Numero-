@@ -19,7 +19,7 @@ const GROUPS: { title: string; items: Faq[] }[] = [
     items: [
       {
         q: "Do you ship worldwide?",
-        a: "Yes. We ship handcrafted bracelets to customers worldwide. Delivery times and shipping costs depend on your region.",
+        a: "Yes. We ship our crystals and jewellery worldwide. Delivery times and shipping costs depend on your region.",
         link: { href: "/returns#shipping", label: "See shipping rates and delivery times" },
       },
       {
@@ -63,14 +63,14 @@ const GROUPS: { title: string; items: Faq[] }[] = [
     items: [
       {
         q: "Are your crystals genuine?",
-        a: "Yes. Every bracelet is made with genuine, ethically sourced gemstones. Because they are natural stones, colour, texture and pattern vary slightly from bead to bead and from the photos — that's a mark of authenticity, not a defect.",
+        a: "Yes. Every piece is made with genuine, ethically sourced gemstones. Because they are natural stones, colour, texture and pattern vary slightly from bead to bead and from the photos — that's a mark of authenticity, not a defect.",
       },
       {
         q: "What size will fit me?",
         a: "Our bracelets are made on a strong elastic cord and fit wrists of roughly 15–20 cm. On the product page you can choose S (15–16 cm), M (17–18 cm) or L (19–20 cm).",
       },
       {
-        q: "How should I care for my bracelet?",
+        q: "How should I care for my crystals and jewellery?",
         a: "Keep it out of prolonged direct sunlight, remove it before swimming, bathing or using chemical cleaners, clean it gently with a soft dry cloth, and store it in its gift box or a soft pouch. Avoid over-stretching the cord.",
       },
     ],

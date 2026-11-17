@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCurrency } from "./CurrencyContext";
 import { Icon } from "./Icon";
 import { READING_PACKAGES as PACKAGES, getReadingPackage } from "@/lib/reading-packages";
+import { ageFromDob, ADULT_AGE } from "@/lib/age";
 
 const TIMEZONES = [
   { value: "Asia/Kolkata", label: "India Standard Time (IST, UTC+5:30)" },
@@ -46,6 +47,8 @@ export function BookingClient({ initialPackage }: { initialPackage?: string }) {
   const [email, setEmail] = useState("");
   const [birthName, setBirthName] = useState("");
   const [dob, setDob] = useState("");
+  const age = dob ? ageFromDob(dob) : null;
+  const minor = age !== null && age < ADULT_AGE;
   // Default to the visitor's own timezone (when it's one we offer) until they pick another. Read via
   // useSyncExternalStore so the server renders "" and the client fills it in without a hydration mismatch.
   const detectedTz = useSyncExternalStore(noSubscribe, browserTimezone, () => "");
@@ -58,6 +61,7 @@ export function BookingClient({ initialPackage }: { initialPackage?: string }) {
   const [privacyConsent, setPrivacyConsent] = useState(false);
   const [disclaimerConsent, setDisclaimerConsent] = useState(false);
   const [termsConsent, setTermsConsent] = useState(false);
+  const [guardianConsent, setGuardianConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -79,6 +83,8 @@ export function BookingClient({ initialPackage }: { initialPackage?: string }) {
     if (!selectedPackage) return setError("Please select a reading package above.");
     if (!firstName || !lastName || !email || !birthName || !dob) return setError("Please fill in all required fields.");
     if (isPremium && !sessionDate) return setError("Please select a preferred session date for your live session.");
+    if (age === null) return setError("Please enter a valid date of birth.");
+    if (minor && !guardianConsent) return setError("For someone under 18, a parent or guardian must confirm their consent below.");
     if (!privacyConsent || !disclaimerConsent || !termsConsent) return setError("Please accept all required consents.");
 
     setError(null);
@@ -98,6 +104,7 @@ export function BookingClient({ initialPackage }: { initialPackage?: string }) {
           sessionDate: isPremium ? sessionDate : null,
           readingFocus: focus,
           additionalNotes: notes,
+          guardianConsent: minor ? guardianConsent : undefined,
         }),
       });
       if (!res.ok) {
@@ -258,8 +265,17 @@ export function BookingClient({ initialPackage }: { initialPackage?: string }) {
                   </label>
                   <label className="checkbox-label">
                     <input type="checkbox" checked={termsConsent} onChange={(e) => setTermsConsent(e.target.checked)} />
-                    <span className="checkbox-text">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> <span className="required">*</span></span>
+                    <span className="checkbox-text">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link> and confirm I am 18 or older{minor ? " (I am the parent or guardian making this booking)" : ""}. <span className="required">*</span></span>
                   </label>
+                  {minor && (
+                    <div className="guardian-consent" role="note">
+                      <p><strong>This reading is for someone under 18.</strong> Under India&apos;s data protection law, a parent or legal guardian must book it and consent to their child&apos;s name and date of birth being used.</p>
+                      <label className="checkbox-label">
+                        <input type="checkbox" checked={guardianConsent} onChange={(e) => setGuardianConsent(e.target.checked)} />
+                        <span className="checkbox-text">I am this person&apos;s parent or legal guardian and I consent to their details being used only for this reading. <span className="required">*</span></span>
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 {error && <p className="form-error" role="alert">{error}</p>}

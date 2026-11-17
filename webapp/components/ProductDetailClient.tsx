@@ -175,6 +175,7 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
               </fieldset>
               )}
 
+              {!isOut && (
               <div className="quantity-group">
                 <label className="option-label" htmlFor="qty-input">Quantity</label>
                 <div className="quantity-control">
@@ -193,6 +194,7 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
                 </div>
                 <p className="qty-limit" aria-live="polite">Max {maxQty} available</p>
               </div>
+              )}
             </div>
             )}
 

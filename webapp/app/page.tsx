@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { isCashfreeConfigured } from "@/lib/cashfree";
 import { prisma } from "@/lib/db";
 import { serializeProduct } from "@/lib/serialize";
 import { Header } from "@/components/Header";
@@ -117,7 +118,7 @@ export default async function HomePage() {
         <section className="trust-bar" aria-label="Shopping with Arise Numero">
           <div className="container trust-bar-inner">
             <div className="trust-item"><Icon name="lock" /><span>Secure checkout</span></div>
-            <div className="trust-item"><Icon name="card" /><span>UPI, cards &amp; cash on delivery</span></div>
+            <div className="trust-item"><Icon name="card" /><span>{isCashfreeConfigured() ? "UPI, cards & cash on delivery" : "Cash on delivery & bank transfer"}</span></div>
             <div className="trust-item"><Icon name="truck" /><span>Tracked worldwide shipping</span></div>
             <div className="trust-item"><Icon name="returns" /><span>14-day returns</span></div>
             {storeRating && (

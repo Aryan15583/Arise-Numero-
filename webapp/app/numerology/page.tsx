@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Price } from "@/components/Price";
+import { READING_PACKAGES } from "@/lib/reading-packages";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { NumerologyCalculator } from "@/components/NumerologyCalculator";
@@ -85,13 +87,13 @@ export default function NumerologyPage() {
                 Includes all core numbers, personal year forecast, and compatibility insights.
               </p>
               <ul className="reading-includes">
-                <li>✓ Full Core Numbers Report (20+ pages)</li>
-                <li>✓ Personal Year &amp; Monthly Forecast</li>
-                <li>✓ Relationship Compatibility Overview</li>
-                <li>✓ Career &amp; Life Purpose Guidance</li>
-                <li>✓ Delivered within 3–5 business days</li>
+                <li>✓ Life Path, Expression &amp; Soul Urge numbers decoded</li>
+                <li>✓ Personal Year &amp; monthly forecast</li>
+                <li>✓ Relationship compatibility overview</li>
+                <li>✓ Career &amp; life purpose deep dive, with a live session</li>
+                <li>✓ Written PDF report, delivered in 3–7 business days</li>
               </ul>
-              <div className="reading-price-note">From <strong className="reading-price">$49.99</strong></div>
+              <div className="reading-price-note">From <strong className="reading-price"><Price usd={Math.min(...READING_PACKAGES.map((p) => p.price))} /></strong></div>
               <Link href="/booking" className="btn btn-primary btn-lg">Book a Reading →</Link>
             </div>
             <div className="readings-cta-visual" aria-hidden="true">
