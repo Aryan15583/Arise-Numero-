@@ -111,7 +111,7 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
                 {wishlistIds.length > 0 && <span className="cart-count">{wishlistIds.length}</span>}
               </Link>
 
-              <Link href="/cart" className="cart-btn" aria-label={`Shopping cart, ${totalCount} items`}>
+              <Link href="/cart" className="cart-btn header-cart" aria-label={`Shopping cart, ${totalCount} items`}>
                 <Icon name="bag" />
                 {totalCount > 0 && <span className="cart-count">{totalCount}</span>}
               </Link>

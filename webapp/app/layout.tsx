@@ -14,6 +14,7 @@ import { Analytics } from "@/components/Analytics";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { CardTilt } from "@/components/CardTilt";
 import { SmoothScroll } from "@/components/SmoothScroll";
+import { MobileTabBar } from "@/components/MobileTabBar";
 import "lenis/dist/lenis.css";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl, isIndexableSite } from "@/lib/seo";
 
@@ -85,6 +86,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CardTilt />
           <SmoothScroll />
           {children}
+          <MobileTabBar />
           <Analytics />
         </Providers>
       </body>

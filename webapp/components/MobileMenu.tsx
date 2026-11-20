@@ -3,25 +3,37 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
-import { useWishlist } from "./WishlistContext";
 import { Icon } from "./Icon";
 import { EXCHANGE_RATES, type CurrencyCode } from "@/lib/currency";
 import { PRODUCT_TYPES } from "@/lib/product-types";
 import { getSmoothScroll } from "@/lib/smooth-scroll";
+import { thumbnailFor } from "@/lib/product-thumbs";
+import { getSocialLinks } from "@/lib/social";
 
 type NavLink = { href: string; label: string };
 const CURRENCIES = Object.keys(EXCHANGE_RATES) as CurrencyCode[];
+const social = getSocialLinks();
+
+// One photo per category for the menu's category cards.
+const CATEGORY_IMAGES: Record<string, string> = {
+  "pyramid-bracelets": "/assets/products/howlite-pyramid-bracelet.jpg",
+  pendants: "/assets/products/amethyst-pendant.jpg",
+  rings: "/assets/products/amethyst-ring.jpg",
+  pencils: "/assets/products/amethyst-pencil.jpg",
+  anklets: "/assets/products/black-obsidian-anklet.jpg",
+  rudraksha: "/assets/products/4-mukhi-rudraksha.jpg",
+  "bowls-plates": "/assets/products/money-magnet-bowl.jpg",
+  certificates: "/assets/products/authenticity-certificate.jpg",
+};
 
 // The phone menu: a panel that slides in from the right with search, the main
-// pages, shop categories, quick links, currency and a reading call-to-action.
-// Locks page scrolling while open; closes on Esc, a tap outside, or navigating.
+// pages, shop categories, currency, a reading call-to-action and help links.
+// Locks page scrolling while open; closes on Esc, a tap outside, a swipe to the
+// right, or navigating. (Cart and wishlist live in the bottom tab bar.)
 export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; onClose: () => void; links: NavLink[]; isActive: (href: string) => boolean }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { totalCount } = useCart();
-  const { ids: wishlistIds } = useWishlist();
   const { currency, setCurrency } = useCurrency();
   const [query, setQuery] = useState("");
   const panelRef = useRef<HTMLDivElement>(null);
@@ -69,6 +81,35 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
     };
   }, [open, onClose]);
 
+  // Swipe right to close: the panel follows the finger, then closes past 80px.
+  const drag = useRef<{ x: number; y: number; dx: number; axis: "x" | "y" | null } | null>(null);
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    drag.current = { x: t.clientX, y: t.clientY, dx: 0, axis: null };
+  }
+  function onTouchMove(e: React.TouchEvent) {
+    const d = drag.current;
+    const panel = panelRef.current;
+    if (!d || !panel) return;
+    const t = e.touches[0];
+    const dx = t.clientX - d.x;
+    const dy = t.clientY - d.y;
+    if (!d.axis && Math.hypot(dx, dy) > 8) d.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    if (d.axis !== "x") return;
+    d.dx = Math.max(0, dx);
+    panel.style.transition = "none";
+    panel.style.transform = `translateX(${d.dx}px)`;
+  }
+  function onTouchEnd() {
+    const d = drag.current;
+    const panel = panelRef.current;
+    drag.current = null;
+    if (!d || !panel || d.axis !== "x") return;
+    panel.style.transition = "";
+    panel.style.transform = "";
+    if (d.dx > 80) onClose();
+  }
+
   function search(e: React.FormEvent) {
     e.preventDefault();
     const q = query.trim().slice(0, 80);
@@ -79,7 +120,7 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
   return (
     <div className={`mnav ${open ? "is-open" : ""}`} inert={!open} aria-hidden={!open}>
       <div className="mnav-backdrop" onClick={onClose} />
-      <div ref={panelRef} id="mobile-nav" className="mnav-panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div ref={panelRef} id="mobile-nav" className="mnav-panel" role="dialog" aria-modal="true" aria-label="Menu" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} onTouchCancel={onTouchEnd}>
         <div className="mnav-head">
           <Link href="/" className="mnav-brand" onClick={onClose}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -118,32 +159,25 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
         </nav>
 
         <section className="mnav-section" aria-labelledby="mnav-shop-heading">
-          <h2 id="mnav-shop-heading" className="mnav-label">Shop by category</h2>
-          <ul className="mnav-chips" role="list">
-            {PRODUCT_TYPES.filter((t) => t.slug !== "bracelets").map((t) => (
-              <li key={t.slug}>
-                <Link href={`/shop?type=${t.slug}`} onClick={onClose}>{t.name}</Link>
-              </li>
-            ))}
+          <div className="mnav-section-head">
+            <h2 id="mnav-shop-heading" className="mnav-label">Shop by category</h2>
+            <Link href="/shop" className="mnav-see-all" onClick={onClose}>See all</Link>
+          </div>
+          <ul className="mnav-cats" role="list">
+            {PRODUCT_TYPES.filter((t) => CATEGORY_IMAGES[t.slug]).map((t) => {
+              const img = CATEGORY_IMAGES[t.slug];
+              return (
+                <li key={t.slug}>
+                  <Link href={`/shop?type=${t.slug}`} onClick={onClose}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={thumbnailFor(img) ?? img} alt="" width={64} height={64} loading="lazy" decoding="async" />
+                    <span>{t.name}</span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </section>
-
-        <div className="mnav-quick">
-          <Link href="/wishlist" onClick={onClose}>
-            <Icon name="heart" size={20} />
-            <span>Wishlist</span>
-            {wishlistIds.length > 0 && <em>{wishlistIds.length}</em>}
-          </Link>
-          <Link href="/cart" onClick={onClose}>
-            <Icon name="bag" size={20} />
-            <span>Cart</span>
-            {totalCount > 0 && <em>{totalCount}</em>}
-          </Link>
-          <Link href="/track-order" onClick={onClose}>
-            <Icon name="truck" size={20} />
-            <span>Track order</span>
-          </Link>
-        </div>
 
         <section className="mnav-section" aria-labelledby="mnav-currency-heading">
           <h2 id="mnav-currency-heading" className="mnav-label">Currency</h2>
@@ -171,6 +205,21 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
             <Link href="/numerology" className="btn btn-primary" onClick={onClose}>Free Calculator</Link>
             <Link href="/booking" className="btn btn-outline btn-outline--light" onClick={onClose}>Book a Reading</Link>
           </div>
+        </div>
+
+        <div className="mnav-foot">
+          <ul className="mnav-help" role="list">
+            <li><Link href="/track-order" onClick={onClose}><Icon name="truck" size={16} />Track order</Link></li>
+            <li><Link href="/faq" onClick={onClose}>FAQ</Link></li>
+            <li><Link href="/returns" onClick={onClose}>Returns</Link></li>
+            <li><Link href="/contact" onClick={onClose}>Contact</Link></li>
+          </ul>
+          <p className="mnav-contact">
+            <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a>
+            {social.map((l) => (
+              <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer">{l.label}</a>
+            ))}
+          </p>
         </div>
       </div>
     </div>
