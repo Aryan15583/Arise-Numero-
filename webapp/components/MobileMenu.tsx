@@ -9,6 +9,7 @@ import { useWishlist } from "./WishlistContext";
 import { Icon } from "./Icon";
 import { EXCHANGE_RATES, type CurrencyCode } from "@/lib/currency";
 import { PRODUCT_TYPES } from "@/lib/product-types";
+import { getSmoothScroll } from "@/lib/smooth-scroll";
 
 type NavLink = { href: string; label: string };
 const CURRENCIES = Object.keys(EXCHANGE_RATES) as CurrencyCode[];
@@ -39,6 +40,7 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
     const previous = [html.style.overflow, document.body.style.overflow];
     html.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
+    getSmoothScroll()?.stop();
     const opener = document.activeElement as HTMLElement | null;
 
     const onKey = (e: KeyboardEvent) => {
@@ -61,6 +63,7 @@ export function MobileMenu({ open, onClose, links, isActive }: { open: boolean; 
     return () => {
       html.style.overflow = previous[0];
       document.body.style.overflow = previous[1];
+      getSmoothScroll()?.start();
       window.removeEventListener("keydown", onKey);
       opener?.focus?.();
     };

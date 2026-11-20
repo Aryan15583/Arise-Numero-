@@ -13,6 +13,8 @@ import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@/components/Analytics";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { CardTilt } from "@/components/CardTilt";
+import { SmoothScroll } from "@/components/SmoothScroll";
+import "lenis/dist/lenis.css";
 import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_TAGLINE, getSiteUrl, isIndexableSite } from "@/lib/seo";
 
 const defaultTitle = `${SITE_NAME} — ${SITE_TAGLINE}`;
@@ -81,6 +83,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CookieBanner />
           <ScrollReveal />
           <CardTilt />
+          <SmoothScroll />
           {children}
           <Analytics />
         </Providers>

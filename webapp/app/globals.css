@@ -4188,3 +4188,22 @@ html { scroll-behavior: smooth; }
   .footer-inner { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-6); }
   .footer-brand { grid-column: 1 / -1; }
 }
+
+/* =============================================================
+   SMOOTH SCROLL + HERO ENTRANCE
+   ============================================================= */
+/* Lenis drives the gliding scroll; the browser's own smooth scrolling must be off. */
+html.lenis, html.lenis body { scroll-behavior: auto !important; }
+
+/* Hero: badge, heading, text, buttons and trust points fade up one after another. */
+@keyframes hero-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes hero-fade { from { opacity: 0; } to { opacity: 1; } }
+.hero-content > .eyebrow { animation: hero-rise 0.9s cubic-bezier(.2, .7, .2, 1) 0.1s backwards; }
+.hero-content > .hero-title { animation: hero-rise 1s cubic-bezier(.2, .7, .2, 1) 0.25s backwards; }
+.hero-content > .hero-subtitle { animation: hero-rise 1s cubic-bezier(.2, .7, .2, 1) 0.42s backwards; }
+.hero-content > .hero-cta-group { animation: hero-rise 1s cubic-bezier(.2, .7, .2, 1) 0.58s backwards; }
+.hero-content > .hero-trust { animation: hero-rise 1s cubic-bezier(.2, .7, .2, 1) 0.74s backwards; }
+.hero-visual { animation: hero-fade 1.4s ease 0.3s backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-content > *, .hero-visual { animation: none; }
+}
