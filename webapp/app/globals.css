@@ -2588,6 +2588,8 @@ select.form-input {
   line-height: 1.1;
 }
 .stat-label { font-size: 0.8rem; color: var(--text-muted); }
+/* An odd last stat (e.g. no rating yet) spans the row instead of sitting alone. */
+.about-stats .stat-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 .team-grid {
   display: grid;

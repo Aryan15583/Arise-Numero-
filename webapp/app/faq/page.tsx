@@ -63,7 +63,7 @@ const GROUPS: { title: string; items: Faq[] }[] = [
     items: [
       {
         q: "Are your crystals genuine?",
-        a: "Yes. Every piece is made with genuine, ethically sourced gemstones. Because they are natural stones, colour, texture and pattern vary slightly from bead to bead and from the photos — that's a mark of authenticity, not a defect.",
+        a: "Yes. Every piece is made with genuine, natural gemstones. Because they are natural stones, colour, texture and pattern vary slightly from bead to bead and from the photos — that's a mark of authenticity, not a defect.",
       },
       {
         q: "What size will fit me?",
