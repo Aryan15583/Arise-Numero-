@@ -2920,11 +2920,6 @@ select.form-input {
   to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes pulse-stock {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.7; }
@@ -2934,8 +2929,10 @@ select.form-input {
   /* "backwards", not "both": once it finishes the animation lets go entirely.
      A held transform would trap fixed popups inside #main-content instead of
      centring them on the screen. */
-  animation: fadeIn 0.4s ease backwards;
+  animation: m-page 0.45s var(--m-ease-soft, ease) backwards;
 }
+/* After the first load, moving between pages glides a little longer. */
+.m-settled #main-content { animation-duration: 0.75s; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -3579,16 +3576,11 @@ html { scroll-behavior: smooth; }
 .category-tile:hover { box-shadow: 0 24px 50px -24px rgba(124, 77, 153, 0.6); }
 .gallery-main { box-shadow: 0 30px 60px -36px rgba(26, 18, 40, 0.45); }
 
-/* Scroll reveal: sections drift up and fade in (only once JS has started,
-   so nothing stays hidden if scripts are blocked). */
-.js-reveal [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(.2,.7,.2,1); }
-.js-reveal [data-reveal].is-visible { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .hero-title .accent, .hero-frame img { animation: none; }
   .btn-primary::after { display: none; }
-  .js-reveal [data-reveal] { opacity: 1; transform: none; transition: none; }
   .btn:hover, .product-card:hover { transform: none; }
 }
 /* Phones: spaced-capital buttons may wrap instead of widening the page. */
@@ -3680,22 +3672,6 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   .skeleton::after { animation: none; }
   .product-card.is-tilting { transform: none; }
-}
-
-/* Cards in grids rise in as they scroll into view. Pure CSS (scroll-driven
-   animation), so browsers without support simply show them as normal. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    :is(.product-grid, .category-tiles, .values-grid, .testimonial-grid, .how-grid, .features-grid, .cert-grid, .packages-grid) > * {
-      animation: card-rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 55%;
-    }
-  }
-}
-@keyframes card-rise {
-  from { opacity: 0; translate: 0 28px; scale: 0.98; }
-  to { opacity: 1; translate: 0 0; scale: 1; }
 }
 
 /* =============================================================
@@ -4268,3 +4244,42 @@ html.lenis, html.lenis body { scroll-behavior: auto !important; }
   .tabbar-item.is-active { color: var(--brand-gold-light); }
 }
 @media (prefers-reduced-motion: reduce) { .tabbar { transition: none; } }
+
+/* =============================================================
+   MOTION (components/Motion.tsx)
+   Only opacity and translate move, so the graphics chip does the work.
+   ============================================================= */
+:root { --m-ease: cubic-bezier(0.16, 1, 0.3, 1); --m-ease-soft: cubic-bezier(0.22, 1, 0.36, 1); }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* (Scroll reveals and the eyebrow lines drawing out run from Motion.tsx.) */
+
+  /* First load: the header settles into place, piece by piece. */
+  html:not(.m-settled) .site-header .header-inner { animation: m-drop 0.7s var(--m-ease) 0.05s backwards; }
+  html:not(.m-settled) .site-header .logo { animation: m-from-left 0.7s var(--m-ease) 0.15s backwards; }
+  html:not(.m-settled) .site-header .nav-list > li { animation: m-drop-sm 0.6s var(--m-ease) calc(0.2s + var(--n, 0) * 0.05s) backwards; }
+  html:not(.m-settled) .site-header .header-actions > * { animation: m-pop 0.6s var(--m-ease) 0.35s backwards; }
+
+  /* Inner page titles rise in on arrival, one line after another. */
+  .page-hero .container > * { animation: m-rise 1s var(--m-ease) backwards; }
+  .page-hero .container > :nth-child(2) { animation-delay: 0.1s; }
+  .page-hero .container > :nth-child(3) { animation-delay: 0.2s; }
+  .page-hero .container > :nth-child(n + 4) { animation-delay: 0.3s; }
+
+  /* Home hero: the still life drifts gently as you scroll past (where supported). */
+  @supports (animation-timeline: scroll()) {
+    .hero-frame { animation: m-parallax linear both; animation-timeline: scroll(root); animation-range: 0 100vh; }
+  }
+}
+
+@keyframes m-rise { from { opacity: 0; translate: 0 26px; } to { opacity: 1; translate: 0 0; } }
+@keyframes m-page { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+@keyframes m-drop { from { opacity: 0; translate: 0 -12px; } to { opacity: 1; translate: 0 0; } }
+@keyframes m-drop-sm { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: 0 0; } }
+@keyframes m-from-left { from { opacity: 0; translate: -10px 0; } to { opacity: 1; translate: 0 0; } }
+@keyframes m-pop { from { opacity: 0; scale: 0.94; } to { opacity: 1; scale: 1; } }
+@keyframes m-parallax { from { translate: 0 0; } to { translate: 0 56px; } }
+
+/* Hero entrance: same silky curve as the rest. */
+.hero-content > * { animation-timing-function: var(--m-ease) !important; }
+
