@@ -11,7 +11,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { CookieBanner } from "@/components/CookieBanner";
 import { Analytics } from "@/components/Analytics";
-import { ScrollReveal } from "@/components/ScrollReveal";
+import { Motion } from "@/components/Motion";
 import { CardTilt } from "@/components/CardTilt";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { MobileTabBar } from "@/components/MobileTabBar";
@@ -82,7 +82,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <a href="#main-content" className="skip-link">Skip to content</a>
           <CookieBanner />
-          <ScrollReveal />
+          <Motion />
           <CardTilt />
           <SmoothScroll />
           {children}

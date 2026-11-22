@@ -127,7 +127,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="section shop-categories" aria-labelledby="categories-heading">
+        <section className="section shop-categories" aria-labelledby="categories-heading">
           <div className="container">
             <div className="section-header">
               <p className="eyebrow">The Collection</p>
@@ -152,7 +152,7 @@ export default async function HomePage() {
         </section>
 
         {products.length > 0 && (
-          <section data-reveal className="section featured-products" aria-labelledby="featured-heading">
+          <section className="section featured-products" aria-labelledby="featured-heading">
             <div className="container">
               <div className="section-header">
                 <p className="eyebrow">Curated</p>
@@ -173,7 +173,7 @@ export default async function HomePage() {
           </section>
         )}
 
-        <section data-reveal className="section numerology-teaser" aria-labelledby="numerology-heading">
+        <section className="section numerology-teaser" aria-labelledby="numerology-heading">
           <div className="container numerology-teaser-inner">
             <div className="numerology-text">
               <p className="eyebrow eyebrow--light">Free tool</p>
@@ -196,7 +196,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section data-reveal className="section why-us" aria-labelledby="why-heading">
+        <section className="section why-us" aria-labelledby="why-heading">
           <div className="container">
             <div className="section-header">
               <p className="eyebrow">Our promise</p>
@@ -228,7 +228,7 @@ export default async function HomePage() {
         </section>
 
         {testimonials.length > 0 && (
-          <section data-reveal className="section testimonials" aria-labelledby="testimonials-heading">
+          <section className="section testimonials" aria-labelledby="testimonials-heading">
             <div className="container">
               <div className="section-header">
                 <p className="eyebrow">Kind words</p>

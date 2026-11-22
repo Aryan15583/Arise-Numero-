@@ -59,8 +59,8 @@ export function Header({ variant = "default" }: { variant?: "default" | "checkou
         ) : (
           <nav className="main-nav" role="navigation" aria-label="Main navigation">
             <ul className="nav-list" role="list">
-              {NAV_LINKS.map((link) => (
-                <li key={link.href}>
+              {NAV_LINKS.map((link, i) => (
+                <li key={link.href} style={{ "--n": i } as React.CSSProperties}>
                   <Link
                     href={link.href}
                     className={`nav-link ${isActive(link.href) ? "active" : ""}`}
