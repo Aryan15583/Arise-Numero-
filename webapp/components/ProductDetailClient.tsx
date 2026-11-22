@@ -154,7 +154,7 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
                 {type?.beaded && product.beadSize && <div className="spec-row"><dt>Bead Size</dt><dd>{product.beadSize} diameter</dd></div>}
                 {isBracelet && <div className="spec-row"><dt>Wrist Size</dt><dd>Adjustable — fits 15–20cm wrists</dd></div>}
                 {product.productType === "anklets" && <div className="spec-row"><dt>Fit</dt><dd>Adjustable to most ankles</dd></div>}
-                {product.productType !== "certificates" && <div className="spec-row"><dt>Origin</dt><dd>Natural stone, ethically sourced</dd></div>}
+                {product.productType !== "certificates" && <div className="spec-row"><dt>Origin</dt><dd>Natural stone</dd></div>}
                 {isBracelet && <div className="spec-row"><dt>Packaging</dt><dd>Arise Numero gift box included</dd></div>}
               </dl>
             </div>
@@ -284,7 +284,7 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
         {activeTab === "returns" && (
           <div className="tab-panel">
             <h3>Return &amp; Refund Policy</h3>
-            <p>We offer a <strong>14-day return window</strong> on all non-customised products, in compliance with the EU Distance Selling Directive and applicable consumer protection laws.</p>
+            <p>We offer a <strong>14-day return window</strong> on all non-customised products.</p>
             <ul className="info-list">
               <li>Items must be unworn and in original packaging</li>
               <li>Contact us within 14 days of delivery to initiate a return</li>

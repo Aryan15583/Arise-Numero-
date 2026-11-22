@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Privacy Policy",
   description:
-    "Arise Numero Privacy Policy — how we collect, store, and protect your personal data. GDPR and CCPA compliant.",
+    "Arise Numero Privacy Policy — how we collect, store, and protect your personal data, and your rights over it.",
   path: "/privacy",
 });
 
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
               <p className="legal-meta">Last updated: <time dateTime="2026-11-08">8 November 2026</time></p>
             </header>
 
-            <p>This Privacy Policy explains how Arise Numero (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) collects, uses, stores, and protects your personal data when you visit our website or purchase our products and services. We comply with the EU General Data Protection Regulation (GDPR), the UK GDPR, and the California Consumer Privacy Act (CCPA).</p>
+            <p>This Privacy Policy explains how Arise Numero (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) collects, uses, stores, and protects your personal data when you visit our website or purchase our products and services. It is written for India&apos;s Digital Personal Data Protection Act, 2023, and also explains the rights you have under the EU and UK GDPR and the California Consumer Privacy Act (CCPA) where those laws apply to you.</p>
 
             <section id="who-we-are"><h2>1. Who We Are</h2>
               <p><strong>Data Controller:</strong> Arise Numero<br /><strong>Contact:</strong> <a href="mailto:arisenumero@gmail.com">arisenumero@gmail.com</a><br /><strong>Address:</strong> Mumbai, Maharashtra, India</p>

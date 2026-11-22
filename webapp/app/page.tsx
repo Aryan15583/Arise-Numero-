@@ -206,17 +206,17 @@ export default async function HomePage() {
               <div className="feature-card" role="listitem">
                 <span className="feature-icon"><Icon name="gem" size={26} /></span>
                 <h3>100% Authentic Crystals</h3>
-                <p>Every piece uses genuine natural gemstones, ethically sourced with natural colour and texture variations.</p>
+                <p>Every piece uses genuine natural gemstones, each with its own natural colour and texture variations.</p>
               </div>
               <div className="feature-card" role="listitem">
                 <span className="feature-icon"><Icon name="globe" size={26} /></span>
-                <h3>Ships to 50+ Countries</h3>
+                <h3>Ships Worldwide</h3>
                 <p>International shipping with full customs/duties transparency. Tracked parcels to your door.</p>
               </div>
               <div className="feature-card" role="listitem">
                 <span className="feature-icon"><Icon name="returns" size={26} /></span>
                 <h3>14-Day Return Policy</h3>
-                <p>Compliant with EU Distance Selling Directive. No-questions return window on non-customised orders.</p>
+                <p>Changed your mind? Return unworn, non-customised items within 14 days of delivery.</p>
               </div>
               <div className="feature-card" role="listitem">
                 <span className="feature-icon"><Icon name="lock" size={26} /></span>

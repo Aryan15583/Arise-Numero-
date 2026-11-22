@@ -33,7 +33,7 @@ const FAQS = [
   },
   {
     q: "How is my personal data used?",
-    a: "Your data is collected only as needed to process your order or reading and is never sold to third parties. We comply with GDPR and CCPA.",
+    a: "Your data is collected only as needed to process your order or reading and is never sold to third parties. You can ask us to see, correct or delete it at any time — see our Privacy Policy.",
   },
   {
     q: "Which payment methods do you accept?",

@@ -48,25 +48,23 @@ export default async function AboutPage() {
             <div className="about-story-text">
               <h2 id="story-heading" className="section-title">How Arise Numero Began</h2>
               <p>
-                Arise Numero was born in 2019 out of a small workshop and a large passion. Our founder, having spent
-                years studying gemology and numerology across India and Southeast Asia, wanted to create something
-                that combined the tactile beauty of authentic crystals with the introspective depth of numerical
-                wisdom.
+                Arise Numero began with a simple idea: to bring together the tactile beauty of authentic crystals and
+                the introspective depth of numerology, in a way that feels personal rather than mass-produced.
               </p>
               <p>
-                What started as handcrafted bracelets gifted to friends and family quickly grew into an international
-                brand trusted by customers in over 50 countries. Every product we sell is a continuation of that
-                original vision: accessible, authentic, and meaningful.
+                We started with handcrafted gemstone bracelets and have grown into a small collection of crystal
+                jewellery, rudraksha and gifts, alongside personal numerology readings. Every product we offer follows
+                the same vision: accessible, authentic, and meaningful.
               </p>
               <p>
                 We are not a mass-production factory. Every piece is chosen and checked by hand. Every numerology reading
                 is written individually. We believe quality and intention matter — in the products we make and the
                 services we offer.
               </p>
-              <div className="about-stats" aria-label="Arise Numero by the numbers">
-                <div className="stat-item"><span className="stat-num">50+</span><span className="stat-label">Countries Served</span></div>
-                <div className="stat-item"><span className="stat-num">12k+</span><span className="stat-label">Happy Customers</span></div>
-                <div className="stat-item"><span className="stat-num">100%</span><span className="stat-label">Authentic Crystals</span></div>
+              <div className="about-stats" aria-label="Arise Numero at a glance">
+                <div className="stat-item"><span className="stat-num">100%</span><span className="stat-label">Natural Gemstones</span></div>
+                <div className="stat-item"><span className="stat-num">14-day</span><span className="stat-label">Easy Returns</span></div>
+                <div className="stat-item"><span className="stat-num">Free</span><span className="stat-label">Numerology Calculator</span></div>
                 {storeRating && (
                   <div className="stat-item"><span className="stat-num">{storeRating.rating.toFixed(1)}★</span><span className="stat-label">Average Rating</span></div>
                 )}
@@ -82,12 +80,12 @@ export default async function AboutPage() {
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="gem" size={26} /></div>
                 <h3>Authenticity</h3>
-                <p>We source only genuine, certified gemstones. Natural colour variations are celebrated, not hidden.</p>
+                <p>We sell only genuine, natural gemstones, and authenticity certificates are available. Natural colour variations are celebrated, not hidden.</p>
               </div>
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="leaf" size={26} /></div>
-                <h3>Ethical Sourcing</h3>
-                <p>We work exclusively with suppliers who adhere to fair labour practices and responsible mining standards.</p>
+                <h3>Careful Sourcing</h3>
+                <p>We buy from suppliers we know and trust, and check every piece by hand before it reaches you.</p>
               </div>
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="search" size={26} /></div>
@@ -102,12 +100,12 @@ export default async function AboutPage() {
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="lock" size={26} /></div>
                 <h3>Privacy &amp; Security</h3>
-                <p>We handle your personal data with the highest care, complying with GDPR, CCPA, and international standards.</p>
+                <p>We collect only the data we need, never sell it, and you can ask us to see, correct or delete it at any time.</p>
               </div>
               <div className="value-card" role="listitem">
                 <div className="value-icon"><Icon name="accessibility" size={26} /></div>
                 <h3>Inclusivity</h3>
-                <p>Our website is built to WCAG 2.1 AA accessibility standards — everyone can shop and explore with ease.</p>
+                <p>We design our website to be easy for everyone to use, with readable contrast, keyboard navigation and screen-reader support.</p>
               </div>
             </div>
           </div>
@@ -122,10 +120,10 @@ export default async function AboutPage() {
             <div className="cert-grid" role="list">
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="lock" size={26} /></span><h3>SSL / TLS Encrypted</h3><p>All communication between your browser and our servers is encrypted via HTTPS.</p></div>
               <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="card" size={26} /></span><h3>Card Data Never Stored</h3><p>We don&apos;t collect raw card numbers on this site. Payments are handled by secure payment partners, or pay by Cash on Delivery or bank transfer.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>GDPR Compliant</h3><p>We meet European Union data protection standards. Cookie consent, data access rights, and full transparency.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>CCPA Compliant</h3><p>California residents can request, delete, or opt out of data sale at any time.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="accessibility" size={26} /></span><h3>WCAG 2.1 AA</h3><p>Designed to meet Web Content Accessibility Guidelines 2.1 Level AA.</p></div>
-              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="returns" size={26} /></span><h3>EU Distance Selling</h3><p>14-day return window on non-customised products, in compliance with EU consumer law.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>Your Data, Your Choice</h3><p>Optional cookies stay off until you allow them, and you can ask to see, correct or delete your data at any time.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="shield" size={26} /></span><h3>Never Sold</h3><p>We never sell your personal data. It is shared only with the services that deliver your order. See our <Link href="/privacy">Privacy Policy</Link>.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="accessibility" size={26} /></span><h3>Accessible Design</h3><p>Built with accessibility in mind: readable colours, keyboard navigation and screen-reader labels.</p></div>
+              <div className="cert-item" role="listitem"><span className="cert-icon"><Icon name="returns" size={26} /></span><h3>14-Day Returns</h3><p>Return unworn, non-customised items within 14 days of delivery. See our <Link href="/returns">Returns Policy</Link>.</p></div>
             </div>
           </div>
         </section>
