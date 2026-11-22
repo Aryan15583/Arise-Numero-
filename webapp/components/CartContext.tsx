@@ -157,10 +157,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         <div
           role="status"
           aria-live="polite"
+          className="cart-toast"
           style={{
             position: "fixed",
-            bottom: 24,
-            right: 24,
             zIndex: 9999,
             background: "var(--bg-surface)",
             border: "1.5px solid var(--brand-gold)",

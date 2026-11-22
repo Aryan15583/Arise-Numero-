@@ -32,6 +32,8 @@ const PATHS = {
   cookie: <><path d="M20.5 12.5A8.5 8.5 0 1 1 11.5 3.5a3 3 0 0 0 4 4 3 3 0 0 0 5 5z" /><path d="M8.5 9v.01M8 14.5v.01M12.5 13v.01M15 16.5v.01" /></>,
   celebrate: <><path d="M4 20l4.5-12L16 15.5 4 20z" /><path d="M14 4v2M19 9h2M17.5 5.5l1.5-1.5M13 8.5c1.5-1.5 3.5-1.5 4 0" /></>,
   arrowRight: <path d="M5 12h14M13 6l6 6-6 6" />,
+  home: <><path d="M4 10.5L12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1v-9.5z" /></>,
+  grid: <><rect x="4" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" /></>,
 } as const;
 
 export type IconName = keyof typeof PATHS;
