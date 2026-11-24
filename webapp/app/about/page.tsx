@@ -43,11 +43,11 @@ export default async function AboutPage() {
           <div className="container about-story-inner">
             <div className="about-story-img">
               <picture>
-                <source type="image/webp" srcSet="/assets/about/crystal-collection-900.webp 900w, /assets/about/crystal-collection-1672.webp 1672w" sizes="(max-width: 1200px) 100vw, 1200px" />
+                <source type="image/webp" srcSet="/assets/about/crystal-collection-900.webp 900w, /assets/about/crystal-collection-1672.webp 1672w" sizes="(max-width: 860px) 100vw, 480px" />
                 <img
                   src="/assets/about/crystal-collection-1672.jpg"
                   srcSet="/assets/about/crystal-collection-900.jpg 900w, /assets/about/crystal-collection-1672.jpg 1672w"
-                  sizes="(max-width: 1200px) 100vw, 1200px"
+                  sizes="(max-width: 860px) 100vw, 480px"
                   alt="Amethyst, clear quartz, rose quartz and citrine points with polished gemstones and crystal bracelets, set before a numerology wheel"
                   width={1672}
                   height={941}

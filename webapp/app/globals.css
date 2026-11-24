@@ -4367,11 +4367,20 @@ html { scroll-padding-top: 90px; }
 .hero-frame picture { display: contents; }
 .hero-frame img { object-position: 50% 55%; }
 
-/* About: the wide collection photo spans the top of the story, on every screen,
-   with the story in a comfortable reading column beneath it. */
-.about-story-inner { grid-template-columns: 1fr; gap: var(--space-10, 2.5rem); }
-.about-story-img { display: block; }
-.about-story-img img { aspect-ratio: 1672 / 941; height: auto; border-radius: var(--radius-xl); box-shadow: 0 40px 80px -40px rgba(26, 18, 40, 0.6); }
-.about-story-text { max-width: 760px; margin-inline: auto; width: 100%; }
-@media (max-width: 1024px) { .about-story-img { display: block; } }
+/* About: the wide collection photo sits beside the story on desktop (image
+   left, text right, kept short at its natural landscape shape), and as a
+   banner above the story on tablets and phones. */
+.about-story-inner { grid-template-columns: minmax(0, 480px) minmax(0, 1fr); gap: var(--space-12); align-items: start; }
+.about-story-img { display: block; position: sticky; top: calc(var(--header-height, 72px) + var(--space-6)); }
+.about-story-img img { aspect-ratio: 1672 / 941; height: auto; border-radius: var(--radius-xl); box-shadow: 0 30px 60px -36px rgba(26, 18, 40, 0.6); }
+@media (max-width: 1024px) {
+  /* The older rule hid this photo below 1024px; keep it side by side down to 861px. */
+  .about-story-inner { grid-template-columns: minmax(0, 42%) minmax(0, 1fr); gap: var(--space-8); }
+  .about-story-img { display: block; }
+}
+@media (max-width: 860px) {
+  .about-story-inner { grid-template-columns: 1fr; gap: var(--space-8); }
+  .about-story-img { position: static; }
+  .about-story-img, .about-story-text { max-width: 760px; margin-inline: auto; width: 100%; }
+}
 @media (max-width: 600px) { .about-story-img img { border-radius: var(--radius-lg); } .about-story-inner { gap: var(--space-6); } }
