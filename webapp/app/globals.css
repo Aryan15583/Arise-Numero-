@@ -3341,7 +3341,12 @@ a.add-to-cart, a.add-to-cart-main { text-decoration: none; display: inline-flex;
 .category-tile img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
 .category-tile-name { padding: var(--space-3) var(--space-3) 0; font-weight: 600; }
 .category-tile-count { padding: 2px var(--space-3) var(--space-3); font-size: 0.8125rem; color: var(--text-muted); }
-.type-pills { display: flex; gap: var(--space-2); overflow-x: auto; padding-bottom: 4px; margin-bottom: var(--space-4); scrollbar-width: thin; }
+.type-pills { display: flex; gap: var(--space-2); overflow-x: auto; padding-bottom: 14px; margin-bottom: var(--space-3); scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--brand-gold) 55%, transparent) transparent; }
+/* The sideways scroll bar sits a little below the pills, slim and soft, so it
+   never runs into them. */
+.type-pills::-webkit-scrollbar { height: 3px; }
+.type-pills::-webkit-scrollbar-track { background: transparent; }
+.type-pills::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--brand-gold) 55%, transparent); border-radius: 999px; }
 .type-pill {
   flex: 0 0 auto; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border-color);
   background: var(--bg-surface); color: var(--text-body); font: inherit; font-size: 0.875rem; cursor: pointer; white-space: nowrap;
@@ -4183,6 +4188,8 @@ html { scroll-behavior: smooth; }
    ============================================================= */
 /* Lenis drives the gliding scroll; the browser's own smooth scrolling must be off. */
 html.lenis, html.lenis body { scroll-behavior: auto !important; }
+/* Native "#" jumps (phones, where Lenis is off) stop below the sticky header. */
+html { scroll-padding-top: 90px; }
 
 /* Hero: badge, heading, text, buttons and trust points fade up one after another. */
 @keyframes hero-rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -4295,4 +4302,13 @@ html.lenis, html.lenis body { scroll-behavior: auto !important; }
   :is(.product-card, .category-tile, .package-card, .mnav-cats a):active { transform: scale(0.975); }
   .product-card:active .product-img, .category-tile:active img { transform: scale(1.05); }
   .btn:active { transform: scale(0.97); }
+}
+
+/* Touch screens: the header and tab bar stay on screen while the page scrolls
+   under them, and a backdrop blur there has to be redrawn on every frame, which
+   is heavy on phones. Both are ~95% opaque anyway, so go solid instead. */
+@media (hover: none) and (pointer: coarse) {
+  .site-header, .tabbar { backdrop-filter: none; }
+  .site-header { background: var(--bg-page); }
+  .tabbar { background: var(--bg-page); }
 }
