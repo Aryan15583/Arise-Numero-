@@ -4283,3 +4283,16 @@ html.lenis, html.lenis body { scroll-behavior: auto !important; }
 /* Hero entrance: same silky curve as the rest. */
 .hero-content > * { animation-timing-function: var(--m-ease) !important; }
 
+
+/* Touch screens: what the mouse hover does on desktop, a press does on phones.
+   Cards and buttons sink slightly under the finger and spring back, and the
+   photo inside drifts in, so the page responds to touch instead of feeling flat. */
+@media (hover: none) and (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  :is(.product-card, .category-tile, .package-card, .mnav-cats a, .value-card, .feature-card) {
+    -webkit-tap-highlight-color: transparent;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  :is(.product-card, .category-tile, .package-card, .mnav-cats a):active { transform: scale(0.975); }
+  .product-card:active .product-img, .category-tile:active img { transform: scale(1.05); }
+  .btn:active { transform: scale(0.97); }
+}
