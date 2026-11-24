@@ -42,8 +42,18 @@ export default async function AboutPage() {
         <section className="section about-story" aria-labelledby="story-heading">
           <div className="container about-story-inner">
             <div className="about-story-img">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/assets/products/about-workbench.jpg" alt="An amethyst and rose quartz bracelet surrounded by loose crystal beads" width={600} height={600} loading="lazy" />
+              <picture>
+                <source type="image/webp" srcSet="/assets/about/crystal-collection-900.webp 900w, /assets/about/crystal-collection-1672.webp 1672w" sizes="(max-width: 1200px) 100vw, 1200px" />
+                <img
+                  src="/assets/about/crystal-collection-1672.jpg"
+                  srcSet="/assets/about/crystal-collection-900.jpg 900w, /assets/about/crystal-collection-1672.jpg 1672w"
+                  sizes="(max-width: 1200px) 100vw, 1200px"
+                  alt="Amethyst, clear quartz, rose quartz and citrine points with polished gemstones and crystal bracelets, set before a numerology wheel"
+                  width={1672}
+                  height={941}
+                  loading="lazy"
+                />
+              </picture>
             </div>
             <div className="about-story-text">
               <h2 id="story-heading" className="section-title">How Arise Numero Began</h2>

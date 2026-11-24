@@ -4312,3 +4312,66 @@ html { scroll-padding-top: 90px; }
   .site-header { background: var(--bg-page); }
   .tabbar { background: var(--bg-page); }
 }
+
+/* =============================================================
+   PRODUCT PAGE ON PHONES
+   ============================================================= */
+.buybar { display: none; }
+@media (max-width: 768px) {
+  /* Less dead space around the photo. */
+  .product-detail { padding-block: var(--space-3) var(--space-6); }
+  .product-detail-inner { gap: var(--space-6); margin-bottom: var(--space-8); }
+  .related-products { padding-top: var(--space-6); }
+
+  /* Buying comes first: price, stock, quantity and "Add to cart", then the
+     reassurance, description and specification table. */
+  .product-detail-info { display: flex; flex-direction: column; }
+  .product-detail-info > .product-trust { order: 1; }
+  .product-detail-info > .product-description { order: 2; }
+  .product-detail-info > .product-specs { order: 3; margin-top: var(--space-6); }
+  .product-detail-info > .share-buttons { order: 4; }
+
+  /* Comfortable thumb targets. */
+  .share-link { min-height: 40px; display: inline-flex; align-items: center; padding-inline: 14px; }
+  .wishlist-heart { width: 44px; height: 44px; }
+
+  /* Sticky buy bar: slides up once the main button has scrolled away, and
+     takes the tab bar's place meanwhile (the tab bar slides down). */
+  .buybar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 950;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: var(--bg-page);
+    border-top: 1px solid var(--border-light);
+    box-shadow: 0 -12px 30px -18px rgba(26, 18, 40, 0.45);
+    transform: translateY(110%);
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .buybar.is-visible { transform: none; }
+  body:has(.buybar.is-visible) .tabbar { transform: translateY(110%); }
+  .buybar-img { flex-shrink: 0; width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: var(--bg-surface-2); }
+  .buybar-text { flex: 1; min-width: 0; display: grid; gap: 1px; }
+  .buybar-name { font-size: 0.82rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .buybar-price { font-family: var(--font-heading); font-size: 1.15rem; color: var(--text-primary); line-height: 1.2; }
+  .buybar-btn { flex-shrink: 0; min-height: 46px; padding-inline: 16px; font-size: 0.72rem; letter-spacing: 0.1em; white-space: nowrap; gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { .buybar { transition: none; } }
+@media (max-width: 360px) {
+  .buybar-more { display: none; } /* "Add" leaves room for the product name */
+  .product-trust .trust-item-sm { letter-spacing: 0.06em; }
+}
+
+/* Home hero: the tall crystals-and-numbers still life (2:3 shows the whole
+   arrangement and most of the number wheel behind it). */
+.hero-frame { aspect-ratio: 2 / 3; }
+.hero-frame picture { display: contents; }
+.hero-frame img { object-position: 50% 55%; }
+
+/* About: the wide collection photo spans the top of the story, on every screen,
+   with the story in a comfortable reading column beneath it. */
+.about-story-inner { grid-template-columns: 1fr; gap: var(--space-10, 2.5rem); }
+.about-story-img { display: block; }
+.about-story-img img { aspect-ratio: 1672 / 941; height: auto; border-radius: var(--radius-xl); box-shadow: 0 40px 80px -40px rgba(26, 18, 40, 0.6); }
+.about-story-text { max-width: 760px; margin-inline: auto; width: 100%; }
+@media (max-width: 1024px) { .about-story-img { display: block; } }
+@media (max-width: 600px) { .about-story-img img { border-radius: var(--radius-lg); } .about-story-inner { gap: var(--space-6); } }
