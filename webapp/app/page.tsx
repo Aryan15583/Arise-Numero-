@@ -108,8 +108,18 @@ export default async function HomePage() {
             </div>
             <div className="hero-visual" aria-hidden="true">
               <div className="hero-frame">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/assets/products/hero-still-life.jpg" alt="" width={1200} height={1350} fetchPriority="high" />
+                <picture>
+                  <source type="image/webp" srcSet="/assets/hero/crystals-numerology-600.webp 600w, /assets/hero/crystals-numerology-941.webp 941w" sizes="(max-width: 900px) 420px, 45vw" />
+                  <img
+                    src="/assets/hero/crystals-numerology-941.jpg"
+                    srcSet="/assets/hero/crystals-numerology-600.jpg 600w, /assets/hero/crystals-numerology-941.jpg 941w"
+                    sizes="(max-width: 900px) 420px, 45vw"
+                    alt=""
+                    width={941}
+                    height={1672}
+                    fetchPriority="high"
+                  />
+                </picture>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useCart } from "./CartContext";
 import { useCurrency } from "./CurrencyContext";
@@ -14,20 +14,31 @@ import type { ProductDTO } from "@/lib/types";
 import { reviewsLabel, starString } from "@/lib/stars";
 import { isPriced } from "@/lib/pricing";
 import { getProductType } from "@/lib/product-types";
+import { thumbnailFor } from "@/lib/product-thumbs";
 import { Icon } from "./Icon";
-
-const SIZE_LABELS: Record<string, string> = { S: "15–16cm", M: "17–18cm", L: "19–20cm" };
 
 export function ProductDetailClient({ product, guide }: { product: ProductDTO; guide?: { href: string; label: string } }) {
   const { addToCart } = useCart();
   const { format } = useCurrency();
   const [activeImg, setActiveImg] = useState(product.imageUrl || product.images[0] || "/assets/placeholder.svg");
-  const [wristSize, setWristSize] = useState("M");
   const [qty, setQty] = useState(1);
   const [activeTab, setActiveTab] = useState<"reviews" | "shipping" | "returns" | "care">("reviews");
   const [added, setAdded] = useState(false);
   const [freeShippingThreshold, setFreeShippingThreshold] = useState(50);
   const [zoomOrigin, setZoomOrigin] = useState<string | null>(null);
+  // Phones: once the main "Add to cart" button has scrolled up out of view, a
+  // slim bar with the price and the same button slides up from the bottom.
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const [showBuyBar, setShowBuyBar] = useState(false);
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el || !("IntersectionObserver" in window)) return;
+    const io = new IntersectionObserver(([entry]) => {
+      setShowBuyBar(!entry.isIntersecting && entry.boundingClientRect.top < 0);
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   function handleZoomMove(e: React.MouseEvent<HTMLDivElement>) {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -161,19 +172,6 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
 
             {priced && (
             <div className="product-options">
-              {isBracelet && (
-              <fieldset className="option-group">
-                <legend className="option-label">Wrist Size</legend>
-                <div className="size-options" role="radiogroup" aria-label="Select wrist size">
-                  {Object.entries(SIZE_LABELS).map(([size, range]) => (
-                    <label className="size-option" key={size}>
-                      <input type="radio" name="wrist-size" checked={wristSize === size} onChange={() => setWristSize(size)} />
-                      <span>{size} <em>({range})</em></span>
-                    </label>
-                  ))}
-                </div>
-              </fieldset>
-              )}
 
               {!isOut && (
               <div className="quantity-group">
@@ -198,10 +196,10 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
             </div>
             )}
 
-            <div className="product-cta-group">
+            <div className="product-cta-group" ref={ctaRef}>
               {priced ? (
                 <button className="btn btn-primary btn-lg add-to-cart-main" onClick={handleAdd} disabled={isOut}>
-                  {added ? <><Icon name="check" size={18} /> Added to bag</> : isOut ? "Out of stock" : <><Icon name="bag" size={18} /> Add to bag</>}
+                  {added ? <><Icon name="check" size={18} /> Added to cart</> : isOut ? "Out of stock" : <><Icon name="bag" size={18} /> Add to cart</>}
                 </button>
               ) : (
                 <Link href={`/contact?product=${encodeURIComponent(product.id)}`} className="btn btn-primary btn-lg add-to-cart-main">
@@ -308,6 +306,19 @@ export function ProductDetailClient({ product, guide }: { product: ProductDTO; g
           </div>
         )}
       </section>
+      {priced && !isOut && (
+        <div className={`buybar ${showBuyBar ? "is-visible" : ""}`} inert={!showBuyBar} aria-hidden={!showBuyBar}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={thumbnailFor(activeImg) ?? activeImg} alt="" width={44} height={44} className="buybar-img" />
+          <div className="buybar-text">
+            <span className="buybar-name">{product.name}</span>
+            <span className="buybar-price">{format(product.priceUsd)}{qty > 1 ? ` × ${qty}` : ""}</span>
+          </div>
+          <button type="button" className="btn btn-primary buybar-btn" onClick={handleAdd}>
+            {added ? <><Icon name="check" size={16} /> Added</> : <><Icon name="bag" size={16} /> Add<span className="buybar-more"> to cart</span></>}
+          </button>
+        </div>
+      )}
     </>
   );
 }

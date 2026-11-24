@@ -12,7 +12,7 @@ const TABS: { href: string; label: string; icon: IconName; match: (p: string) =>
   { href: "/shop", label: "Shop", icon: "grid", match: (p) => p.startsWith("/shop") || p.startsWith("/product") },
   { href: "/numerology", label: "Numbers", icon: "sparkle", match: (p) => p.startsWith("/numerology") || p.startsWith("/booking") || p.startsWith("/guides") },
   { href: "/wishlist", label: "Wishlist", icon: "heart", match: (p) => p.startsWith("/wishlist") },
-  { href: "/cart", label: "Bag", icon: "bag", match: (p) => p.startsWith("/cart") },
+  { href: "/cart", label: "Cart", icon: "bag", match: (p) => p.startsWith("/cart") },
 ];
 
 // App-style bottom bar on phones: the main destinations are always one tap away.
